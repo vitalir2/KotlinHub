@@ -35,4 +35,8 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    // Arrow Kt
+    implementation(platform("io.arrow-kt:arrow-stack:1.1.2"))
+    implementation("io.arrow-kt:arrow-core")
 }
