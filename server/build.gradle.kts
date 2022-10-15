@@ -39,4 +39,7 @@ dependencies {
     // Arrow Kt
     implementation(platform("io.arrow-kt:arrow-stack:1.1.2"))
     implementation("io.arrow-kt:arrow-core")
+
+    // YAML Config
+    implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
 }
