@@ -4,5 +4,5 @@ import arrow.core.Either
 
 interface RegisterUserUseCase {
 
-    operator fun invoke(credentials: User.Credentials): Either<RegistrationError, User>
+    operator fun invoke(credentials: User.Credentials): Either<UserError, User>
 }

@@ -4,5 +4,5 @@ import arrow.core.Either
 
 interface LoginUseCase {
 
-    operator fun invoke(credentials: User.Credentials): Either<LoginError, User>
+    suspend operator fun invoke(credentials: User.Credentials): Either<UserError, User>
 }
