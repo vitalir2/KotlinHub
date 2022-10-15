@@ -1,11 +1,11 @@
-package io.vitalir.kotlinvcshub.server.user.domain.impl
+package io.vitalir.kotlinvcshub.server.user.domain.usecase.impl
 
 import arrow.core.Either
 import arrow.core.continuations.either
-import io.vitalir.kotlinvcshub.server.user.domain.LoginUseCase
-import io.vitalir.kotlinvcshub.server.user.domain.User
-import io.vitalir.kotlinvcshub.server.user.domain.UserError
-import io.vitalir.kotlinvcshub.server.user.domain.UserPersistence
+import io.vitalir.kotlinvcshub.server.user.domain.usecase.LoginUseCase
+import io.vitalir.kotlinvcshub.server.user.domain.model.User
+import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
+import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 
 internal class LoginUseCaseImpl(
     private val userPersistence: UserPersistence,

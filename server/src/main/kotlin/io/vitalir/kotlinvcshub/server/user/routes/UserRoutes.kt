@@ -11,11 +11,10 @@ import io.ktor.server.routing.*
 import io.vitalir.kotlinvcshub.server.common.routes.ErrorResponse
 import io.vitalir.kotlinvcshub.server.common.routes.ResponseData
 import io.vitalir.kotlinvcshub.server.infrastructure.config.AppConfig
-import io.vitalir.kotlinvcshub.server.user.domain.LoginError
-import io.vitalir.kotlinvcshub.server.user.domain.LoginUseCase
-import io.vitalir.kotlinvcshub.server.user.domain.RegisterUserUseCase
-import io.vitalir.kotlinvcshub.server.user.domain.RegistrationError
-import io.vitalir.kotlinvcshub.server.user.domain.User
+import io.vitalir.kotlinvcshub.server.user.domain.usecase.LoginUseCase
+import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
+import io.vitalir.kotlinvcshub.server.user.domain.model.User
+import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import java.util.*
 
 internal fun Routing.userRoutes(
@@ -44,7 +43,7 @@ private fun Route.registerUserRoute(registerUserUseCase: RegisterUserUseCase) {
 }
 
 @JvmName("getRegisterUserResponseData")
-private fun getResponseData(registrationResult: Either<RegistrationError, User>): ResponseData {
+private fun getResponseData(registrationResult: Either<UserError, User>): ResponseData {
     return when (registrationResult) {
         is Either.Left -> {
             getErrorResponseData(registrationResult.value)
@@ -52,26 +51,6 @@ private fun getResponseData(registrationResult: Either<RegistrationError, User>)
         is Either.Right -> {
             val responseBody = RegisterUserResponse(userId = registrationResult.value.id)
             ResponseData(code = HttpStatusCode.Created, body = responseBody)
-        }
-    }
-}
-
-private fun getErrorResponseData(registrationError: RegistrationError): ResponseData {
-    return when (registrationError) {
-        RegistrationError.InvalidCredentialsFormat -> {
-            val responseBody = ErrorResponse(
-                code = HttpStatusCode.BadRequest.value,
-                message = "invalid credentials format",
-            )
-            ResponseData(code = HttpStatusCode.BadRequest, body = responseBody)
-        }
-
-        RegistrationError.UserAlreadyExists -> {
-            val responseBody = ErrorResponse(
-                code = HttpStatusCode.BadRequest.value,
-                message = "user already exists",
-            )
-            ResponseData(code = HttpStatusCode.BadRequest, body = responseBody)
         }
     }
 }
@@ -94,7 +73,7 @@ private fun Route.loginRoute(
 }
 
 @JvmName("getLoginResponseData")
-private fun getResponseData(jwtConfig: AppConfig.Jwt, loginResult: Either<LoginError, User>): ResponseData {
+private fun getResponseData(jwtConfig: AppConfig.Jwt, loginResult: Either<UserError, User>): ResponseData {
     return when (loginResult) {
         is Either.Left -> {
             getErrorResponseData(loginResult.value)
@@ -118,9 +97,9 @@ private fun getResponseData(jwtConfig: AppConfig.Jwt, loginResult: Either<LoginE
     }
 }
 
-private fun getErrorResponseData(loginError: LoginError): ResponseData {
-    return when (loginError) {
-        LoginError.InvalidCredentials -> {
+private fun getErrorResponseData(userError: UserError): ResponseData {
+    return when (userError) {
+        UserError.InvalidCredentials -> {
             ResponseData(
                 code = HttpStatusCode.BadRequest,
                 body = ErrorResponse(
@@ -129,7 +108,7 @@ private fun getErrorResponseData(loginError: LoginError): ResponseData {
                 )
             )
         }
-        LoginError.InvalidCredentialsFormat -> {
+        UserError.InvalidCredentialsFormat -> {
             ResponseData(
                 code = HttpStatusCode.BadRequest,
                 body = ErrorResponse(
@@ -137,6 +116,13 @@ private fun getErrorResponseData(loginError: LoginError): ResponseData {
                     message = "invalid credentials format",
                 )
             )
+        }
+        UserError.UserAlreadyExists -> {
+            val responseBody = ErrorResponse(
+                code = HttpStatusCode.BadRequest.value,
+                message = "user already exists",
+            )
+            ResponseData(code = HttpStatusCode.BadRequest, body = responseBody)
         }
     }
 }

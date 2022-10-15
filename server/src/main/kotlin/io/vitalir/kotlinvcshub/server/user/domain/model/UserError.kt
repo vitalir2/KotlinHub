@@ -1,4 +1,4 @@
-package io.vitalir.kotlinvcshub.server.user.domain
+package io.vitalir.kotlinvcshub.server.user.domain.model
 
 sealed interface UserError {
 

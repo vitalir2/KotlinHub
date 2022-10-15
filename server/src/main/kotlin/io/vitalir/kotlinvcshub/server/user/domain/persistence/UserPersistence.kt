@@ -1,6 +1,8 @@
-package io.vitalir.kotlinvcshub.server.user.domain
+package io.vitalir.kotlinvcshub.server.user.domain.persistence
 
 import arrow.core.Either
+import io.vitalir.kotlinvcshub.server.user.domain.model.User
+import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 
 interface UserPersistence {
 
