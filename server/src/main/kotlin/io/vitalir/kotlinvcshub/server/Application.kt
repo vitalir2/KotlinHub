@@ -5,6 +5,7 @@ import io.ktor.server.config.*
 import io.ktor.server.netty.*
 import io.vitalir.kotlinvcshub.server.infrastructure.config.AppConfig
 import io.vitalir.kotlinvcshub.server.plugins.configureRouting
+import io.vitalir.kotlinvcshub.server.plugins.configureSecurity
 import io.vitalir.kotlinvcshub.server.plugins.configureSerialization
 
 fun main(args: Array<String>) = EngineMain.main(args)
@@ -12,8 +13,8 @@ fun main(args: Array<String>) = EngineMain.main(args)
 // Used in application config
 @Suppress("UNUSED")
 fun Application.mainModule() {
-    val parsedConfig = environment.config.toAppConfig()
-    // TODO configureSecurity()
+    val appConfig = environment.config.toAppConfig()
+    configureSecurity(jwtConfig = appConfig.jwtConfig)
     configureSerialization()
     configureRouting()
 }

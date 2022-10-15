@@ -1,6 +1,8 @@
 package io.vitalir.kotlinvcshub.server.user.routes
 
 import arrow.core.Either
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -8,19 +10,22 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinvcshub.server.common.routes.ErrorResponse
 import io.vitalir.kotlinvcshub.server.common.routes.ResponseData
+import io.vitalir.kotlinvcshub.server.infrastructure.config.AppConfig
 import io.vitalir.kotlinvcshub.server.user.domain.LoginError
 import io.vitalir.kotlinvcshub.server.user.domain.LoginUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.RegisterUserUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.RegistrationError
 import io.vitalir.kotlinvcshub.server.user.domain.User
+import java.util.*
 
 internal fun Routing.userRoutes(
+    jwtConfig: AppConfig.Jwt,
     registerUserUseCase: RegisterUserUseCase,
     loginUseCase: LoginUseCase,
 ) {
     route("users/") {
         registerUserRoute(registerUserUseCase)
-        loginRoute(loginUseCase)
+        loginRoute(jwtConfig, loginUseCase)
     }
 }
 
@@ -71,7 +76,10 @@ private fun getErrorResponseData(registrationError: RegistrationError): Response
     }
 }
 
-private fun Route.loginRoute(loginUseCase: LoginUseCase) {
+private fun Route.loginRoute(
+    jwtConfig: AppConfig.Jwt,
+    loginUseCase: LoginUseCase,
+) {
     post("auth/") {
         val loginRequest = call.receive<LoginRequest>()
         val loginResult = loginUseCase(
@@ -80,21 +88,31 @@ private fun Route.loginRoute(loginUseCase: LoginUseCase) {
                 password = loginRequest.password,
             )
         )
-        val responseData = getResponseData(loginResult)
+        val responseData = getResponseData(jwtConfig, loginResult)
         call.respond(responseData)
     }
 }
 
 @JvmName("getLoginResponseData")
-private fun getResponseData(loginResult: Either<LoginError, User>): ResponseData {
+private fun getResponseData(jwtConfig: AppConfig.Jwt, loginResult: Either<LoginError, User>): ResponseData {
     return when (loginResult) {
         is Either.Left -> {
             getErrorResponseData(loginResult.value)
         }
         is Either.Right -> {
+            val user = loginResult.value
+            val token = JWT.create().apply {
+                withAudience(jwtConfig.audience)
+                withIssuer(jwtConfig.issuer)
+                withClaim("login", user.login)
+                withExpiresAt(Date(System.currentTimeMillis() + HOUR_MS))
+            }.sign(Algorithm.HMAC256(jwtConfig.secret))
             ResponseData(
                 code = HttpStatusCode.OK,
-                body = LoginResponse(userId = loginResult.value.id),
+                body = LoginResponse(
+                    userId = user.id,
+                    token = token,
+                ),
             )
         }
     }
@@ -129,3 +147,5 @@ private suspend fun ApplicationCall.respond(responseData: ResponseData) {
         message = responseData.body,
     )
 }
+
+private const val HOUR_MS = 1000 * 60 * 60
