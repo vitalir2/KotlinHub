@@ -1,0 +1,16 @@
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    login TEXT NOT NULL
+);
+
+INSERT INTO users (id, login)
+VALUES (15, 'vitalir');
+
+getById:
+SELECT * FROM users
+WHERE id = ?
+LIMIT 1;
+
+insert:
+INSERT INTO users (id, login)
+VALUES (?, ?);

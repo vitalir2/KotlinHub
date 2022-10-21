@@ -7,14 +7,7 @@ plugins {
     kotlin("jvm") version "1.7.20"
     id("io.ktor.plugin") version "2.1.2"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.20"
-}
-
-group = "io.vitalir"
-version = "0.0.1"
-application {
-    mainClass.set("io.vitalir.kotlinvcshub.server.ApplicationKt")
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+    id("app.cash.sqldelight") version "2.0.0-alpha04"
 }
 
 repositories {
@@ -42,4 +35,24 @@ dependencies {
 
     // YAML Config
     implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
+
+    // Database
+    implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("app.cash.sqldelight:jdbc-driver:2.0.0-alpha04")
+}
+
+group = "io.vitalir"
+version = "0.0.1"
+
+application {
+    mainClass.set("io.vitalir.kotlinvcshub.server.ApplicationKt")
+    val isDevelopment: Boolean = project.ext.has("development")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+
+sqldelight {
+    database("MainSqlDelight") {
+        packageName = "io.vitalir.kotlinvcshub.server.infrastructure.database.sqldelight"
+        dialect("app.cash.sqldelight:postgresql-dialect:2.0.0-alpha04")
+    }
 }
