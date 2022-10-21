@@ -2,7 +2,7 @@ package io.vitalir.kotlinvcshub.server.user.domain.model
 
 sealed interface UserError {
 
-    object InvalidCredentialsFormat : UserError
+    object ValidationFailed : UserError
 
     object UserAlreadyExists : UserError
 

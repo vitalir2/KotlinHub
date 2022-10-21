@@ -99,7 +99,7 @@ private fun getResponseData(jwtConfig: AppConfig.Jwt, loginResult: Either<UserEr
 
 private fun getErrorResponseData(userError: UserError): ResponseData {
     return when (userError) {
-        UserError.InvalidCredentials -> {
+        is UserError.InvalidCredentials -> {
             ResponseData(
                 code = HttpStatusCode.BadRequest,
                 body = ErrorResponse(
@@ -108,7 +108,7 @@ private fun getErrorResponseData(userError: UserError): ResponseData {
                 )
             )
         }
-        UserError.InvalidCredentialsFormat -> {
+        is UserError.ValidationFailed -> {
             ResponseData(
                 code = HttpStatusCode.BadRequest,
                 body = ErrorResponse(
@@ -117,7 +117,7 @@ private fun getErrorResponseData(userError: UserError): ResponseData {
                 )
             )
         }
-        UserError.UserAlreadyExists -> {
+        is UserError.UserAlreadyExists -> {
             val responseBody = ErrorResponse(
                 code = HttpStatusCode.BadRequest.value,
                 message = "user already exists",
