@@ -1,16 +1,28 @@
 CREATE TABLE users (
-    id INTEGER PRIMARY KEY,
-    login TEXT NOT NULL
+    id SERIAL PRIMARY KEY,
+    login TEXT NOT NULL,
+    password TEXT NOT NULL,
+    email TEXT
 );
 
-INSERT INTO users (id, login)
-VALUES (15, 'vitalir');
+INSERT INTO users (login, password)
+VALUES ( 'vitalir', 'hsa:lkj3rflkdc8otk2jfecd235jalg.nasdlfj253rsa052nf20a85nas05vasf');
 
 getById:
 SELECT * FROM users
 WHERE id = ?
 LIMIT 1;
 
+getByLogin:
+SELECT * FROM users
+WHERE login = ?
+LIMIT 1;
+
+getByEmail:
+SELECT * FROM users
+WHERE email = ?
+LIMIT 1;
+
 insert:
-INSERT INTO users (id, login)
-VALUES (?, ?);
+INSERT INTO users (login, password, email)
+VALUES (?, ?, ?);
