@@ -11,6 +11,7 @@ import io.ktor.server.routing.*
 import io.vitalir.kotlinvcshub.server.common.routes.ErrorResponse
 import io.vitalir.kotlinvcshub.server.common.routes.ResponseData
 import io.vitalir.kotlinvcshub.server.infrastructure.config.AppConfig
+import io.vitalir.kotlinvcshub.server.infrastructure.di.AppGraph
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.LoginUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
@@ -19,12 +20,11 @@ import java.util.*
 
 internal fun Routing.userRoutes(
     jwtConfig: AppConfig.Jwt,
-    registerUserUseCase: RegisterUserUseCase,
-    loginUseCase: LoginUseCase,
+    userGraph: AppGraph.User,
 ) {
     route("users/") {
-        registerUserRoute(registerUserUseCase)
-        loginRoute(jwtConfig, loginUseCase)
+        registerUserRoute(userGraph.registerUserUseCase)
+        loginRoute(jwtConfig, userGraph.loginUseCase)
     }
 }
 

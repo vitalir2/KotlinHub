@@ -15,5 +15,7 @@ data class AppConfig(
     data class Database(
         val username: String,
         val password: String,
+        val databaseName: String,
+        val serverName: String,
     )
 }

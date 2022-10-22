@@ -38,6 +38,7 @@ dependencies {
 
     // Database
     implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("org.postgresql:postgresql:42.5.0")
     implementation("app.cash.sqldelight:jdbc-driver:2.0.0-alpha04")
 }
 

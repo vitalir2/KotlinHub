@@ -7,6 +7,8 @@ services:
     environment:
       POSTGRES_USERNAME: ${POSTGRES_USERNAME:?No username for db connection was set}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?No password for db connection was set}
+      POSTGRES_DATABASE_NAME: ${POSTGRES_DB:?No db name was set}
+      POSTGRES_SERVER_NAME: ${POSTGRES_SERVER_NAME:?No server name for db was set}
       JWT_SECRET: ${JWT_SECRET:?No jwt secret was set}
       JWT_REALM: ${JWT_REALM:?No jwt realm was set}
     depends_on:
