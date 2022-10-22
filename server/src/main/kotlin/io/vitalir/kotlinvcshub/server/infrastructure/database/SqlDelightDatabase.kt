@@ -12,6 +12,8 @@ private fun createDataSource(databaseConfig: AppConfig.Database): DataSource {
         dataSourceClassName = "org.postgresql.ds.PGSimpleDataSource"
         username = databaseConfig.username
         password = databaseConfig.password
+        addDataSourceProperty("databaseName", databaseConfig.databaseName)
+        addDataSourceProperty("serverName", databaseConfig.serverName)
     }
     return HikariDataSource(hikariConfig)
 }

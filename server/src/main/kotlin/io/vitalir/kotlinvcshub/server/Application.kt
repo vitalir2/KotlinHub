@@ -41,4 +41,6 @@ private val ApplicationConfig.databaseConfig: AppConfig.Database
     get() = AppConfig.Database(
         username = property("database.username").getString(),
         password = property("database.password").getString(),
+        databaseName = property("database.databaseName").getString(),
+        serverName = property("database.serverName").getString(),
     )

@@ -14,3 +14,5 @@ jwt:
 database:
   username: $POSTGRES_USERNAME
   password: $POSTGRES_PASSWORD
+  databaseName: $POSTGRES_DATABASE_NAME
+  serverName: $POSTGRES_SERVER_NAME
