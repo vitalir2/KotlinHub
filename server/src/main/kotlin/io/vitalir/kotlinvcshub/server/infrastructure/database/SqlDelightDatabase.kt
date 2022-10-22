@@ -9,8 +9,8 @@ import javax.sql.DataSource
 private val dataSource: DataSource by lazy {
     val hikariConfig = HikariConfig().apply {
         dataSourceClassName = "org.postgresql.ds.PGSimpleDataSource"
-        username = "vitalir"
-        password = "kek"
+        username = "postgres" // TODO set from config
+        password = "admin"
     }
     HikariDataSource(hikariConfig)
 }
