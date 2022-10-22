@@ -1,7 +1,8 @@
 package io.vitalir.kotlinvcshub.server.infrastructure.config
 
 data class AppConfig(
-    val jwtConfig: Jwt,
+    val jwt: Jwt,
+    val database: Database,
 ) {
 
     data class Jwt(
@@ -9,5 +10,10 @@ data class AppConfig(
         val issuer: String,
         val audience: String,
         val realm: String,
+    )
+
+    data class Database(
+        val username: String,
+        val password: String,
     )
 }
