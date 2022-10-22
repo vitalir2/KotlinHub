@@ -14,17 +14,21 @@ fun main(args: Array<String>) = EngineMain.main(args)
 @Suppress("UNUSED")
 fun Application.mainModule() {
     val appConfig = environment.config.toAppConfig()
-    configureSecurity(jwtConfig = appConfig.jwtConfig)
+    configureSecurity(jwtConfig = appConfig.jwt)
     configureSerialization()
     configureRouting()
 }
 
 private fun ApplicationConfig.toAppConfig(): AppConfig =
     AppConfig(
-        jwtConfig = AppConfig.Jwt(
+        jwt = AppConfig.Jwt(
             secret = property("jwt.secret").getString(),
             issuer = property("jwt.issuer").getString(),
             audience = property("jwt.audience").getString(),
             realm = property("jwt.realm").getString(),
+        ),
+        database = AppConfig.Database(
+            username = property("database.username").getString(),
+            password = property("database.password").getString(),
         )
     )

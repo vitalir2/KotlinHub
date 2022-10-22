@@ -10,3 +10,7 @@ jwt:
   issuer: "http://0.0.0.0:8080/"
   audience: "http://0.0.0.0:8080/hello"
   realm: $JWT_REALM
+
+database:
+  username: $POSTGRES_USERNAME
+  password: $POSTGRES_PASSWORD
