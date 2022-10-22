@@ -2,9 +2,9 @@ package io.vitalir.kotlinvcshub.server.infrastructure.di
 
 import io.vitalir.kotlinvcshub.server.infrastructure.config.AppConfig
 
-interface ApplicationGraphFactory {
+interface AppGraphFactory {
 
     fun create(
         appConfig: AppConfig,
-    ): ApplicationGraph
+    ): AppGraph
 }

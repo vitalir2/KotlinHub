@@ -14,23 +14,24 @@ import io.vitalir.kotlinvcshub.server.user.domain.usecase.ValidateUserCredential
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.LoginUseCaseImpl
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.ValidateUserCredentialsUseCaseImpl
 
-internal class ApplicationGraphFactoryImpl : ApplicationGraphFactory {
+internal class AppGraphFactoryImpl : AppGraphFactory {
 
     override fun create(
         appConfig: AppConfig,
-    ): ApplicationGraph {
+    ): AppGraph {
         val database = createMainSqlDelightDatabase(appConfig.database)
-        return ApplicationGraph(
-            userGraph = createUserGraph(database),
+        return AppGraph(
+            appConfig = appConfig,
+            user = createUserGraph(database),
         )
     }
 
     private fun createUserGraph(
         database: MainSqlDelight,
-    ): ApplicationGraph.User {
+    ): AppGraph.User {
         val userPersistence: UserPersistence = SqlDelightUserPersistence(database)
         val validateUserCredentialsUseCase: ValidateUserCredentialsUseCase = ValidateUserCredentialsUseCaseImpl()
-        return ApplicationGraph.User(
+        return AppGraph.User(
             loginUseCase = LoginUseCaseImpl(userPersistence, validateUserCredentialsUseCase),
             registerUserUseCase = object : RegisterUserUseCase {
                 override fun invoke(credentials: User.Credentials): Either<UserError, User> {
