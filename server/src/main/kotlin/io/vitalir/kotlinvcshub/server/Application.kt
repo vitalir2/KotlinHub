@@ -21,14 +21,20 @@ fun Application.mainModule() {
 
 private fun ApplicationConfig.toAppConfig(): AppConfig =
     AppConfig(
-        jwt = AppConfig.Jwt(
-            secret = property("jwt.secret").getString(),
-            issuer = property("jwt.issuer").getString(),
-            audience = property("jwt.audience").getString(),
-            realm = property("jwt.realm").getString(),
-        ),
-        database = AppConfig.Database(
-            username = property("database.username").getString(),
-            password = property("database.password").getString(),
-        )
+        jwt = jwtConfig,
+        database = databaseConfig,
+    )
+
+private val ApplicationConfig.jwtConfig: AppConfig.Jwt
+    get() = AppConfig.Jwt(
+        secret = property("jwt.secret").getString(),
+        issuer = property("jwt.issuer").getString(),
+        audience = property("jwt.audience").getString(),
+        realm = property("jwt.realm").getString(),
+    )
+
+private val ApplicationConfig.databaseConfig: AppConfig.Database
+    get() = AppConfig.Database(
+        username = property("database.username").getString(),
+        password = property("database.password").getString(),
     )
