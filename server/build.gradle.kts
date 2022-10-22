@@ -56,3 +56,28 @@ sqldelight {
         dialect("app.cash.sqldelight:postgresql-dialect:2.0.0-alpha04")
     }
 }
+
+// Docker Compose custom tasks
+val environments = listOf("dev")
+for (env in environments) {
+    val capitalizedEnv = env.capitalize()
+    tasks.register("runDockerCompose$capitalizedEnv") {
+        dependsOn("buildFatJar")
+        doLast {
+            exec {
+                workingDir = projectDir
+                executable = "docker"
+                args = listOf("compose", "--env-file", "./config/.env.$env", "up")
+            }
+        }
+    }
+    tasks.register("stopDockerCompose$capitalizedEnv") {
+        doLast {
+            exec {
+                workingDir = projectDir
+                executable = "docker"
+                args = listOf("compose", "--env-file", "./config/.env.$env", "down")
+            }
+        }
+    }
+}
