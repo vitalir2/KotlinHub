@@ -58,7 +58,7 @@ sqldelight {
 }
 
 // Docker Compose custom tasks
-val environments = listOf("dev")
+val environments = listOf("dev", "prod")
 for (env in environments) {
     val capitalizedEnv = env.capitalize()
     tasks.register("runDockerCompose$capitalizedEnv") {
