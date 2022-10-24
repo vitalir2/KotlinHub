@@ -16,6 +16,5 @@ internal object EmailValidationRule : UserValidationRule<User.Credentials.Identi
         }
     }
 
-    // TODO: Add real regex
-    private val EMAIL_REGEX = Regex("TODO")
+    private val EMAIL_REGEX = Regex("^[a-zA-Z0-9_!#\$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
 }
