@@ -1,5 +1,6 @@
 package io.vitalir.kotlinvschub.server.user.domain
 
+import arrow.core.left
 import arrow.core.right
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
@@ -22,6 +23,8 @@ class LoginUseCaseSpec : ShouldSpec({
     val loginUseCase: LoginUseCase = LoginUseCaseImpl(
         userPersistence = userPersistenceMock,
     )
+
+    val login = User.Credentials.Identifier.Login("happybirthday125")
     val userLogin = "smock"
     val validUserIdentifier = User.Credentials.Identifier.Login(userLogin)
     val validHashedPassword = "some hashed value"
@@ -57,6 +60,32 @@ class LoginUseCaseSpec : ShouldSpec({
 
         loginResult.shouldBeRight() { error -> "should be right, but found left with error=$error" }
         loginResult.value shouldBe someUser
+    }
+
+    should("return invalid credentials if user does not exist") {
+        val credentials = User.Credentials(
+            identifier = login,
+            password = "any",
+        )
+        coEvery { userPersistenceMock.getUser(login) } returns UserError.InvalidCredentials.left()
+
+        val loginResult = loginUseCase(credentials)
+
+        loginResult.shouldBeLeft() { user -> "should be left, but $user was found" }
+        loginResult.value shouldBe UserError.InvalidCredentials
+    }
+
+    should("return invalid credentials if user password does not match") {
+        val credentials = User.Credentials(
+            identifier = login,
+            password = "notthesamepassword",
+        )
+        coEvery { userPersistenceMock.getUser(login) } returns someUser.right()
+
+        val loginResult = loginUseCase(credentials)
+
+        loginResult.shouldBeLeft() { user -> "should be left, but $user was found" }
+        loginResult.value shouldBe UserError.InvalidCredentials
     }
 
     context("validation errors") {
