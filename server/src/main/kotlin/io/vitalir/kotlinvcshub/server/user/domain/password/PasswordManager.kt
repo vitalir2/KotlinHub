@@ -14,9 +14,9 @@ interface PasswordManager {
     fun encode(password: String): String
 
     /**
-     * @param password outer password e.g. from user input
-     * @param hashedPassword as its name implies, a hashed password e.g. from database
-     * @return true if two are the same password in their raw form
+     * @param plaintext outer password e.g. from user input
+     * @param hashed as its name implies, a hashed password e.g. from database
+     * @return true if two are the same password in their raw form, false otherwise
      */
-    fun comparePasswords(password: String, hashedPassword: String): Boolean
+    fun comparePasswords(plaintext: String, hashed: String): Boolean
 }
