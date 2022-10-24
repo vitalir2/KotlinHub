@@ -45,6 +45,9 @@ dependencies {
     val kotestVersion = "5.5.1"
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    testImplementation("io.kotest.extensions:kotest-assertions-arrow:1.2.5")
+
+    testImplementation("io.mockk:mockk:1.13.2")
 }
 
 group = "io.vitalir"
