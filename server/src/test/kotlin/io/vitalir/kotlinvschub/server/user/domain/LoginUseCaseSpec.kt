@@ -11,17 +11,21 @@ import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
+import io.vitalir.kotlinvcshub.server.user.domain.password.PasswordManager
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.LoginUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.LoginUseCaseImpl
 
 class LoginUseCaseSpec : ShouldSpec({
     val userPersistenceMock = mockk<UserPersistence>()
+    val passwordManagerMock = mockk<PasswordManager>()
     val loginUseCase: LoginUseCase = LoginUseCaseImpl(
         userPersistence = userPersistenceMock,
+        passwordManager = passwordManagerMock,
     )
 
     val login = User.Credentials.Identifier.Login("happybirthday125")
@@ -38,8 +42,13 @@ class LoginUseCaseSpec : ShouldSpec({
         password = validHashedPassword,
     )
 
+    fun setupAlwaysPassingPasswordManager() {
+        every { passwordManagerMock.comparePasswords(any(), any()) } returns true
+    }
+
     should("return user if the credentials with login are valid and it exists") {
         coEvery { userPersistenceMock.getUser(validUserIdentifier) } returns someUser.right()
+        setupAlwaysPassingPasswordManager()
 
         val loginResult = loginUseCase(validUserCredentials)
 
@@ -54,7 +63,9 @@ class LoginUseCaseSpec : ShouldSpec({
             identifier = identifier,
             password = "any",
         )
+
         coEvery { userPersistenceMock.getUser(identifier) } returns someUser.right()
+        setupAlwaysPassingPasswordManager()
 
         val loginResult = loginUseCase(credentials)
 
@@ -67,7 +78,9 @@ class LoginUseCaseSpec : ShouldSpec({
             identifier = login,
             password = "any",
         )
+
         coEvery { userPersistenceMock.getUser(login) } returns UserError.InvalidCredentials.left()
+        setupAlwaysPassingPasswordManager()
 
         val loginResult = loginUseCase(credentials)
 
@@ -80,7 +93,9 @@ class LoginUseCaseSpec : ShouldSpec({
             identifier = login,
             password = "notthesamepassword",
         )
+
         coEvery { userPersistenceMock.getUser(login) } returns someUser.right()
+        every { passwordManagerMock.comparePasswords(any(), any()) } returns false
 
         val loginResult = loginUseCase(credentials)
 

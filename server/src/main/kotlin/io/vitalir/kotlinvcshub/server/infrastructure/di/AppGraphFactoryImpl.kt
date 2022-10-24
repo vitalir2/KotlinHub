@@ -8,6 +8,7 @@ import io.vitalir.kotlinvcshub.server.infrastructure.database.sqldelight.MainSql
 import io.vitalir.kotlinvcshub.server.user.data.SqlDelightUserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
+import io.vitalir.kotlinvcshub.server.user.data.BCryptPasswordManager
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.LoginUseCaseImpl
@@ -28,8 +29,12 @@ internal class AppGraphFactoryImpl : AppGraphFactory {
         database: MainSqlDelight,
     ): AppGraph.User {
         val userPersistence: UserPersistence = SqlDelightUserPersistence(database)
+        val passwordManager = BCryptPasswordManager()
         return AppGraph.User(
-            loginUseCase = LoginUseCaseImpl(userPersistence),
+            loginUseCase = LoginUseCaseImpl(
+                userPersistence = userPersistence,
+                passwordManager = passwordManager,
+            ),
             registerUserUseCase = object : RegisterUserUseCase {
                 override fun invoke(credentials: User.Credentials): Either<UserError, User> {
                     return UserError.UserAlreadyExists.left() // TODO

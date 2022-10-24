@@ -41,6 +41,9 @@ dependencies {
     implementation("org.postgresql:postgresql:42.5.0")
     implementation("app.cash.sqldelight:jdbc-driver:2.0.0-alpha04")
 
+    // Security
+    implementation("org.mindrot:jbcrypt:0.4")
+
     // Testing
     val kotestVersion = "5.5.1"
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
