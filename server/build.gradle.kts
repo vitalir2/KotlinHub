@@ -40,6 +40,18 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.5.0")
     implementation("app.cash.sqldelight:jdbc-driver:2.0.0-alpha04")
+
+    // Security
+    implementation("org.mindrot:jbcrypt:0.4")
+
+    // Testing
+    val kotestVersion = "5.5.1"
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    testImplementation("io.kotest:kotest-property:$kotestVersion")
+    testImplementation("io.kotest.extensions:kotest-assertions-arrow:1.2.5")
+
+    testImplementation("io.mockk:mockk:1.13.2")
 }
 
 group = "io.vitalir"
@@ -81,4 +93,9 @@ for (env in environments) {
             }
         }
     }
+}
+
+// Kotlin JVM Kotest dependency
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
