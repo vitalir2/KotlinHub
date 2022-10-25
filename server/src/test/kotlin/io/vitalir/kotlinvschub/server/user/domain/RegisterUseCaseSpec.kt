@@ -6,9 +6,9 @@ import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.confirmVerified
 import io.mockk.spyk
 import io.mockk.verify
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
@@ -44,6 +44,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
             registerUserUseCase(credentials)
 
             verify { spyIdentifierValidationRule.validate(credentials.identifier) }
+            coVerify { spyUserPersistence.addUser(any()) wasNot called }
         }
 
         should("return user already exists error if user with identifier exists") {
@@ -56,6 +57,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
             val result = registerUserUseCase(credentials)
 
             result shouldBeLeft UserError.UserAlreadyExists
+            coVerify { spyUserPersistence.addUser(any()) wasNot called }
         }
 
         should("return user if user credentials with email are valid and user does not exist") {
