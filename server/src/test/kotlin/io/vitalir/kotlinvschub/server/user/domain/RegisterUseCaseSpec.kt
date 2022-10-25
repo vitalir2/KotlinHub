@@ -1,5 +1,6 @@
 package io.vitalir.kotlinvschub.server.user.domain
 
+import arrow.core.left
 import arrow.core.right
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
@@ -69,6 +70,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 password = validPassword,
                 email = validEmail.value,
             )
+            coEvery { mockUserPersistence.getUser(credentials.identifier) } returns UserError.InvalidCredentials.left()
 
             val result = registerUserUseCase(credentials)
 
