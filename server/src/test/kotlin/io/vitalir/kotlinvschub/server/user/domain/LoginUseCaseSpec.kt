@@ -14,6 +14,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
+import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import io.vitalir.kotlinvcshub.server.user.domain.password.PasswordManager
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
@@ -28,11 +29,11 @@ class LoginUseCaseSpec : ShouldSpec({
         passwordManager = passwordManagerMock,
     )
 
-    val login = User.Credentials.Identifier.Login("happybirthday125")
+    val login = UserCredentials.Identifier.Login("happybirthday125")
     val userLogin = "smock"
-    val validUserIdentifier = User.Credentials.Identifier.Login(userLogin)
+    val validUserIdentifier = UserCredentials.Identifier.Login(userLogin)
     val validHashedPassword = "some hashed value"
-    val validUserCredentials = User.Credentials(
+    val validUserCredentials = UserCredentials(
         identifier = validUserIdentifier,
         password = validHashedPassword
     )
@@ -52,14 +53,14 @@ class LoginUseCaseSpec : ShouldSpec({
 
         val loginResult = loginUseCase(validUserCredentials)
 
-        loginResult.shouldBeRight() { error -> "should be right, but found left with error=$error" }
+        loginResult.shouldBeRight { error -> "should be right, but found left with error=$error" }
         loginResult.value shouldBe someUser
     }
 
     should("return user if the credentials with email are valid and it exists") {
         val validEmail = "heh123@gmail.com"
-        val identifier = User.Credentials.Identifier.Email(validEmail)
-        val credentials = User.Credentials(
+        val identifier = UserCredentials.Identifier.Email(validEmail)
+        val credentials = UserCredentials(
             identifier = identifier,
             password = "any",
         )
@@ -69,12 +70,12 @@ class LoginUseCaseSpec : ShouldSpec({
 
         val loginResult = loginUseCase(credentials)
 
-        loginResult.shouldBeRight() { error -> "should be right, but found left with error=$error" }
+        loginResult.shouldBeRight { error -> "should be right, but found left with error=$error" }
         loginResult.value shouldBe someUser
     }
 
     should("return invalid credentials if user does not exist") {
-        val credentials = User.Credentials(
+        val credentials = UserCredentials(
             identifier = login,
             password = "any",
         )
@@ -84,12 +85,12 @@ class LoginUseCaseSpec : ShouldSpec({
 
         val loginResult = loginUseCase(credentials)
 
-        loginResult.shouldBeLeft() { user -> "should be left, but $user was found" }
+        loginResult.shouldBeLeft { user -> "should be left, but $user was found" }
         loginResult.value shouldBe UserError.InvalidCredentials
     }
 
     should("return invalid credentials if user password does not match") {
-        val credentials = User.Credentials(
+        val credentials = UserCredentials(
             identifier = login,
             password = "notthesamepassword",
         )
@@ -99,15 +100,15 @@ class LoginUseCaseSpec : ShouldSpec({
 
         val loginResult = loginUseCase(credentials)
 
-        loginResult.shouldBeLeft() { user -> "should be left, but $user was found" }
+        loginResult.shouldBeLeft { user -> "should be left, but $user was found" }
         loginResult.value shouldBe UserError.InvalidCredentials
     }
 
     context("validation errors") {
         should("return validation error if email is not valid") {
             val invalidEmail = "heh"
-            val identifier = User.Credentials.Identifier.Email(invalidEmail)
-            val credentials = User.Credentials(
+            val identifier = UserCredentials.Identifier.Email(invalidEmail)
+            val credentials = UserCredentials(
                 identifier = identifier,
                 password = "any",
             )
@@ -123,8 +124,8 @@ class LoginUseCaseSpec : ShouldSpec({
             val invalidLogins = Arb.string()
                 .filter { it.length !in 5..20 }
             checkAll(10, invalidLogins) { invalidLogin ->
-                val identifier = User.Credentials.Identifier.Login(invalidLogin)
-                val credentials = User.Credentials(
+                val identifier = UserCredentials.Identifier.Login(invalidLogin)
+                val credentials = UserCredentials(
                     identifier = identifier,
                     password = "any",
                 )

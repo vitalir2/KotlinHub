@@ -15,6 +15,7 @@ import io.vitalir.kotlinvcshub.server.infrastructure.di.AppGraph
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.LoginUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
+import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import java.util.*
 
@@ -32,8 +33,8 @@ private fun Route.registerUserRoute(registerUserUseCase: RegisterUserUseCase) {
     post {
         val registerUserRequest = call.receive<RegisterUserRequest>()
         val registrationResult = registerUserUseCase(
-            User.Credentials(
-                identifier = User.Credentials.Identifier.Login(registerUserRequest.login),
+            UserCredentials(
+                identifier = UserCredentials.Identifier.Login(registerUserRequest.login),
                 password = registerUserRequest.password,
             )
         )
@@ -62,8 +63,8 @@ private fun Route.loginRoute(
     post("auth/") {
         val loginRequest = call.receive<LoginRequest>()
         val loginResult = loginUseCase(
-            User.Credentials(
-                identifier = User.Credentials.Identifier.Login(loginRequest.login),
+            UserCredentials(
+                identifier = UserCredentials.Identifier.Login(loginRequest.login),
                 password = loginRequest.password,
             )
         )

@@ -7,6 +7,7 @@ import arrow.core.rightIfNotNull
 import io.vitalir.kotlinvcshub.server.infrastructure.database.sqldelight.MainSqlDelight
 import io.vitalir.kotlinvcshub.server.user.data.extensions.toDomainModel
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
+import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.UsersQueries
@@ -18,10 +19,10 @@ internal class SqlDelightUserPersistence(
     private val queries: UsersQueries
         get() = sqlDelightDatabase.usersQueries
 
-    override suspend fun getUser(identifier: User.Credentials.Identifier): Either<UserError.InvalidCredentials, User> {
+    override suspend fun getUser(identifier: UserCredentials.Identifier): Either<UserError.InvalidCredentials, User> {
         return when (identifier) {
-            is User.Credentials.Identifier.Email -> queries.getByEmail(identifier.value)
-            is User.Credentials.Identifier.Login -> queries.getByLogin(identifier.value)
+            is UserCredentials.Identifier.Email -> queries.getByEmail(identifier.value)
+            is UserCredentials.Identifier.Login -> queries.getByLogin(identifier.value)
         }
             .executeAsOneOrNull()
             ?.toDomainModel()
