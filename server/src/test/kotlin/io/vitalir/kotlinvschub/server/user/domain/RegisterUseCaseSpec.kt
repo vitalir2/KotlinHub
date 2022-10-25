@@ -44,7 +44,6 @@ class RegisterUseCaseSpec : ShouldSpec() {
             registerUserUseCase(credentials)
 
             verify { spyIdentifierValidationRule.validate(credentials.identifier) }
-            confirmVerified(spyIdentifierValidationRule)
         }
 
         should("return user already exists error if user with identifier exists") {
