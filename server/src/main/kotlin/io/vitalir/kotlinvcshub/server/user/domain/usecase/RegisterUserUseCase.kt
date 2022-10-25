@@ -7,5 +7,5 @@ import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 
 interface RegisterUserUseCase {
 
-    operator fun invoke(credentials: UserCredentials): Either<UserError, User>
+    suspend operator fun invoke(credentials: UserCredentials): Either<UserError, User>
 }
