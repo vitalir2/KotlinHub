@@ -9,11 +9,13 @@ import io.kotest.matchers.shouldBe
 import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.spyk
 import io.mockk.verify
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
+import io.vitalir.kotlinvcshub.server.user.domain.password.PasswordManager
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.RegisterUserUseCaseImpl
@@ -28,10 +30,18 @@ class RegisterUseCaseSpec : ShouldSpec() {
         val validPassword = "validpassword"
         val spyIdentifierValidationRule = spyk(IdentifierValidationRule)
         val spyUserPersistence = spyk<UserPersistence>()
+        val spyPasswordManager = spyk<PasswordManager>()
+
+        fun confirmUserWasAddedCorrectly(credentials: UserCredentials) {
+            coVerify { spyUserPersistence.addUser(any()) wasNot called }
+            verify { spyPasswordManager.encode(credentials.password) }
+            confirmVerified(spyUserPersistence, spyPasswordManager)
+        }
 
         val registerUserUseCase: RegisterUserUseCase = RegisterUserUseCaseImpl(
             identifierValidationRule = spyIdentifierValidationRule,
             userPersistence = spyUserPersistence,
+            passwordManager = spyPasswordManager,
         )
 
         should("call identifier validation rule") {
@@ -57,7 +67,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
             val result = registerUserUseCase(credentials)
 
             result shouldBeLeft UserError.UserAlreadyExists
-            coVerify { spyUserPersistence.addUser(any()) wasNot called }
+            confirmUserWasAddedCorrectly(credentials)
         }
 
         should("return user if user credentials with email are valid and user does not exist") {
@@ -90,7 +100,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
 
             registerUserUseCase(credentials)
 
-            coVerify { spyUserPersistence.addUser(any()) }
+            confirmUserWasAddedCorrectly(credentials)
         }
     }
 }
