@@ -30,7 +30,19 @@ class RegisterUseCaseSpec : ShouldSpec() {
 
             val result = registerUserUseCase(credentials)
 
-            result.shouldBeLeft(UserError.ValidationFailed)
+            result shouldBeLeft UserError.ValidationFailed
+        }
+
+        should("return error if user login is invalid") {
+            val login = UserCredentials.Identifier.Login("h")
+            val credentials = UserCredentials(
+                identifier = login,
+                password = anyPassword,
+            )
+
+            val result = registerUserUseCase(credentials)
+
+            result shouldBeLeft UserError.ValidationFailed
         }
 
         should("return user if user credentials with email are valid and user does not exist") {

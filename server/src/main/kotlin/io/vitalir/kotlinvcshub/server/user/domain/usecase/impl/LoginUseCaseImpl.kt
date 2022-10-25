@@ -11,6 +11,7 @@ import io.vitalir.kotlinvcshub.server.user.domain.password.PasswordManager
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.LoginUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.validation.EmailValidationRule
+import io.vitalir.kotlinvcshub.server.user.domain.validation.IdentifierValidationRule
 import io.vitalir.kotlinvcshub.server.user.domain.validation.LoginValidationRule
 
 internal class LoginUseCaseImpl(
@@ -31,10 +32,7 @@ internal class LoginUseCaseImpl(
         }
 
     private fun validateIdentifier(identifier: UserCredentials.Identifier): Either<UserError.ValidationFailed, Unit> {
-        return when (identifier) {
-            is UserCredentials.Identifier.Email -> EmailValidationRule.validate(identifier)
-            is UserCredentials.Identifier.Login -> LoginValidationRule.validate(identifier)
-        }
+        return IdentifierValidationRule.validate(identifier)
     }
     private fun passwordIsCorrectForUser(
         outerPassword: String,

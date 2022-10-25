@@ -7,6 +7,7 @@ import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.validation.EmailValidationRule
+import io.vitalir.kotlinvcshub.server.user.domain.validation.IdentifierValidationRule
 
 internal class RegisterUserUseCaseImpl : RegisterUserUseCase {
 
@@ -25,9 +26,6 @@ internal class RegisterUserUseCaseImpl : RegisterUserUseCase {
     }
 
     private fun validateCredentials(credentials: UserCredentials): Either<UserError.ValidationFailed, Unit> {
-        return when (credentials.identifier) {
-            is UserCredentials.Identifier.Email -> EmailValidationRule.validate(credentials.identifier)
-            is UserCredentials.Identifier.Login -> TODO()
-        }
+        return IdentifierValidationRule.validate(credentials.identifier)
     }
 }
