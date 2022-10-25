@@ -6,10 +6,11 @@ import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
-import io.vitalir.kotlinvcshub.server.user.domain.validation.EmailValidationRule
-import io.vitalir.kotlinvcshub.server.user.domain.validation.IdentifierValidationRule
+import io.vitalir.kotlinvcshub.server.user.domain.validation.UserValidationRule
 
-internal class RegisterUserUseCaseImpl : RegisterUserUseCase {
+internal class RegisterUserUseCaseImpl(
+    private val identifierValidationRule: UserValidationRule<UserCredentials.Identifier>,
+) : RegisterUserUseCase {
 
     override suspend fun invoke(credentials: UserCredentials): Either<UserError, User> = either {
         validateCredentials(credentials).bind()
@@ -26,6 +27,6 @@ internal class RegisterUserUseCaseImpl : RegisterUserUseCase {
     }
 
     private fun validateCredentials(credentials: UserCredentials): Either<UserError.ValidationFailed, Unit> {
-        return IdentifierValidationRule.validate(credentials.identifier)
+        return identifierValidationRule.validate(credentials.identifier)
     }
 }
