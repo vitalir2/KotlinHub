@@ -7,8 +7,8 @@ import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
@@ -25,12 +25,13 @@ class RegisterUseCaseSpec : ShouldSpec() {
         val anyUid = 123
         val anyString = "any"
         val validEmail = UserCredentials.Identifier.Email("gm@gmail.com")
+        val validPassword = "validpassword"
         val spyIdentifierValidationRule = spyk(IdentifierValidationRule)
-        val mockUserPersistence = mockk<UserPersistence>()
+        val spyUserPersistence = spyk<UserPersistence>()
 
         val registerUserUseCase: RegisterUserUseCase = RegisterUserUseCaseImpl(
             identifierValidationRule = spyIdentifierValidationRule,
-            userPersistence = mockUserPersistence,
+            userPersistence = spyUserPersistence,
         )
 
         should("call identifier validation rule") {
@@ -51,7 +52,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 identifier = validEmail,
                 password = anyString,
             )
-            coEvery { mockUserPersistence.getUser(credentials.identifier) } returns User.any.right()
+            coEvery { spyUserPersistence.getUser(credentials.identifier) } returns User.any.right()
 
             val result = registerUserUseCase(credentials)
 
@@ -59,7 +60,6 @@ class RegisterUseCaseSpec : ShouldSpec() {
         }
 
         should("return user if user credentials with email are valid and user does not exist") {
-            val validPassword = "validPassword"
             val credentials = UserCredentials(
                 identifier = validEmail,
                 password = validPassword,
@@ -70,7 +70,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 password = validPassword,
                 email = validEmail.value,
             )
-            coEvery { mockUserPersistence.getUser(credentials.identifier) } returns UserError.InvalidCredentials.left()
+            coEvery { spyUserPersistence.getUser(credentials.identifier) } returns UserError.InvalidCredentials.left()
 
             val result = registerUserUseCase(credentials)
 
@@ -78,6 +78,18 @@ class RegisterUseCaseSpec : ShouldSpec() {
             registeredUser.login shouldBe expectedUser.login
             registeredUser.email shouldBe expectedUser.email
             registeredUser.password shouldBe expectedUser.password
+        }
+
+        should("call adding user from UserPersistence if it does not exist yet") {
+            val credentials = UserCredentials(
+                identifier = validEmail,
+                password = validPassword,
+            )
+            coEvery { spyUserPersistence.getUser(credentials.identifier) } returns UserError.InvalidCredentials.left()
+
+            registerUserUseCase(credentials)
+
+            coVerify { spyUserPersistence.addUser(any()) }
         }
     }
 }
