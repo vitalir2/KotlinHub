@@ -10,4 +10,9 @@ data class User(
     val lastName: String? = null,
     val email: String? = null,
     val repositories: List<Repository> = emptyList(),
-)
+) {
+    /**
+     * For tests e.g. [io.vitalir.kotlinvschub.server.user.domain.extensionsKt]
+     */
+    companion object
+}

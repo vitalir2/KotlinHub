@@ -37,7 +37,7 @@ internal class AppGraphFactoryImpl : AppGraphFactory {
                 passwordManager = passwordManager,
             ),
             registerUserUseCase = object : RegisterUserUseCase {
-                override fun invoke(credentials: UserCredentials): Either<UserError, User> {
+                override suspend fun invoke(credentials: UserCredentials): Either<UserError, User> {
                     return UserError.UserAlreadyExists.left() // TODO
                 }
             },

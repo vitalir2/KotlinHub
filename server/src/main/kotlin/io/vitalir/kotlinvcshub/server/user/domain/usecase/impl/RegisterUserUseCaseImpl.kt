@@ -5,11 +5,13 @@ import arrow.core.continuations.either
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
+import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.validation.UserValidationRule
 
 internal class RegisterUserUseCaseImpl(
     private val identifierValidationRule: UserValidationRule<UserCredentials.Identifier>,
+    private val userPersistence: UserPersistence,
 ) : RegisterUserUseCase {
 
     override suspend fun invoke(credentials: UserCredentials): Either<UserError, User> = either {
