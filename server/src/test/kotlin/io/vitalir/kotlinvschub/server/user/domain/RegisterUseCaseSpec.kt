@@ -10,6 +10,7 @@ import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.spyk
 import io.mockk.verify
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
@@ -20,29 +21,34 @@ import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.RegisterUserUseCaseImpl
 import io.vitalir.kotlinvcshub.server.user.domain.validation.IdentifierValidationRule
+import io.vitalir.kotlinvcshub.server.user.domain.validation.UserValidationRule
 
 class RegisterUseCaseSpec : ShouldSpec() {
+
+    private lateinit var spyIdentifierValidationRule: UserValidationRule<UserCredentials.Identifier>
+
+    private lateinit var spyUserPersistence: UserPersistence
+
+    private lateinit var spyPasswordManager: PasswordManager
+
+    private lateinit var registerUserUseCase: RegisterUserUseCase
 
     init {
         val anyUid = 123
         val anyString = "any"
         val validEmail = UserCredentials.Identifier.Email("gm@gmail.com")
         val validPassword = "validpassword"
-        val spyIdentifierValidationRule = spyk(IdentifierValidationRule)
-        val spyUserPersistence = spyk<UserPersistence>()
-        val spyPasswordManager = spyk<PasswordManager>()
 
-        fun confirmUserWasAddedCorrectly(credentials: UserCredentials) {
-            coVerify { spyUserPersistence.addUser(any()) wasNot called }
-            verify { spyPasswordManager.encode(credentials.password) }
-            confirmVerified(spyUserPersistence, spyPasswordManager)
+        beforeEach {
+            spyIdentifierValidationRule = spyk(IdentifierValidationRule)
+            spyUserPersistence = spyk()
+            spyPasswordManager = spyk()
+            registerUserUseCase = RegisterUserUseCaseImpl(
+                identifierValidationRule = spyIdentifierValidationRule,
+                userPersistence = spyUserPersistence,
+                passwordManager = spyPasswordManager,
+            )
         }
-
-        val registerUserUseCase: RegisterUserUseCase = RegisterUserUseCaseImpl(
-            identifierValidationRule = spyIdentifierValidationRule,
-            userPersistence = spyUserPersistence,
-            passwordManager = spyPasswordManager,
-        )
 
         should("call identifier validation rule") {
             val email = UserCredentials.Identifier.Email(anyString)
@@ -54,7 +60,6 @@ class RegisterUseCaseSpec : ShouldSpec() {
             registerUserUseCase(credentials)
 
             verify { spyIdentifierValidationRule.validate(credentials.identifier) }
-            coVerify { spyUserPersistence.addUser(any()) wasNot called }
         }
 
         should("return user already exists error if user with identifier exists") {
@@ -63,11 +68,12 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 password = anyString,
             )
             coEvery { spyUserPersistence.getUser(credentials.identifier) } returns User.any.right()
+            setupSimplePasswordManager()
 
             val result = registerUserUseCase(credentials)
 
             result shouldBeLeft UserError.UserAlreadyExists
-            confirmUserWasAddedCorrectly(credentials)
+            coVerify { spyUserPersistence.addUser(any()) wasNot called }
         }
 
         should("return user if user credentials with email are valid and user does not exist") {
@@ -82,6 +88,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 email = validEmail.value,
             )
             coEvery { spyUserPersistence.getUser(credentials.identifier) } returns UserError.InvalidCredentials.left()
+            setupSimplePasswordManager()
 
             val result = registerUserUseCase(credentials)
 
@@ -89,6 +96,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
             registeredUser.login shouldBe expectedUser.login
             registeredUser.email shouldBe expectedUser.email
             registeredUser.password shouldBe expectedUser.password
+            confirmUserWasAddedCorrectly(credentials)
         }
 
         should("call adding user from UserPersistence if it does not exist yet") {
@@ -97,10 +105,22 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 password = validPassword,
             )
             coEvery { spyUserPersistence.getUser(credentials.identifier) } returns UserError.InvalidCredentials.left()
+            setupSimplePasswordManager()
 
             registerUserUseCase(credentials)
 
             confirmUserWasAddedCorrectly(credentials)
         }
+    }
+
+    private fun setupSimplePasswordManager() {
+        every { spyPasswordManager.encode(any()) } returnsArgument 0
+    }
+
+    private fun confirmUserWasAddedCorrectly(
+        credentials: UserCredentials,
+    ) {
+        coVerify { spyUserPersistence.addUser(any()) }
+        verify { spyPasswordManager.encode(credentials.password) }
     }
 }

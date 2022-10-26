@@ -26,7 +26,7 @@ internal class RegisterUserUseCaseImpl(
         val newUser = User(
             id = Random.nextInt(0, Int.MAX_VALUE), // TODO use UUID.generateRandom() or something like that
             login = login,
-            password = credentials.password,
+            password = passwordManager.encode(credentials.password),
             email = email,
         )
         userPersistence.addUser(newUser)
