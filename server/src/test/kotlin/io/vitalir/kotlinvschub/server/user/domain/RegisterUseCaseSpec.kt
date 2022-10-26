@@ -1,7 +1,5 @@
 package io.vitalir.kotlinvschub.server.user.domain
 
-import arrow.core.left
-import arrow.core.right
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
@@ -9,7 +7,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.spyk
 import io.mockk.verify
@@ -67,7 +64,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 identifier = validEmail,
                 password = anyString,
             )
-            coEvery { spyUserPersistence.getUser(credentials.identifier) } returns User.any.right()
+            coEvery { spyUserPersistence.isUserExists(credentials.identifier) } returns true
             setupSimplePasswordManager()
 
             val result = registerUserUseCase(credentials)
@@ -87,7 +84,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 password = validPassword,
                 email = validEmail.value,
             )
-            coEvery { spyUserPersistence.getUser(credentials.identifier) } returns UserError.InvalidCredentials.left()
+            coEvery { spyUserPersistence.isUserExists(credentials.identifier) } returns false
             setupSimplePasswordManager()
 
             val result = registerUserUseCase(credentials)
@@ -104,7 +101,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 identifier = validEmail,
                 password = validPassword,
             )
-            coEvery { spyUserPersistence.getUser(credentials.identifier) } returns UserError.InvalidCredentials.left()
+            coEvery { spyUserPersistence.isUserExists(credentials.identifier) } returns false
             setupSimplePasswordManager()
 
             registerUserUseCase(credentials)

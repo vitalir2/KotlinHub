@@ -11,7 +11,6 @@ import io.vitalir.kotlinvcshub.server.user.domain.password.PasswordManager
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.validation.UserValidationRule
-import kotlin.random.Random
 
 internal class RegisterUserUseCaseImpl(
     private val identifierValidationRule: UserValidationRule<UserCredentials.Identifier>,
@@ -22,13 +21,7 @@ internal class RegisterUserUseCaseImpl(
     override suspend fun invoke(credentials: UserCredentials): Either<UserError, User> = either {
         validateCredentials(credentials).bind()
         checkIfUserExists(credentials.identifier).bind()
-        val (login, email) = credentials.identifier.userIdentifiers
-        val newUser = User(
-            id = Random.nextInt(0, Int.MAX_VALUE), // TODO use UUID.generateRandom() or something like that
-            login = login,
-            password = passwordManager.encode(credentials.password),
-            email = email,
-        )
+        val newUser = User.fromCredentials(credentials, passwordManager)
         userPersistence.addUser(newUser)
         newUser
     }
@@ -40,25 +33,10 @@ internal class RegisterUserUseCaseImpl(
     private suspend fun checkIfUserExists(
         identifier: UserCredentials.Identifier,
     ): Either<UserError.UserAlreadyExists, Unit> {
-        val userOrNull = userPersistence.getUser(identifier).orNull()
-        return if (userOrNull == null) {
+        return if (userPersistence.isUserExists(identifier).not()) {
             Unit.right()
         } else {
             UserError.UserAlreadyExists.left()
         }
-    }
-
-    companion object {
-
-        private data class UserIdentifiers(
-            val login: String,
-            val email: String? = null,
-        )
-
-        private val UserCredentials.Identifier.userIdentifiers: UserIdentifiers
-            get() = when (this) {
-                is UserCredentials.Identifier.Email -> UserIdentifiers(login = this.value, email = this.value)
-                is UserCredentials.Identifier.Login -> UserIdentifiers(login = this.value)
-            }
     }
 }

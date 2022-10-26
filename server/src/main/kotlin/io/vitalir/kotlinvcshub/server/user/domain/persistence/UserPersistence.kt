@@ -11,4 +11,6 @@ interface UserPersistence {
     suspend fun getUser(identifier: UserCredentials.Identifier): Either<UserError.InvalidCredentials, User>
 
     suspend fun addUser(user: User): Either<UserError.UserAlreadyExists, Unit>
+
+    suspend fun isUserExists(identifier: UserCredentials.Identifier): Boolean
 }

@@ -30,8 +30,7 @@ internal class SqlDelightUserPersistence(
     }
 
     override suspend fun addUser(user: User): Either<UserError.UserAlreadyExists, Unit> {
-        val existingUser = queries.getById(user.id).executeAsOneOrNull()
-        return if (existingUser != null) {
+        return if (isUserExists(UserCredentials.Identifier.Login(user.login))) {
             UserError.UserAlreadyExists.left()
         } else {
             queries.insert(
@@ -40,5 +39,10 @@ internal class SqlDelightUserPersistence(
                 email = user.email.orEmpty(),
             ).right()
         }
+    }
+
+    override suspend fun isUserExists(identifier: UserCredentials.Identifier): Boolean {
+        val existingUser = getUser(identifier).orNull()
+        return existingUser != null
     }
 }
