@@ -20,5 +20,6 @@ private fun createDataSource(databaseConfig: AppConfig.Database): DataSource {
 
 fun createMainSqlDelightDatabase(databaseConfig: AppConfig.Database): MainSqlDelight {
     val sqlDriver = createDataSource(databaseConfig).asJdbcDriver()
+    MainSqlDelight.Schema.create(sqlDriver)
     return MainSqlDelight(sqlDriver)
 }
