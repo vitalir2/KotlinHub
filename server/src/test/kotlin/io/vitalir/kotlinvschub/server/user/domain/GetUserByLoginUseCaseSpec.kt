@@ -1,7 +1,9 @@
 package io.vitalir.kotlinvschub.server.user.domain
 
+import arrow.core.left
 import arrow.core.right
 import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -10,6 +12,7 @@ import io.mockk.mockk
 import io.mockk.spyk
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
+import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import io.vitalir.kotlinvcshub.server.user.domain.password.PasswordManager
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.GetUserByLoginUseCase
@@ -31,7 +34,12 @@ internal class GetUserByLoginUseCaseSpec : ShouldSpec() {
 
     init {
 
-        val anyPassword = "any"
+        val someValidLogin = UserCredentials.Identifier.Login("mamamia")
+        val somePassword = "any"
+        val someUserCredentials = UserCredentials(
+            identifier = someValidLogin,
+            password = somePassword,
+        )
 
         beforeEach {
             userPersistence = spyk()
@@ -41,31 +49,29 @@ internal class GetUserByLoginUseCaseSpec : ShouldSpec() {
         }
 
         should("return user if it exists by login") {
-            val login = UserCredentials.Identifier.Login("mamamia")
-            val userCredentials = UserCredentials(
-                identifier = login,
-                password = anyPassword,
-            )
-            val expectedUser = userCredentials.testValidUser
-            coEvery { userPersistence.getUser(login) } returns expectedUser.right()
+            val expectedUser = someUserCredentials.testValidUser
+            coEvery { userPersistence.getUser(someValidLogin) } returns expectedUser.right()
 
-            val result = getUserByLoginUseCase(login)
+            val result = getUserByLoginUseCase(someValidLogin)
 
             result.shouldNotBeNull()
             result shouldHaveTheSameCredentialsAs expectedUser
         }
 
         should("call UserPersistence.getUser for getting user from persistence") {
-            val login = UserCredentials.Identifier.Login("mamamia")
-            val userCredentials = UserCredentials(
-                identifier = login,
-                password = anyPassword,
-            )
-            coEvery { userPersistence.getUser(login) } returns userCredentials.testValidUser.right()
+            coEvery { userPersistence.getUser(someValidLogin) } returns someUserCredentials.testValidUser.right()
 
-            getUserByLoginUseCase(login)
+            getUserByLoginUseCase(someValidLogin)
 
-            coVerify { userPersistence.getUser(login) }
+            coVerify { userPersistence.getUser(someValidLogin) }
+        }
+
+        should("return null if user does not exist") {
+            coEvery { userPersistence.getUser(someValidLogin) } returns UserError.InvalidCredentials.left()
+
+            val result = getUserByLoginUseCase(someValidLogin)
+
+            result.shouldBeNull()
         }
     }
 }
