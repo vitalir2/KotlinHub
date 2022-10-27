@@ -12,6 +12,7 @@ import io.vitalir.kotlinvcshub.server.user.data.BCryptPasswordManager
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
+import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.GetUserByLoginUseCaseImpl
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.LoginUseCaseImpl
 
 internal class AppGraphFactoryImpl : AppGraphFactory {
@@ -41,6 +42,9 @@ internal class AppGraphFactoryImpl : AppGraphFactory {
                     return UserError.UserAlreadyExists.left() // TODO
                 }
             },
+            getUserByLoginUseCase = GetUserByLoginUseCaseImpl(
+                userPersistence = userPersistence,
+            ),
         )
     }
 }
