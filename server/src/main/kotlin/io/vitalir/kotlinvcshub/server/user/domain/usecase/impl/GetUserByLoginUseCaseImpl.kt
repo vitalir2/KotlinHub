@@ -9,7 +9,7 @@ internal class GetUserByLoginUseCaseImpl(
     private val userPersistence: UserPersistence,
 ) : GetUserByLoginUseCase {
 
-    override fun invoke(login: UserCredentials.Identifier.Login): User? {
-        TODO("Not yet implemented")
+    override suspend fun invoke(login: UserCredentials.Identifier.Login): User? {
+        return userPersistence.getUser(login).orNull()
     }
 }

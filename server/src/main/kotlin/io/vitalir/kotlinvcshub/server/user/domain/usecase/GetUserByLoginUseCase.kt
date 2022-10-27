@@ -5,5 +5,5 @@ import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 
 interface GetUserByLoginUseCase {
 
-    operator fun invoke(login: UserCredentials.Identifier.Login): User?
+    suspend operator fun invoke(login: UserCredentials.Identifier.Login): User?
 }
