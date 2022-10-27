@@ -7,6 +7,7 @@ import io.ktor.server.routing.*
 import io.vitalir.kotlinvcshub.server.common.routes.ResponseData
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.GetUserByLoginUseCase
+import io.vitalir.kotlinvcshub.server.user.routes.common.extensions.asPureUser
 
 internal fun Route.getUserByLoginRoute(
     getUserByLoginUseCase: GetUserByLoginUseCase,
@@ -26,7 +27,7 @@ internal fun Route.getUserByLoginRoute(
         val resultResponseData = if (user != null) {
             ResponseData(
                 code = HttpStatusCode.OK,
-                body = GetUserByLoginResponse(user = user),
+                body = GetUserByLoginResponse(user = user.asPureUser),
             )
         } else {
             ResponseData.fromErrorData(
