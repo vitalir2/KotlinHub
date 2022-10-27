@@ -1,4 +1,4 @@
-package io.vitalir.kotlinvcshub.server.user.routes
+package io.vitalir.kotlinvcshub.server.user.routes.login
 
 import arrow.core.Either
 import com.auth0.jwt.JWT
@@ -14,6 +14,8 @@ import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.LoginUseCase
+import io.vitalir.kotlinvcshub.server.user.routes.HOUR_MS
+import io.vitalir.kotlinvcshub.server.user.routes.getErrorResponseData
 import java.util.*
 
 internal fun Route.loginRoute(

@@ -1,4 +1,4 @@
-package io.vitalir.kotlinvcshub.server.user.routes
+package io.vitalir.kotlinvcshub.server.user.routes.login
 
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 

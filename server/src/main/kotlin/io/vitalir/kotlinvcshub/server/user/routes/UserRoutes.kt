@@ -7,6 +7,9 @@ import io.vitalir.kotlinvcshub.server.common.routes.ResponseData
 import io.vitalir.kotlinvcshub.server.infrastructure.config.AppConfig
 import io.vitalir.kotlinvcshub.server.infrastructure.di.AppGraph
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
+import io.vitalir.kotlinvcshub.server.user.routes.getuser.getUserByLoginRoute
+import io.vitalir.kotlinvcshub.server.user.routes.login.loginRoute
+import io.vitalir.kotlinvcshub.server.user.routes.registration.registerUserRoute
 
 internal fun Routing.userRoutes(
     jwtConfig: AppConfig.Jwt,

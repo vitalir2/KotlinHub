@@ -1,4 +1,4 @@
-package io.vitalir.kotlinvcshub.server.user.routes
+package io.vitalir.kotlinvcshub.server.user.routes.registration
 
 import arrow.core.Either
 import io.ktor.http.*
@@ -11,6 +11,7 @@ import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
+import io.vitalir.kotlinvcshub.server.user.routes.getErrorResponseData
 
 internal fun Route.registerUserRoute(registerUserUseCase: RegisterUserUseCase) {
     post {

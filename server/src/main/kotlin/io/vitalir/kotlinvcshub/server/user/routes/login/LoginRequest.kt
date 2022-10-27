@@ -1,4 +1,4 @@
-package io.vitalir.kotlinvcshub.server.user.routes
+package io.vitalir.kotlinvcshub.server.user.routes.login
 
 internal data class LoginRequest(
     val login: String,

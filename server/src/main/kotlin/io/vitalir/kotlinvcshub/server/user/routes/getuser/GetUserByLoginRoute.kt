@@ -1,4 +1,4 @@
-package io.vitalir.kotlinvcshub.server.user.routes
+package io.vitalir.kotlinvcshub.server.user.routes.getuser
 
 import io.ktor.http.*
 import io.ktor.server.application.*
