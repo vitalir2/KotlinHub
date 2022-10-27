@@ -79,23 +79,26 @@ sqldelight {
 val environments = listOf("dev", "prod")
 for (env in environments) {
     val capitalizedEnv = env.capitalize()
-    tasks.register("runDockerCompose$capitalizedEnv") {
+    val buildDockerComposeTaskName = "buildDockerCompose$capitalizedEnv"
+    tasks.register(buildDockerComposeTaskName) {
         dependsOn("buildFatJar")
-        doLast {
-            exec {
-                workingDir = projectDir
-                executable = "docker"
-                args = listOf("compose", "--env-file", "./config/.env.$env", "up")
-            }
-        }
+        dockerComposeTask(env, "build")
+    }
+    tasks.register("runDockerCompose$capitalizedEnv") {
+        dependsOn(buildDockerComposeTaskName)
+        dockerComposeTask(env, "up")
     }
     tasks.register("stopDockerCompose$capitalizedEnv") {
-        doLast {
-            exec {
-                workingDir = projectDir
-                executable = "docker"
-                args = listOf("compose", "--env-file", "./config/.env.$env", "down")
-            }
+        dockerComposeTask(env, "down")
+    }
+}
+
+fun Task.dockerComposeTask(env: String, arg: String) {
+    doLast {
+        exec {
+            workingDir = projectDir
+            executable = "docker"
+            args = listOf("compose", "--env-file", "./config/.env.$env", arg)
         }
     }
 }
