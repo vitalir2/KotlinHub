@@ -1,18 +1,15 @@
 package io.vitalir.kotlinvcshub.server.infrastructure.di
 
-import arrow.core.Either
-import arrow.core.left
 import io.vitalir.kotlinvcshub.server.infrastructure.config.AppConfig
 import io.vitalir.kotlinvcshub.server.infrastructure.database.createMainSqlDelightDatabase
 import io.vitalir.kotlinvcshub.server.infrastructure.database.sqldelight.MainSqlDelight
-import io.vitalir.kotlinvcshub.server.user.data.SqlDelightUserPersistence
-import io.vitalir.kotlinvcshub.server.user.domain.model.User
-import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import io.vitalir.kotlinvcshub.server.user.data.BCryptPasswordManager
-import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
+import io.vitalir.kotlinvcshub.server.user.data.SqlDelightUserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
-import io.vitalir.kotlinvcshub.server.user.domain.usecase.RegisterUserUseCase
+import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.GetUserByLoginUseCaseImpl
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.LoginUseCaseImpl
+import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.RegisterUserUseCaseImpl
+import io.vitalir.kotlinvcshub.server.user.domain.validation.IdentifierValidationRule
 
 internal class AppGraphFactoryImpl : AppGraphFactory {
 
@@ -36,11 +33,14 @@ internal class AppGraphFactoryImpl : AppGraphFactory {
                 userPersistence = userPersistence,
                 passwordManager = passwordManager,
             ),
-            registerUserUseCase = object : RegisterUserUseCase {
-                override suspend fun invoke(credentials: UserCredentials): Either<UserError, User> {
-                    return UserError.UserAlreadyExists.left() // TODO
-                }
-            },
+            registerUserUseCase = RegisterUserUseCaseImpl(
+                identifierValidationRule = IdentifierValidationRule,
+                userPersistence = userPersistence,
+                passwordManager = passwordManager,
+            ),
+            getUserByLoginUseCase = GetUserByLoginUseCaseImpl(
+                userPersistence = userPersistence,
+            ),
         )
     }
 }
