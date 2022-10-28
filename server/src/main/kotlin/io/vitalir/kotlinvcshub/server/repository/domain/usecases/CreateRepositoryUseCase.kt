@@ -6,5 +6,5 @@ import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryError
 
 interface CreateRepositoryUseCase {
 
-    suspend fun invoke(initData: CreateRepositoryData): Either<RepositoryError.Create, Unit>
+    suspend operator fun invoke(initData: CreateRepositoryData): Either<RepositoryError.Create, Unit>
 }
