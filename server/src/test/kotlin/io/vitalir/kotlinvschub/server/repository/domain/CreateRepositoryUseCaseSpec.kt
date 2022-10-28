@@ -55,5 +55,21 @@ class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
             result shouldBeLeft RepositoryError.Create.InvalidUserId
         }
+
+        should("return error if repository with this name already exists") {
+            val userId = 123
+            val existingRepositoryName = "any"
+            coEvery { userPersistence.isUserExists(userId) } returns true
+
+            val result = createRepositoryUseCase(
+                CreateRepositoryData(
+                    userId = userId,
+                    name = existingRepositoryName,
+                    accessMode = Repository.AccessMode.PUBLIC,
+                )
+            )
+
+            result shouldBeLeft RepositoryError.Create.RepositoryAlreadyExists
+        }
     }
 }
