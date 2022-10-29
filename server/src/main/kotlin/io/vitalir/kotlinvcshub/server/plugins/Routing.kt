@@ -8,8 +8,15 @@ import io.vitalir.kotlinvcshub.server.repository.routing.repositoryRoutes
 import io.vitalir.kotlinvcshub.server.user.routes.userRoutes
 
 fun Application.configureRouting(appGraph: AppGraph) {
+    val debugConfig = appGraph.appConfig.debug
+
     install(CallLogging)
+
     routing {
+        if (debugConfig?.isRoutesTracingEnabled == true) {
+            trace { application.log.trace(it.buildText()) }
+        }
+
         userRoutes(
             jwtConfig = appGraph.appConfig.jwt,
             userGraph = appGraph.user,

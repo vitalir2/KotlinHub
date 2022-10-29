@@ -17,3 +17,6 @@ database:
   password: $POSTGRES_PASSWORD
   databaseName: $POSTGRES_DATABASE_NAME
   serverName: $POSTGRES_SERVER_NAME
+
+debug:
+  routeTracing: $ROUTE_TRACING

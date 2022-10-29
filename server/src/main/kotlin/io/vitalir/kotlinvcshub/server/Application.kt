@@ -24,12 +24,14 @@ fun Application.mainModule() {
     configureRouting(applicationGraph)
 }
 
-private fun ApplicationConfig.toAppConfig(): AppConfig =
-    AppConfig(
-        isDevelopment = property("ktor.development").getString().toBoolean(),
+private fun ApplicationConfig.toAppConfig(): AppConfig {
+    val isDevelopmentMode = property("ktor.development").getString().toBoolean()
+    return AppConfig(
+        debug = if (isDevelopmentMode) config("debug").debugConfig else null,
         jwt = config("jwt").jwtConfig,
         database = config("database").databaseConfig,
     )
+}
 
 private val ApplicationConfig.jwtConfig: AppConfig.Jwt
     get() = AppConfig.Jwt(
@@ -45,4 +47,9 @@ private val ApplicationConfig.databaseConfig: AppConfig.Database
         password = property("password").getString(),
         databaseName = property("databaseName").getString(),
         serverName = property("serverName").getString(),
+    )
+
+private val ApplicationConfig.debugConfig: AppConfig.Debug
+    get() = AppConfig.Debug(
+        isRoutesTracingEnabled = property("routeTracing").getString().toBoolean(),
     )
