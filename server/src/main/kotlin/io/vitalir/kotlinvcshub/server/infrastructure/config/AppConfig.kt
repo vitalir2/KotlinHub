@@ -1,9 +1,14 @@
 package io.vitalir.kotlinvcshub.server.infrastructure.config
 
 data class AppConfig(
+    val debug: Debug?,
     val jwt: Jwt,
     val database: Database,
 ) {
+
+    data class Debug(
+        val isRoutesTracingEnabled: Boolean,
+    )
 
     data class Jwt(
         val secret: String,

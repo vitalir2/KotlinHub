@@ -10,6 +10,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinvcshub.server.common.routes.AuthVariant
 import io.vitalir.kotlinvcshub.server.common.routes.ResponseData
+import io.vitalir.kotlinvcshub.server.common.routes.extensions.respondByResponseData
 import io.vitalir.kotlinvcshub.server.infrastructure.auth.userId
 import io.vitalir.kotlinvcshub.server.infrastructure.di.AppGraph
 import io.vitalir.kotlinvcshub.server.repository.domain.model.CreateRepositoryData
@@ -19,7 +20,7 @@ import io.vitalir.kotlinvcshub.server.repository.domain.usecase.CreateRepository
 internal fun Routing.repositoryRoutes(
     repositoryGraph: AppGraph.RepositoryGraph,
 ) {
-    route("/repository") {
+    route("repository/") {
         createRepositoryRoute(repositoryGraph.createRepositoryUseCase)
     }
 }
@@ -45,7 +46,7 @@ private fun Route.createRepositoryRoute(
 
             val result = createRepositoryUseCase(createRepositoryData)
             val responseData = result.toCreateRepositoryResponseData()
-            call.respond(responseData)
+            call.respondByResponseData(responseData)
         }
     }
 }

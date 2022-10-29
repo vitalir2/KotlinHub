@@ -18,29 +18,38 @@ fun Application.mainModule() {
     val appConfig = environment.config.toAppConfig()
     val appGraphFactory: AppGraphFactory = AppGraphFactoryImpl()
     val applicationGraph = appGraphFactory.create(appConfig)
+
     configureSecurity(jwtConfig = appConfig.jwt)
     configureSerialization()
     configureRouting(applicationGraph)
 }
 
-private fun ApplicationConfig.toAppConfig(): AppConfig =
-    AppConfig(
-        jwt = jwtConfig,
-        database = databaseConfig,
+private fun ApplicationConfig.toAppConfig(): AppConfig {
+    val isDevelopmentMode = property("ktor.development").getString().toBoolean()
+    return AppConfig(
+        debug = if (isDevelopmentMode) config("debug").debugConfig else null,
+        jwt = config("jwt").jwtConfig,
+        database = config("database").databaseConfig,
     )
+}
 
 private val ApplicationConfig.jwtConfig: AppConfig.Jwt
     get() = AppConfig.Jwt(
-        secret = property("jwt.secret").getString(),
-        issuer = property("jwt.issuer").getString(),
-        audience = property("jwt.audience").getString(),
-        realm = property("jwt.realm").getString(),
+        secret = property("secret").getString(),
+        issuer = property("issuer").getString(),
+        audience = property("audience").getString(),
+        realm = property("realm").getString(),
     )
 
 private val ApplicationConfig.databaseConfig: AppConfig.Database
     get() = AppConfig.Database(
-        username = property("database.username").getString(),
-        password = property("database.password").getString(),
-        databaseName = property("database.databaseName").getString(),
-        serverName = property("database.serverName").getString(),
+        username = property("username").getString(),
+        password = property("password").getString(),
+        databaseName = property("databaseName").getString(),
+        serverName = property("serverName").getString(),
+    )
+
+private val ApplicationConfig.debugConfig: AppConfig.Debug
+    get() = AppConfig.Debug(
+        isRoutesTracingEnabled = property("routeTracing").getString().toBoolean(),
     )
