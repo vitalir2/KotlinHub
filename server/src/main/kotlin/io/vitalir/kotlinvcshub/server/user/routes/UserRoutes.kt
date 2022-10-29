@@ -13,7 +13,7 @@ import io.vitalir.kotlinvcshub.server.user.routes.registration.registerUserRoute
 
 internal fun Routing.userRoutes(
     jwtConfig: AppConfig.Jwt,
-    userGraph: AppGraph.User,
+    userGraph: AppGraph.UserGraph,
 ) {
     route("users/") {
         registerUserRoute(userGraph.registerUserUseCase)
