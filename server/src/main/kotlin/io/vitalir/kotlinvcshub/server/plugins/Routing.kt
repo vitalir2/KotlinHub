@@ -5,6 +5,7 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.routing.*
 import io.ktor.server.webjars.*
 import io.vitalir.kotlinvcshub.server.infrastructure.di.AppGraph
+import io.vitalir.kotlinvcshub.server.repository.routing.repositoryRoutes
 import io.vitalir.kotlinvcshub.server.user.routes.userRoutes
 
 fun Application.configureRouting(appGraph: AppGraph) {
@@ -19,6 +20,9 @@ fun Application.configureRouting(appGraph: AppGraph) {
         userRoutes(
             jwtConfig = appGraph.appConfig.jwt,
             userGraph = appGraph.user,
+        )
+        repositoryRoutes(
+            repositoryGraph = appGraph.repository,
         )
     }
 }

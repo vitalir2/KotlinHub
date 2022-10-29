@@ -1,6 +1,6 @@
 package io.vitalir.kotlinvcshub.server.user.domain.model
 
-import io.vitalir.kotlinvcshub.server.repository.domain.Repository
+import io.vitalir.kotlinvcshub.server.repository.domain.model.Repository
 import io.vitalir.kotlinvcshub.server.user.domain.password.PasswordManager
 
 data class User(

@@ -9,6 +9,7 @@ import io.vitalir.kotlinvcshub.server.user.data.extensions.toDomainModel
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
+import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.UsersQueries
 
@@ -44,5 +45,10 @@ internal class SqlDelightUserPersistence(
     override suspend fun isUserExists(identifier: UserCredentials.Identifier): Boolean {
         val existingUser = getUser(identifier).orNull()
         return existingUser != null
+    }
+
+    // TODO
+    override suspend fun isUserExists(userId: UserId): Boolean {
+        return true
     }
 }
