@@ -10,6 +10,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinvcshub.server.common.routes.AuthVariant
 import io.vitalir.kotlinvcshub.server.common.routes.ResponseData
+import io.vitalir.kotlinvcshub.server.infrastructure.auth.userId
 import io.vitalir.kotlinvcshub.server.infrastructure.di.AppGraph
 import io.vitalir.kotlinvcshub.server.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinvcshub.server.repository.domain.model.RepositoryError
@@ -29,13 +30,8 @@ private fun Route.createRepositoryRoute(
     authenticate(AuthVariant.JWT.authName) {
         post {
             val principal = call.principal<JWTPrincipal>()
-            val userId = principal?.payload?.getClaim("userId")?.asInt() ?: run {
-                call.respond(
-                    ResponseData.fromErrorData(
-                        code = HttpStatusCode.Unauthorized,
-                        errorMessage = "unauthorized",
-                    )
-                )
+            val userId = principal?.payload?.userId ?: run {
+                call.respond(ResponseData.unauthorized())
                 return@post
             }
 

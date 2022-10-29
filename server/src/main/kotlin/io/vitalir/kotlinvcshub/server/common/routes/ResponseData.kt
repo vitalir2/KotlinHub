@@ -17,5 +17,12 @@ data class ResponseData(
                 )
             )
         }
+
+        fun unauthorized(): ResponseData {
+            return ResponseData(
+                code = HttpStatusCode.Unauthorized,
+                body = ErrorResponse.unauthorized(),
+            )
+        }
     }
 }

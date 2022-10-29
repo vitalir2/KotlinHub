@@ -4,7 +4,7 @@ import io.vitalir.kotlinvcshub.server.repository.domain.model.Repository
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateRepositoryRequest(
+internal data class CreateRepositoryRequest(
     val name: String,
     val accessMode: Repository.AccessMode,
     val description: String? = null,
