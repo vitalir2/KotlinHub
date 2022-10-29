@@ -63,20 +63,21 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
             )
         }
 
+        val someUserId = 123
+        val someRepositoryName = repositoryNameProvider.next()
+        val someRepositoryAccessMode = repositoryAccessModeProvider.next()
+
         should("return success if data is valid") {
-            val userId = userIdProvider.next()
-            val repositoryName = repositoryNameProvider.next()
-            val repositoryAccessMode = repositoryAccessModeProvider.next()
             val createdAtDateTime = dateTimeProvider.next()
 
-            coEvery { userPersistence.isUserExists(userId) } returns true
-            coEvery { repositoryPersistence.isRepositoryExists(userId, repositoryName) } returns false
+            coEvery { userPersistence.isUserExists(someUserId) } returns true
+            coEvery { repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName) } returns false
             every { localDateTimeProvider.now() } returns createdAtDateTime
 
             val createRepositoryData = CreateRepositoryData(
-                userId = userId,
-                name = repositoryName,
-                accessMode = repositoryAccessMode,
+                userId = someUserId,
+                name = someRepositoryName,
+                accessMode = someRepositoryAccessMode,
             )
 
             val result = createRepositoryUseCase(createRepositoryData)
@@ -94,15 +95,15 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         should("return error if user does not exist") {
-            val notExistingUserId = 5
+            val notExistingUserId = userIdProvider.next()
             coEvery { userPersistence.isUserExists(notExistingUserId) } returns false
-            coEvery { repositoryPersistence.isRepositoryExists(notExistingUserId, any()) } returns false
+            coEvery { repositoryPersistence.isRepositoryExists(notExistingUserId, someRepositoryName) } returns false
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
                     userId = notExistingUserId,
-                    name = "any",
-                    accessMode = Repository.AccessMode.PUBLIC,
+                    name = someRepositoryName,
+                    accessMode = someRepositoryAccessMode,
                 )
             )
 
@@ -110,16 +111,14 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         should("return error if repository with this name already exists") {
-            val userId = 123
-            val existingRepositoryName = "any"
-            coEvery { userPersistence.isUserExists(userId) } returns true
-            coEvery { repositoryPersistence.isRepositoryExists(userId, any()) } returns true
+            coEvery { userPersistence.isUserExists(someUserId) } returns true
+            coEvery { repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName) } returns true
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
-                    userId = userId,
-                    name = existingRepositoryName,
-                    accessMode = Repository.AccessMode.PUBLIC,
+                    userId = someUserId,
+                    name = someRepositoryName,
+                    accessMode = repositoryAccessModeProvider.next(),
                 )
             )
 
