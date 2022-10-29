@@ -1,5 +1,6 @@
 package io.vitalir.kotlinvcshub.server.repository.domain
 
+import io.vitalir.kotlinvcshub.server.common.domain.LocalDateTimeProvider
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 import java.time.LocalDateTime
 
@@ -48,6 +49,19 @@ data class Repository(
     )
 
     companion object {
-       // fun fromInitData(initData: CreateRepositoryData): Repository
+       fun fromInitData(
+           initData: CreateRepositoryData,
+           localDateTimeProvider: LocalDateTimeProvider,
+       ): Repository {
+           val createdAtDateTime = localDateTimeProvider.now()
+           return Repository(
+               ownerId = initData.userId,
+               name = initData.name,
+               accessMode = initData.accessMode,
+               description = initData.description,
+               createdAt = createdAtDateTime,
+               lastUpdated = createdAtDateTime,
+           )
+       }
     }
 }

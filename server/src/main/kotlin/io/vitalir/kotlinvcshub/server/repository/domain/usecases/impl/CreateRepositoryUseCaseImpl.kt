@@ -28,15 +28,6 @@ internal class CreateRepositoryUseCaseImpl(
     }
 
     private suspend fun createRepositoryAfterValidation(initData: CreateRepositoryData) {
-        val createdAt = localDateTimeProvider.now()
-        val fakeRepository = Repository(
-            ownerId = initData.userId,
-            name = initData.name,
-            accessMode = initData.accessMode,
-            description = initData.description,
-            createdAt = createdAt,
-            lastUpdated = createdAt,
-        )
-        repositoryPersistence.addRepository(fakeRepository)
+        repositoryPersistence.addRepository(Repository.fromInitData(initData, localDateTimeProvider))
     }
 }
