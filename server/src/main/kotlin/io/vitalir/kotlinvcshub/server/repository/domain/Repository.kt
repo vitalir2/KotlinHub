@@ -1,10 +1,10 @@
 package io.vitalir.kotlinvcshub.server.repository.domain
 
-import io.vitalir.kotlinvcshub.server.user.domain.model.User
+import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 import java.time.LocalDateTime
 
 data class Repository(
-    val owner: User,
+    val ownerId: UserId,
     val name: String,
     val accessMode: AccessMode,
     val createdAt: LocalDateTime,
@@ -43,7 +43,7 @@ data class Repository(
     }
 
     data class Commit(
-        val author: User,
+        val author: UserId,
         val message: String,
     )
 }

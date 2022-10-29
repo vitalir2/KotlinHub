@@ -4,7 +4,10 @@ import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
 import io.vitalir.kotlinvcshub.server.repository.domain.CreateRepositoryData
 import io.vitalir.kotlinvcshub.server.repository.domain.Repository
 import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryError
@@ -24,7 +27,7 @@ class CreateRepositoryUseCaseSpec : ShouldSpec() {
     init {
         beforeEach {
             userPersistence = mockk()
-            repositoryPersistence = mockk()
+            repositoryPersistence = spyk()
             createRepositoryUseCase = CreateRepositoryUseCaseImpl(
                 userPersistence = userPersistence,
                 repositoryPersistence = repositoryPersistence,
@@ -45,6 +48,7 @@ class CreateRepositoryUseCaseSpec : ShouldSpec() {
             )
 
             result shouldBeRight Unit
+            coVerify { repositoryPersistence.addRepository(any()) }
         }
 
         should("return error if user does not exist") {

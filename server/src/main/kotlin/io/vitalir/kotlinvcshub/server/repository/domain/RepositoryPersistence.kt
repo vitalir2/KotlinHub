@@ -8,4 +8,6 @@ interface RepositoryPersistence {
         userId: UserId,
         name: String,
     ): Boolean
+
+    suspend fun addRepository(repository: Repository)
 }
