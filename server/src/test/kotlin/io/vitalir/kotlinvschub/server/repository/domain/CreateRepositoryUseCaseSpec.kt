@@ -3,22 +3,35 @@ package io.vitalir.kotlinvschub.server.repository.domain
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.property.Arb
+import io.kotest.property.Exhaustive
+import io.kotest.property.RandomSource
+import io.kotest.property.arbitrary.ArbitraryBuilder
+import io.kotest.property.arbitrary.enum
+import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.localDateTime
+import io.kotest.property.arbitrary.next
+import io.kotest.property.arbitrary.positiveInt
+import io.kotest.property.arbitrary.string
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
+import io.vitalir.kotlinvcshub.server.common.domain.LocalDateTimeProvider
 import io.vitalir.kotlinvcshub.server.repository.domain.CreateRepositoryData
 import io.vitalir.kotlinvcshub.server.repository.domain.Repository
 import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryError
 import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryPersistence
 import io.vitalir.kotlinvcshub.server.repository.domain.usecases.CreateRepositoryUseCase
 import io.vitalir.kotlinvcshub.server.repository.domain.usecases.impl.CreateRepositoryUseCaseImpl
+import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class CreateRepositoryUseCaseSpec : ShouldSpec() {
+internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
     private lateinit var createRepositoryUseCase: CreateRepositoryUseCase
 
@@ -26,31 +39,51 @@ class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
     private lateinit var repositoryPersistence: RepositoryPersistence
 
+    private lateinit var localDateTimeProvider: LocalDateTimeProvider
+
+    private val userIdProvider: Arb<UserId> by lazy {
+        Arb.positiveInt()
+    }
+
+    private val repositoryNameProvider: Arb<String> by lazy {
+        Arb.string(6..50)
+    }
+
+    private val repositoryAccessModeProvider: Arb<Repository.AccessMode> by lazy {
+        Arb.enum()
+    }
+
+    private val dateTimeProvider: Arb<LocalDateTime> by lazy {
+        Arb.localDateTime(minYear = 2021, maxYear = 2022)
+    }
+
     init {
         beforeEach {
             userPersistence = mockk()
             repositoryPersistence = spyk()
+            localDateTimeProvider = mockk()
             createRepositoryUseCase = CreateRepositoryUseCaseImpl(
                 userPersistence = userPersistence,
                 repositoryPersistence = repositoryPersistence,
+                localDateTimeProvider = localDateTimeProvider,
             )
         }
 
         should("return success if data is valid") {
-            val userId = 123
-            val repositoryName = "anyname"
-            val repositoryAccessMode = Repository.AccessMode.PUBLIC
+            val userId = userIdProvider.next()
+            val repositoryName = repositoryNameProvider.next()
+            val repositoryAccessMode = repositoryAccessModeProvider.next()
+            val createdAtDateTime = dateTimeProvider.next()
+
+            coEvery { userPersistence.isUserExists(userId) } returns true
+            coEvery { repositoryPersistence.isRepositoryExists(userId, repositoryName) } returns false
+            every { localDateTimeProvider.now() } returns createdAtDateTime
+
             val createRepositoryData = CreateRepositoryData(
                 userId = userId,
                 name = repositoryName,
                 accessMode = repositoryAccessMode,
             )
-            val createdAtDateTime = LocalDateTime.of(
-                LocalDate.of(2022, 12, 12),
-                LocalTime.of(12, 20, 5),
-            )
-            coEvery { userPersistence.isUserExists(userId) } returns true
-            coEvery { repositoryPersistence.isRepositoryExists(userId, repositoryName) } returns false
 
             val result = createRepositoryUseCase(createRepositoryData)
 
