@@ -46,4 +46,8 @@ data class Repository(
         val author: UserId,
         val message: String,
     )
+
+    companion object {
+       // fun fromInitData(initData: CreateRepositoryData): Repository
+    }
 }

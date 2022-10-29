@@ -7,7 +7,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.spyk
-import io.mockk.verify
 import io.vitalir.kotlinvcshub.server.repository.domain.CreateRepositoryData
 import io.vitalir.kotlinvcshub.server.repository.domain.Repository
 import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryError
@@ -15,6 +14,9 @@ import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryPersistence
 import io.vitalir.kotlinvcshub.server.repository.domain.usecases.CreateRepositoryUseCase
 import io.vitalir.kotlinvcshub.server.repository.domain.usecases.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
@@ -36,19 +38,32 @@ class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
         should("return success if data is valid") {
             val userId = 123
-            coEvery { userPersistence.isUserExists(userId) } returns true
-            coEvery { repositoryPersistence.isRepositoryExists(userId, any()) } returns false
-
-            val result = createRepositoryUseCase(
-                CreateRepositoryData(
-                    userId = userId,
-                    name = "any",
-                    accessMode = Repository.AccessMode.PUBLIC,
-                )
+            val repositoryName = "anyname"
+            val repositoryAccessMode = Repository.AccessMode.PUBLIC
+            val createRepositoryData = CreateRepositoryData(
+                userId = userId,
+                name = repositoryName,
+                accessMode = repositoryAccessMode,
             )
+            val createdAtDateTime = LocalDateTime.of(
+                LocalDate.of(2022, 12, 12),
+                LocalTime.of(12, 20, 5),
+            )
+            coEvery { userPersistence.isUserExists(userId) } returns true
+            coEvery { repositoryPersistence.isRepositoryExists(userId, repositoryName) } returns false
 
+            val result = createRepositoryUseCase(createRepositoryData)
+
+            val expectedRepository = Repository(
+                ownerId = createRepositoryData.userId,
+                name = createRepositoryData.name,
+                accessMode = createRepositoryData.accessMode,
+                description = createRepositoryData.description,
+                createdAt = createdAtDateTime,
+                lastUpdated = createdAtDateTime,
+            )
             result shouldBeRight Unit
-            coVerify { repositoryPersistence.addRepository(any()) }
+            coVerify { repositoryPersistence.addRepository(expectedRepository) }
         }
 
         should("return error if user does not exist") {
