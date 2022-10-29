@@ -8,6 +8,7 @@ import io.mockk.mockk
 import io.vitalir.kotlinvcshub.server.repository.domain.CreateRepositoryData
 import io.vitalir.kotlinvcshub.server.repository.domain.Repository
 import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryError
+import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryPersistence
 import io.vitalir.kotlinvcshub.server.repository.domain.usecases.CreateRepositoryUseCase
 import io.vitalir.kotlinvcshub.server.repository.domain.usecases.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
@@ -18,17 +19,22 @@ class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
     private lateinit var userPersistence: UserPersistence
 
+    private lateinit var repositoryPersistence: RepositoryPersistence
+
     init {
         beforeEach {
             userPersistence = mockk()
+            repositoryPersistence = mockk()
             createRepositoryUseCase = CreateRepositoryUseCaseImpl(
                 userPersistence = userPersistence,
+                repositoryPersistence = repositoryPersistence,
             )
         }
 
         should("return success if data is valid") {
             val userId = 123
             coEvery { userPersistence.isUserExists(userId) } returns true
+            coEvery { repositoryPersistence.isRepositoryExists(userId, any()) } returns false
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
@@ -44,6 +50,7 @@ class CreateRepositoryUseCaseSpec : ShouldSpec() {
         should("return error if user does not exist") {
             val notExistingUserId = 5
             coEvery { userPersistence.isUserExists(notExistingUserId) } returns false
+            coEvery { repositoryPersistence.isRepositoryExists(notExistingUserId, any()) } returns false
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
@@ -60,6 +67,7 @@ class CreateRepositoryUseCaseSpec : ShouldSpec() {
             val userId = 123
             val existingRepositoryName = "any"
             coEvery { userPersistence.isUserExists(userId) } returns true
+            coEvery { repositoryPersistence.isRepositoryExists(userId, any()) } returns true
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
