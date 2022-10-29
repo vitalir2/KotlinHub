@@ -1,6 +1,7 @@
 package io.vitalir.kotlinvcshub.server.plugins
 
 import com.auth0.jwt.JWT
+import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -19,11 +20,7 @@ internal fun Application.configureSecurity(
         jwt(AuthVariant.JWT.authName) {
             realm = jwtConfig.realm
 
-            val jwtVerifier = JWT.require(Algorithm.HMAC256(jwtConfig.secret)).apply {
-                withAudience(jwtConfig.audience)
-                withIssuer(jwtConfig.issuer)
-            }.build()
-            verifier(jwtVerifier)
+            verifier(jwtConfig.toJwtVerifier())
 
             validate { credential ->
                 val userId = credential.payload.userId
@@ -43,4 +40,11 @@ internal fun Application.configureSecurity(
             }
         }
     }
+}
+
+private fun AppConfig.Jwt.toJwtVerifier(): JWTVerifier {
+    return JWT.require(Algorithm.HMAC256(secret)).apply {
+        withAudience(audience)
+        withIssuer(issuer)
+    }.build()
 }

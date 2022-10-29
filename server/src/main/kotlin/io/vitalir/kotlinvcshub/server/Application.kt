@@ -18,6 +18,7 @@ fun Application.mainModule() {
     val appConfig = environment.config.toAppConfig()
     val appGraphFactory: AppGraphFactory = AppGraphFactoryImpl()
     val applicationGraph = appGraphFactory.create(appConfig)
+
     configureSecurity(jwtConfig = appConfig.jwt)
     configureSerialization()
     configureRouting(applicationGraph)
@@ -26,22 +27,22 @@ fun Application.mainModule() {
 private fun ApplicationConfig.toAppConfig(): AppConfig =
     AppConfig(
         isDevelopment = property("ktor.development").getString().toBoolean(),
-        jwt = jwtConfig,
-        database = databaseConfig,
+        jwt = config("jwt").jwtConfig,
+        database = config("database").databaseConfig,
     )
 
 private val ApplicationConfig.jwtConfig: AppConfig.Jwt
     get() = AppConfig.Jwt(
-        secret = property("jwt.secret").getString(),
-        issuer = property("jwt.issuer").getString(),
-        audience = property("jwt.audience").getString(),
-        realm = property("jwt.realm").getString(),
+        secret = property("secret").getString(),
+        issuer = property("issuer").getString(),
+        audience = property("audience").getString(),
+        realm = property("realm").getString(),
     )
 
 private val ApplicationConfig.databaseConfig: AppConfig.Database
     get() = AppConfig.Database(
-        username = property("database.username").getString(),
-        password = property("database.password").getString(),
-        databaseName = property("database.databaseName").getString(),
-        serverName = property("database.serverName").getString(),
+        username = property("username").getString(),
+        password = property("password").getString(),
+        databaseName = property("databaseName").getString(),
+        serverName = property("serverName").getString(),
     )
