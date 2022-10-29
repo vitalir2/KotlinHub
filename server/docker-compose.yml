@@ -11,6 +11,7 @@ services:
       POSTGRES_SERVER_NAME: ${POSTGRES_SERVER_NAME:?No server name for db was set}
       JWT_SECRET: ${JWT_SECRET:?No jwt secret was set}
       JWT_REALM: ${JWT_REALM:?No jwt realm was set}
+      IS_DEVELOPMENT: ${IS_DEVELOPMENT}
     depends_on:
       db-main:
         condition: service_healthy

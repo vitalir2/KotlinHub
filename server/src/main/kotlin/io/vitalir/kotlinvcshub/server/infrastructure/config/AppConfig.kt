@@ -1,6 +1,7 @@
 package io.vitalir.kotlinvcshub.server.infrastructure.config
 
 data class AppConfig(
+    val isDevelopment: Boolean,
     val jwt: Jwt,
     val database: Database,
 ) {

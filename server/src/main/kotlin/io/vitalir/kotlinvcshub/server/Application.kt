@@ -25,6 +25,7 @@ fun Application.mainModule() {
 
 private fun ApplicationConfig.toAppConfig(): AppConfig =
     AppConfig(
+        isDevelopment = property("ktor.development").getString().toBoolean(),
         jwt = jwtConfig,
         database = databaseConfig,
     )
