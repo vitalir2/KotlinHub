@@ -1,14 +1,14 @@
-package io.vitalir.kotlinvcshub.server.repository.domain.usecases.impl
+package io.vitalir.kotlinvcshub.server.repository.domain.usecase.impl
 
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import io.vitalir.kotlinvcshub.server.common.domain.LocalDateTimeProvider
-import io.vitalir.kotlinvcshub.server.repository.domain.CreateRepositoryData
-import io.vitalir.kotlinvcshub.server.repository.domain.Repository
-import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryError
-import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryPersistence
-import io.vitalir.kotlinvcshub.server.repository.domain.usecases.CreateRepositoryUseCase
+import io.vitalir.kotlinvcshub.server.repository.domain.model.CreateRepositoryData
+import io.vitalir.kotlinvcshub.server.repository.domain.model.Repository
+import io.vitalir.kotlinvcshub.server.repository.domain.model.RepositoryError
+import io.vitalir.kotlinvcshub.server.repository.domain.persistence.RepositoryPersistence
+import io.vitalir.kotlinvcshub.server.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 
 internal class CreateRepositoryUseCaseImpl(

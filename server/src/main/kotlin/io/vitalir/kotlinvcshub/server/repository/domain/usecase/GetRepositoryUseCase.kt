@@ -1,8 +1,8 @@
-package io.vitalir.kotlinvcshub.server.repository.domain.usecases
+package io.vitalir.kotlinvcshub.server.repository.domain.usecase
 
 import arrow.core.Either
-import io.vitalir.kotlinvcshub.server.repository.domain.Repository
-import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryError
+import io.vitalir.kotlinvcshub.server.repository.domain.model.Repository
+import io.vitalir.kotlinvcshub.server.repository.domain.model.RepositoryError
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 
 interface GetRepositoryUseCase {

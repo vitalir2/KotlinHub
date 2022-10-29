@@ -1,4 +1,4 @@
-package io.vitalir.kotlinvcshub.server.repository.domain
+package io.vitalir.kotlinvcshub.server.repository.domain.model
 
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 

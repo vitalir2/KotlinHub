@@ -1,4 +1,4 @@
-package io.vitalir.kotlinvcshub.server.repository.domain
+package io.vitalir.kotlinvcshub.server.repository.domain.model
 
 object RepositoryError {
 

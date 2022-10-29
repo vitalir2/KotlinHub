@@ -4,11 +4,7 @@ import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.property.Arb
-import io.kotest.property.Exhaustive
-import io.kotest.property.RandomSource
-import io.kotest.property.arbitrary.ArbitraryBuilder
 import io.kotest.property.arbitrary.enum
-import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.localDateTime
 import io.kotest.property.arbitrary.next
 import io.kotest.property.arbitrary.positiveInt
@@ -19,17 +15,15 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.vitalir.kotlinvcshub.server.common.domain.LocalDateTimeProvider
-import io.vitalir.kotlinvcshub.server.repository.domain.CreateRepositoryData
-import io.vitalir.kotlinvcshub.server.repository.domain.Repository
-import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryError
-import io.vitalir.kotlinvcshub.server.repository.domain.RepositoryPersistence
-import io.vitalir.kotlinvcshub.server.repository.domain.usecases.CreateRepositoryUseCase
-import io.vitalir.kotlinvcshub.server.repository.domain.usecases.impl.CreateRepositoryUseCaseImpl
+import io.vitalir.kotlinvcshub.server.repository.domain.model.CreateRepositoryData
+import io.vitalir.kotlinvcshub.server.repository.domain.model.Repository
+import io.vitalir.kotlinvcshub.server.repository.domain.model.RepositoryError
+import io.vitalir.kotlinvcshub.server.repository.domain.persistence.RepositoryPersistence
+import io.vitalir.kotlinvcshub.server.repository.domain.usecase.CreateRepositoryUseCase
+import io.vitalir.kotlinvcshub.server.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 
 internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
