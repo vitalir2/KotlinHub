@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinvcshub.server.infrastructure.di.AppGraph
+import io.vitalir.kotlinvcshub.server.infrastructure.git.GitPlugin
 import io.vitalir.kotlinvcshub.server.repository.routing.repositoryRoutes
 import io.vitalir.kotlinvcshub.server.user.routes.userRoutes
 
@@ -11,6 +12,7 @@ fun Application.configureRouting(appGraph: AppGraph) {
     val debugConfig = appGraph.appConfig.debug
 
     install(CallLogging)
+    install(GitPlugin)
 
     routing {
         if (debugConfig?.isRoutesTracingEnabled == true) {
