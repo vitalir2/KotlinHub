@@ -4,7 +4,7 @@ import io.vitalir.kotlinvcshub.server.common.data.JavaLocalDateTimeProvider
 import io.vitalir.kotlinvcshub.server.infrastructure.config.AppConfig
 import io.vitalir.kotlinvcshub.server.infrastructure.database.createMainSqlDelightDatabase
 import io.vitalir.kotlinvcshub.server.infrastructure.database.sqldelight.MainSqlDelight
-import io.vitalir.kotlinvcshub.server.repository.data.InMemoryRepositoryPersistence
+import io.vitalir.kotlinvcshub.server.repository.data.SqlDelightRepositoryPersistence
 import io.vitalir.kotlinvcshub.server.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinvcshub.server.user.data.BCryptPasswordManager
 import io.vitalir.kotlinvcshub.server.user.data.SqlDelightUserPersistence
@@ -24,7 +24,10 @@ internal class AppGraphFactoryImpl : AppGraphFactory {
         return AppGraph(
             appConfig = appConfig,
             user = userGraph,
-            repository = createRepositoryGraph(userGraph.userPersistence),
+            repository = createRepositoryGraph(
+                userPersistence = userGraph.userPersistence,
+                database = database,
+            ),
         )
     }
 
@@ -52,11 +55,14 @@ internal class AppGraphFactoryImpl : AppGraphFactory {
 
     private fun createRepositoryGraph(
         userPersistence: UserPersistence,
+        database: MainSqlDelight,
     ): AppGraph.RepositoryGraph {
         return AppGraph.RepositoryGraph(
             createRepositoryUseCase = CreateRepositoryUseCaseImpl(
                 userPersistence = userPersistence,
-                repositoryPersistence = InMemoryRepositoryPersistence(),
+                repositoryPersistence = SqlDelightRepositoryPersistence(
+                    mainDatabase = database,
+                ),
                 localDateTimeProvider = JavaLocalDateTimeProvider(),
             )
         )

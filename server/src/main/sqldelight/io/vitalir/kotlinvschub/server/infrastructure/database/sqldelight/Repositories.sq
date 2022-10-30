@@ -10,10 +10,10 @@ CREATE TABLE repositories (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-getRepositoriesByUserId:
+getRepositoryByUserIdAndName:
 SELECT *
 FROM repositories
-WHERE user_id = ?;
+WHERE user_id = :user_id AND name = :name;
 
 insertRepository:
 INSERT INTO repositories (user_id, name, access_mode,

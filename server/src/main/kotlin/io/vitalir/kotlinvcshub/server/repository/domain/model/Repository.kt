@@ -9,7 +9,7 @@ data class Repository(
     val name: String,
     val accessMode: AccessMode,
     val createdAt: LocalDateTime,
-    val lastUpdated: LocalDateTime,
+    val updatedAt: LocalDateTime,
     val description: String? = null,
     val commits: List<Commit> = emptyList(),
 ) {
@@ -36,7 +36,7 @@ data class Repository(
                accessMode = initData.accessMode,
                description = initData.description,
                createdAt = createdAtDateTime,
-               lastUpdated = createdAtDateTime,
+               updatedAt = createdAtDateTime,
            )
        }
     }

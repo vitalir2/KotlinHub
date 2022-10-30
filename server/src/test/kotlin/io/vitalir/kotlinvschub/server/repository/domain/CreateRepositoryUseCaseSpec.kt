@@ -88,7 +88,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 accessMode = createRepositoryData.accessMode,
                 description = createRepositoryData.description,
                 createdAt = createdAtDateTime,
-                lastUpdated = createdAtDateTime,
+                updatedAt = createdAtDateTime,
             )
             result shouldBeRight Unit
             coVerify { repositoryPersistence.addRepository(expectedRepository) }
