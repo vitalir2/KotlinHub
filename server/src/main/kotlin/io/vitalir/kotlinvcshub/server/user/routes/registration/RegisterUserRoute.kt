@@ -6,7 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinvcshub.server.common.routes.ResponseData
-import io.vitalir.kotlinvcshub.server.common.routes.extensions.respondByResponseData
+import io.vitalir.kotlinvcshub.server.common.routes.extensions.respondWith
 import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
@@ -23,7 +23,7 @@ internal fun Route.registerUserRoute(registerUserUseCase: RegisterUserUseCase) {
             )
         )
         val responseData: ResponseData = getResponseData(registrationResult)
-        call.respondByResponseData(responseData)
+        call.respondWith(responseData)
     }
 }
 

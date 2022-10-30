@@ -6,11 +6,10 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinvcshub.server.common.routes.AuthVariant
 import io.vitalir.kotlinvcshub.server.common.routes.ResponseData
-import io.vitalir.kotlinvcshub.server.common.routes.extensions.respondByResponseData
+import io.vitalir.kotlinvcshub.server.common.routes.extensions.respondWith
 import io.vitalir.kotlinvcshub.server.infrastructure.auth.userId
 import io.vitalir.kotlinvcshub.server.infrastructure.di.AppGraph
 import io.vitalir.kotlinvcshub.server.repository.domain.model.CreateRepositoryData
@@ -32,7 +31,7 @@ private fun Route.createRepositoryRoute(
         post {
             val principal = call.principal<JWTPrincipal>()
             val userId = principal?.payload?.userId ?: run {
-                call.respond(ResponseData.unauthorized())
+                call.respondWith(ResponseData.unauthorized())
                 return@post
             }
 
@@ -46,7 +45,7 @@ private fun Route.createRepositoryRoute(
 
             val result = createRepositoryUseCase(createRepositoryData)
             val responseData = result.toCreateRepositoryResponseData()
-            call.respondByResponseData(responseData)
+            call.respondWith(responseData)
         }
     }
 }
