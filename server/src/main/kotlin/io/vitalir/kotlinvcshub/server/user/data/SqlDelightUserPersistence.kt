@@ -30,6 +30,12 @@ internal class SqlDelightUserPersistence(
             .rightIfNotNull { UserError.InvalidCredentials }
     }
 
+    override suspend fun getUser(userId: UserId): User? {
+        return queries.getById(userId)
+            .executeAsOneOrNull()
+            ?.toDomainModel()
+    }
+
     override suspend fun addUser(user: User): Either<UserError.UserAlreadyExists, Unit> {
         return if (isUserExists(UserCredentials.Identifier.Login(user.login))) {
             UserError.UserAlreadyExists.left()

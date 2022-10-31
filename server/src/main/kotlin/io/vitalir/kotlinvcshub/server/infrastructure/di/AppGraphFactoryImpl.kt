@@ -65,7 +65,9 @@ internal class AppGraphFactoryImpl : AppGraphFactory {
                     mainDatabase = database,
                 ),
                 localDateTimeProvider = JavaLocalDateTimeProvider(),
-                gitManager = GitManagerImpl(),
+                gitManager = GitManagerImpl(
+                    userPersistence = userPersistence, // TODO add user entity in User model to remove it
+                ),
             )
         )
     }
