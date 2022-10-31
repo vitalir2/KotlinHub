@@ -4,6 +4,7 @@ import io.vitalir.kotlinvcshub.server.common.data.JavaLocalDateTimeProvider
 import io.vitalir.kotlinvcshub.server.infrastructure.config.AppConfig
 import io.vitalir.kotlinvcshub.server.infrastructure.database.createMainSqlDelightDatabase
 import io.vitalir.kotlinvcshub.server.infrastructure.database.sqldelight.MainSqlDelight
+import io.vitalir.kotlinvcshub.server.infrastructure.git.GitManagerImpl
 import io.vitalir.kotlinvcshub.server.repository.data.SqlDelightRepositoryPersistence
 import io.vitalir.kotlinvcshub.server.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinvcshub.server.user.data.BCryptPasswordManager
@@ -64,6 +65,7 @@ internal class AppGraphFactoryImpl : AppGraphFactory {
                     mainDatabase = database,
                 ),
                 localDateTimeProvider = JavaLocalDateTimeProvider(),
+                gitManager = GitManagerImpl(),
             )
         )
     }
