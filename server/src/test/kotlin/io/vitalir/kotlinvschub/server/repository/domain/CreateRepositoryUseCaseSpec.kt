@@ -3,6 +3,7 @@ package io.vitalir.kotlinvschub.server.repository.domain
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.enum
 import io.kotest.property.arbitrary.localDateTime
@@ -15,6 +16,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.vitalir.kotlinvcshub.server.common.domain.LocalDateTimeProvider
+import io.vitalir.kotlinvcshub.server.common.domain.Uri
 import io.vitalir.kotlinvcshub.server.infrastructure.git.GitManager
 import io.vitalir.kotlinvcshub.server.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinvcshub.server.repository.domain.model.Repository
@@ -22,6 +24,7 @@ import io.vitalir.kotlinvcshub.server.repository.domain.model.RepositoryError
 import io.vitalir.kotlinvcshub.server.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinvcshub.server.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinvcshub.server.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
+import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import java.time.LocalDateTime
@@ -74,8 +77,15 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
         should("return success if data is valid") {
             val nowDateTime = dateTimeProvider.next()
+            val ownerLogin = "validlogin"
+            val repositoryOwner = User(
+                id = someUserId,
+                login = ownerLogin,
+                password = "validpassword",
+            )
 
             coEvery { userPersistence.isUserExists(someUserId) } returns true
+            coEvery { userPersistence.getUser(someUserId) } returns repositoryOwner
             coEvery { repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName) } returns false
             every { localDateTimeProvider.now() } returns nowDateTime
 
@@ -95,7 +105,8 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 createdAt = nowDateTime,
                 updatedAt = nowDateTime,
             )
-            result shouldBeRight Unit
+            val uri = result.shouldBeRight()
+            uri.value shouldBe "git://${Uri.HOST}/$ownerLogin/$someRepositoryName.git"
             coVerify { repositoryPersistence.addRepository(expectedRepository) }
             coVerify { gitManager.initRepository(expectedRepository) }
         }

@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import io.vitalir.kotlinvcshub.server.common.domain.LocalDateTimeProvider
+import io.vitalir.kotlinvcshub.server.common.domain.Uri
 import io.vitalir.kotlinvcshub.server.infrastructure.git.GitManager
 import io.vitalir.kotlinvcshub.server.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinvcshub.server.repository.domain.model.Repository
@@ -19,7 +20,7 @@ internal class CreateRepositoryUseCaseImpl(
     private val gitManager: GitManager,
 ) : CreateRepositoryUseCase {
 
-    override suspend fun invoke(initData: CreateRepositoryData): Either<RepositoryError.Create, Unit> {
+    override suspend fun invoke(initData: CreateRepositoryData): Either<RepositoryError.Create, Uri> {
         return when {
             userPersistence.isUserExists(initData.userId).not() ->
                 RepositoryError.Create.InvalidUserId.left()
@@ -29,9 +30,11 @@ internal class CreateRepositoryUseCaseImpl(
         }
     }
 
-    private suspend fun createRepositoryAfterValidation(initData: CreateRepositoryData) {
+    private suspend fun createRepositoryAfterValidation(initData: CreateRepositoryData): Uri {
         val repository = Repository.fromInitData(initData, localDateTimeProvider)
+        val owner = userPersistence.getUser(repository.ownerId)!! // User exists (have been checked before)
         repositoryPersistence.addRepository(repository)
         gitManager.initRepository(repository)
+        return Uri.create(Uri.Scheme.GIT, owner.login, "${repository.name}.git")
     }
 }

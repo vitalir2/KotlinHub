@@ -7,6 +7,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
+import io.vitalir.kotlinvcshub.server.common.domain.Uri
 import io.vitalir.kotlinvcshub.server.common.routes.AuthVariant
 import io.vitalir.kotlinvcshub.server.common.routes.ResponseData
 import io.vitalir.kotlinvcshub.server.common.routes.extensions.respondWith
@@ -50,12 +51,12 @@ private fun Route.createRepositoryRoute(
     }
 }
 
-private fun Either<RepositoryError.Create, Unit>.toCreateRepositoryResponseData(): ResponseData {
+private fun Either<RepositoryError.Create, Uri>.toCreateRepositoryResponseData(): ResponseData {
     return when (this) {
         is Either.Left -> value.toResponseData()
         is Either.Right -> ResponseData(
             code = HttpStatusCode.Created,
-            body = CreateRepositoryResponse(repositoryUrl = "TODO"),
+            body = CreateRepositoryResponse(repositoryUrl = value.value),
         )
     }
 }
