@@ -4,7 +4,6 @@ import arrow.core.Either
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinvcshub.server.common.domain.Uri
@@ -30,8 +29,7 @@ private fun Route.createRepositoryRoute(
 ) {
     authenticate(AuthVariant.JWT.authName) {
         post {
-            val principal = call.principal<JWTPrincipal>()
-            val userId = principal?.payload?.userId ?: run {
+            val userId = call.userId ?: run {
                 call.respondWith(ResponseData.unauthorized())
                 return@post
             }
