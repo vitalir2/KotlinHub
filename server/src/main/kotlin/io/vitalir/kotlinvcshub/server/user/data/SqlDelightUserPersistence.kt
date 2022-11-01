@@ -11,14 +11,14 @@ import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
-import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.UsersQueries
+import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.CUsersQueries
 
 internal class SqlDelightUserPersistence(
     private val sqlDelightDatabase: MainSqlDelight,
 ) : UserPersistence {
 
-    private val queries: UsersQueries
-        get() = sqlDelightDatabase.usersQueries
+    private val queries: CUsersQueries
+        get() = sqlDelightDatabase.cUsersQueries
 
     override suspend fun getUser(identifier: UserCredentials.Identifier): Either<UserError.InvalidCredentials, User> {
         return when (identifier) {
@@ -28,6 +28,12 @@ internal class SqlDelightUserPersistence(
             .executeAsOneOrNull()
             ?.toDomainModel()
             .rightIfNotNull { UserError.InvalidCredentials }
+    }
+
+    override suspend fun getUser(userId: UserId): User? {
+        return queries.getById(userId)
+            .executeAsOneOrNull()
+            ?.toDomainModel()
     }
 
     override suspend fun addUser(user: User): Either<UserError.UserAlreadyExists, Unit> {

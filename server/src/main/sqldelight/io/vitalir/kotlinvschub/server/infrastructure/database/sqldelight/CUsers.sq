@@ -1,3 +1,4 @@
+-- C in name of file because many tables depends on it and code for initialization is generated in alphabetical order =/
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     login TEXT NOT NULL,

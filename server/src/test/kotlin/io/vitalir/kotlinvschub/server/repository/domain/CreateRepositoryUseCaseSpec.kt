@@ -3,6 +3,7 @@ package io.vitalir.kotlinvschub.server.repository.domain
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.enum
 import io.kotest.property.arbitrary.localDateTime
@@ -15,12 +16,15 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.vitalir.kotlinvcshub.server.common.domain.LocalDateTimeProvider
+import io.vitalir.kotlinvcshub.server.common.domain.Uri
+import io.vitalir.kotlinvcshub.server.infrastructure.git.GitManager
 import io.vitalir.kotlinvcshub.server.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinvcshub.server.repository.domain.model.Repository
 import io.vitalir.kotlinvcshub.server.repository.domain.model.RepositoryError
 import io.vitalir.kotlinvcshub.server.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinvcshub.server.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinvcshub.server.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
+import io.vitalir.kotlinvcshub.server.user.domain.model.User
 import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import java.time.LocalDateTime
@@ -34,6 +38,8 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
     private lateinit var repositoryPersistence: RepositoryPersistence
 
     private lateinit var localDateTimeProvider: LocalDateTimeProvider
+
+    private lateinit var gitManager: GitManager
 
     private val userIdProvider: Arb<UserId> by lazy {
         Arb.positiveInt()
@@ -56,26 +62,34 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
             userPersistence = mockk()
             repositoryPersistence = spyk()
             localDateTimeProvider = mockk()
+            gitManager = spyk()
             createRepositoryUseCase = CreateRepositoryUseCaseImpl(
                 userPersistence = userPersistence,
                 repositoryPersistence = repositoryPersistence,
                 localDateTimeProvider = localDateTimeProvider,
+                gitManager = gitManager,
             )
         }
 
         val someUserId = 123
+        val repositoryOwner = User(
+            id = someUserId,
+            login = "validlogin",
+            password = "validpassword",
+        )
         val someRepositoryName = repositoryNameProvider.next()
         val someRepositoryAccessMode = repositoryAccessModeProvider.next()
 
         should("return success if data is valid") {
-            val createdAtDateTime = dateTimeProvider.next()
+            val nowDateTime = dateTimeProvider.next()
 
             coEvery { userPersistence.isUserExists(someUserId) } returns true
+            coEvery { userPersistence.getUser(someUserId) } returns repositoryOwner
             coEvery { repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName) } returns false
-            every { localDateTimeProvider.now() } returns createdAtDateTime
+            every { localDateTimeProvider.now() } returns nowDateTime
 
             val createRepositoryData = CreateRepositoryData(
-                userId = someUserId,
+                ownerId = someUserId,
                 name = someRepositoryName,
                 accessMode = someRepositoryAccessMode,
             )
@@ -83,15 +97,17 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
             val result = createRepositoryUseCase(createRepositoryData)
 
             val expectedRepository = Repository(
-                ownerId = createRepositoryData.userId,
+                owner = repositoryOwner,
                 name = createRepositoryData.name,
                 accessMode = createRepositoryData.accessMode,
                 description = createRepositoryData.description,
-                createdAt = createdAtDateTime,
-                lastUpdated = createdAtDateTime,
+                createdAt = nowDateTime,
+                updatedAt = nowDateTime,
             )
-            result shouldBeRight Unit
+            val uri = result.shouldBeRight()
+            uri.value shouldBe "git://${Uri.HOST}/${repositoryOwner.login}/$someRepositoryName.git"
             coVerify { repositoryPersistence.addRepository(expectedRepository) }
+            coVerify { gitManager.initRepository(expectedRepository) }
         }
 
         should("return error if user does not exist") {
@@ -101,7 +117,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
-                    userId = notExistingUserId,
+                    ownerId = notExistingUserId,
                     name = someRepositoryName,
                     accessMode = someRepositoryAccessMode,
                 )
@@ -116,7 +132,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
-                    userId = someUserId,
+                    ownerId = someUserId,
                     name = someRepositoryName,
                     accessMode = repositoryAccessModeProvider.next(),
                 )

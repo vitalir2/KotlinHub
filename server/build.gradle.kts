@@ -48,6 +48,9 @@ dependencies {
     implementation("org.postgresql:postgresql:42.5.0")
     implementation("app.cash.sqldelight:jdbc-driver:2.0.0-alpha04")
 
+    // Git
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.3.0.202209071007-r")
+
     // Security
     implementation("org.mindrot:jbcrypt:0.4")
 

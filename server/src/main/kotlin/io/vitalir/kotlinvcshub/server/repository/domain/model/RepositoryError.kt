@@ -8,11 +8,4 @@ object RepositoryError {
 
         object RepositoryAlreadyExists : Create
     }
-
-    sealed interface Get {
-
-        object InvalidUserId : Get
-
-        object RepositoryDoesNotExist : Get
-    }
 }
