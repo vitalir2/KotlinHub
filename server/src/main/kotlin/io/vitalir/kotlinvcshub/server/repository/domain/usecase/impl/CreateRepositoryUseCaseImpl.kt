@@ -22,19 +22,22 @@ internal class CreateRepositoryUseCaseImpl(
 
     override suspend fun invoke(initData: CreateRepositoryData): Either<RepositoryError.Create, Uri> {
         return when {
-            userPersistence.isUserExists(initData.userId).not() ->
+            userPersistence.isUserExists(initData.ownerId).not() ->
                 RepositoryError.Create.InvalidUserId.left()
-            repositoryPersistence.isRepositoryExists(initData.userId, initData.name) ->
+            repositoryPersistence.isRepositoryExists(initData.ownerId, initData.name) ->
                 RepositoryError.Create.RepositoryAlreadyExists.left()
             else -> createRepositoryAfterValidation(initData).right()
         }
     }
 
     private suspend fun createRepositoryAfterValidation(initData: CreateRepositoryData): Uri {
-        val repository = Repository.fromInitData(initData, localDateTimeProvider)
-        val owner = userPersistence.getUser(repository.ownerId)!! // User exists (have been checked before)
+        val repository = Repository.fromInitData(
+            owner = userPersistence.getUser(initData.ownerId)!!,
+            initData = initData,
+            localDateTimeProvider = localDateTimeProvider,
+        )
         repositoryPersistence.addRepository(repository)
         gitManager.initRepository(repository)
-        return Uri.create(Uri.Scheme.GIT, owner.login, "${repository.name}.git")
+        return Uri.create(Uri.Scheme.GIT, repository.owner.login, "${repository.name}.git")
     }
 }

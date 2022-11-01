@@ -72,17 +72,16 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         val someUserId = 123
+        val repositoryOwner = User(
+            id = someUserId,
+            login = "validlogin",
+            password = "validpassword",
+        )
         val someRepositoryName = repositoryNameProvider.next()
         val someRepositoryAccessMode = repositoryAccessModeProvider.next()
 
         should("return success if data is valid") {
             val nowDateTime = dateTimeProvider.next()
-            val ownerLogin = "validlogin"
-            val repositoryOwner = User(
-                id = someUserId,
-                login = ownerLogin,
-                password = "validpassword",
-            )
 
             coEvery { userPersistence.isUserExists(someUserId) } returns true
             coEvery { userPersistence.getUser(someUserId) } returns repositoryOwner
@@ -90,7 +89,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
             every { localDateTimeProvider.now() } returns nowDateTime
 
             val createRepositoryData = CreateRepositoryData(
-                userId = someUserId,
+                ownerId = someUserId,
                 name = someRepositoryName,
                 accessMode = someRepositoryAccessMode,
             )
@@ -98,7 +97,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
             val result = createRepositoryUseCase(createRepositoryData)
 
             val expectedRepository = Repository(
-                ownerId = createRepositoryData.userId,
+                owner = repositoryOwner,
                 name = createRepositoryData.name,
                 accessMode = createRepositoryData.accessMode,
                 description = createRepositoryData.description,
@@ -106,7 +105,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 updatedAt = nowDateTime,
             )
             val uri = result.shouldBeRight()
-            uri.value shouldBe "git://${Uri.HOST}/$ownerLogin/$someRepositoryName.git"
+            uri.value shouldBe "git://${Uri.HOST}/${repositoryOwner.login}/$someRepositoryName.git"
             coVerify { repositoryPersistence.addRepository(expectedRepository) }
             coVerify { gitManager.initRepository(expectedRepository) }
         }
@@ -118,7 +117,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
-                    userId = notExistingUserId,
+                    ownerId = notExistingUserId,
                     name = someRepositoryName,
                     accessMode = someRepositoryAccessMode,
                 )
@@ -133,7 +132,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
-                    userId = someUserId,
+                    ownerId = someUserId,
                     name = someRepositoryName,
                     accessMode = repositoryAccessModeProvider.next(),
                 )

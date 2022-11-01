@@ -20,7 +20,7 @@ internal class SqlDelightRepositoryPersistence(
 
     override suspend fun addRepository(repository: Repository) {
         queries.insertRepository(
-            user_id = repository.ownerId,
+            user_id = repository.owner.id,
             name = repository.name,
             access_mode = repository.accessMode.toDataModel(),
             created_at = repository.createdAt,

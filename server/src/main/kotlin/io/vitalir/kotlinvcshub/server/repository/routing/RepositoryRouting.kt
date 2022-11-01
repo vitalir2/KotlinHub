@@ -38,7 +38,7 @@ private fun Route.createRepositoryRoute(
 
             val request = call.receive<CreateRepositoryRequest>()
             val createRepositoryData = CreateRepositoryData(
-                userId = userId,
+                ownerId = userId,
                 name = request.name,
                 accessMode = request.accessMode,
                 description = request.description,
