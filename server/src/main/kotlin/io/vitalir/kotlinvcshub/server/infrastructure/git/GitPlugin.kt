@@ -13,18 +13,17 @@ import kotlin.io.path.isDirectory
 private const val PLUGIN_NAME = "KGitServer"
 
 internal val GitPlugin = createApplicationPlugin(PLUGIN_NAME, ::GitPluginConfig) {
-    val networkToFilePathConverter = pluginConfig.dependencies.networkToFilePathConverter
-    val gitRepositoryActionCallMatcher = pluginConfig.dependencies.gitRepositoryActionCallMatcher
+    val gitUriParser = pluginConfig.dependencies.gitUriParser
     val git = pluginConfig.git
     application.initGitRepositoriesDirectory(pluginConfig.baseRepositoriesPath)
     onCallReceive { call ->
-        if (gitRepositoryActionCallMatcher.matches(call.request.uri)) {
-            val networkPath = call.request.path()
-            val repositoryRootPath = networkToFilePathConverter.convert(networkPath)
+        val parsedUri = gitUriParser.parse(call.request.uri)
+        if (parsedUri != null) {
+            val repositoryRootPath = "/var/lib/../username/repositoryname/" // TODO
             git.handleAction(
                 GitActionRequest(
                     repositoryRootPath = repositoryRootPath,
-                    networkPath = networkPath,
+                    parsedGitUri = parsedUri,
                     queryParams = call.request.queryParameters
                         .toMap()
                         .mapValues { it.value.first() }
