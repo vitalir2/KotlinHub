@@ -10,9 +10,7 @@ import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
 import io.vitalir.kotlinvcshub.server.user.domain.password.PasswordManager
 import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinvcshub.server.user.domain.usecase.LoginUseCase
-import io.vitalir.kotlinvcshub.server.user.domain.validation.EmailValidationRule
 import io.vitalir.kotlinvcshub.server.user.domain.validation.IdentifierValidationRule
-import io.vitalir.kotlinvcshub.server.user.domain.validation.LoginValidationRule
 
 internal class LoginUseCaseImpl(
     private val userPersistence: UserPersistence,
