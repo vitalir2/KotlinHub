@@ -75,7 +75,7 @@ application {
 
 sqldelight {
     database("MainSqlDelight") {
-        packageName = "io.vitalir.kotlinvcshub.server.infrastructure.database.sqldelight"
+        packageName = "io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight"
         dialect("app.cash.sqldelight:postgresql-dialect:2.0.0-alpha04")
     }
 }

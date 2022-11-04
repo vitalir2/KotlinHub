@@ -1,7 +1,7 @@
 package io.vitalir.kotlinvschub.server.user.domain
 
 import io.kotest.matchers.shouldBe
-import io.vitalir.kotlinvcshub.server.user.domain.model.User
+import io.vitalir.kotlinhub.server.app.user.domain.model.User
 
 internal val User.Companion.any: User
     get() = User(

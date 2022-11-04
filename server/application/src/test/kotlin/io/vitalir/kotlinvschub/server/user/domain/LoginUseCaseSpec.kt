@@ -13,13 +13,13 @@ import io.kotest.property.checkAll
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.vitalir.kotlinvcshub.server.user.domain.model.User
-import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
-import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
-import io.vitalir.kotlinvcshub.server.user.domain.password.PasswordManager
-import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
-import io.vitalir.kotlinvcshub.server.user.domain.usecase.LoginUseCase
-import io.vitalir.kotlinvcshub.server.user.domain.usecase.impl.LoginUseCaseImpl
+import io.vitalir.kotlinhub.server.app.user.domain.model.User
+import io.vitalir.kotlinhub.server.app.user.domain.model.UserCredentials
+import io.vitalir.kotlinhub.server.app.user.domain.model.UserError
+import io.vitalir.kotlinhub.server.app.user.domain.password.PasswordManager
+import io.vitalir.kotlinhub.server.app.user.domain.persistence.UserPersistence
+import io.vitalir.kotlinhub.server.app.user.domain.usecase.LoginUseCase
+import io.vitalir.kotlinhub.server.app.user.domain.usecase.impl.LoginUseCaseImpl
 
 class LoginUseCaseSpec : ShouldSpec({
     val userPersistenceMock = mockk<UserPersistence>()

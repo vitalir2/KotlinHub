@@ -8,10 +8,10 @@ import io.kotest.property.arbitrary.email
 import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
-import io.vitalir.kotlinvcshub.server.user.domain.model.UserCredentials
-import io.vitalir.kotlinvcshub.server.user.domain.model.UserError
-import io.vitalir.kotlinvcshub.server.user.domain.validation.IdentifierValidationRule
-import io.vitalir.kotlinvcshub.server.user.domain.validation.UserValidationRule
+import io.vitalir.kotlinhub.server.app.user.domain.model.UserCredentials
+import io.vitalir.kotlinhub.server.app.user.domain.model.UserError
+import io.vitalir.kotlinhub.server.app.user.domain.validation.IdentifierValidationRule
+import io.vitalir.kotlinhub.server.app.user.domain.validation.UserValidationRule
 
 class IdentifierValidationRuleSpec : ShouldSpec() {
 

@@ -15,18 +15,18 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
-import io.vitalir.kotlinvcshub.server.common.domain.LocalDateTimeProvider
-import io.vitalir.kotlinvcshub.server.common.domain.Uri
-import io.vitalir.kotlinvcshub.server.infrastructure.git.GitManager
-import io.vitalir.kotlinvcshub.server.repository.domain.model.CreateRepositoryData
-import io.vitalir.kotlinvcshub.server.repository.domain.model.Repository
-import io.vitalir.kotlinvcshub.server.repository.domain.model.RepositoryError
-import io.vitalir.kotlinvcshub.server.repository.domain.persistence.RepositoryPersistence
-import io.vitalir.kotlinvcshub.server.repository.domain.usecase.CreateRepositoryUseCase
-import io.vitalir.kotlinvcshub.server.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
-import io.vitalir.kotlinvcshub.server.user.domain.model.User
-import io.vitalir.kotlinvcshub.server.user.domain.model.UserId
-import io.vitalir.kotlinvcshub.server.user.domain.persistence.UserPersistence
+import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
+import io.vitalir.kotlinhub.server.app.common.domain.Uri
+import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
+import io.vitalir.kotlinhub.server.app.repository.domain.model.CreateRepositoryData
+import io.vitalir.kotlinhub.server.app.repository.domain.model.Repository
+import io.vitalir.kotlinhub.server.app.repository.domain.model.RepositoryError
+import io.vitalir.kotlinhub.server.app.repository.domain.persistence.RepositoryPersistence
+import io.vitalir.kotlinhub.server.app.repository.domain.usecase.CreateRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
+import io.vitalir.kotlinhub.server.app.user.domain.model.User
+import io.vitalir.kotlinhub.server.app.user.domain.model.UserId
+import io.vitalir.kotlinhub.server.app.user.domain.persistence.UserPersistence
 import java.time.LocalDateTime
 
 internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
