@@ -103,7 +103,12 @@ fun Task.dockerComposeTask(env: String, arg: String) {
         exec {
             workingDir = projectDir
             executable = "docker"
-            args = listOf("compose", "--env-file", "./config/.env.$env", arg)
+            args = listOf(
+                "compose",
+                "--file", "../docker-compose.yml",
+                "--env-file", "./config/.env.$env",
+                arg,
+            )
         }
     }
 }

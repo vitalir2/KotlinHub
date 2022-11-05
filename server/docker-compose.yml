@@ -1,6 +1,7 @@
 services:
   server:
-    build: ..
+    build:
+      context: ./application
     container_name: kotlinvcshub-server
     ports:
       - 8080:8080
