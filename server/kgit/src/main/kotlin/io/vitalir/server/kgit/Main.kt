@@ -4,6 +4,7 @@ import io.vitalir.server.kgit.client.MockHttpClient
 import io.vitalir.server.kgit.client.Response
 import io.vitalir.server.kgit.di.ApplicationGraph
 import io.vitalir.server.kgit.git.GitAuthManagerImpl
+import io.vitalir.server.kgit.git.GitConstants
 import io.vitalir.server.kgit.git.KGitAuthFilter
 import javax.servlet.http.HttpServletRequest
 import org.eclipse.jetty.server.Server
@@ -44,7 +45,7 @@ private fun readServerConfig(): ServerConfig {
             port = 8081,
             servletPath = "/git/*", // TODO
         ),
-        rootDirAbsolute = "/tmp/srv/repos", // TODO
+        rootDirAbsolute = GitConstants.REPOSITORIES_PATH,
     )
 }
 
@@ -69,7 +70,7 @@ private fun createApplicationGraph(serverConfig: ServerConfig): ApplicationGraph
 }
 
 private fun ServerConnector.withConfig(networkConfig: ServerConfig.Network): ServerConnector = apply {
-    host = networkConfig.host
+    host = null // TODO refactor
     port = networkConfig.port
 }
 

@@ -1,5 +1,8 @@
+import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
+
 plugins {
     kotlin("jvm") version "1.7.20"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "io.vitalir.kotlingit"
@@ -22,4 +25,17 @@ dependencies {
 
     // Logging
     implementation("ch.qos.logback:logback-classic:1.3.2")
+}
+
+tasks {
+    named<Jar>("jar") {
+        manifest {
+            attributes("Main-Class" to "io.vitalir.server.kgit.MainKt")
+        }
+    }
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        configurations = listOf(
+            project.configurations.runtimeClasspath.get(),
+        )
+    }
 }

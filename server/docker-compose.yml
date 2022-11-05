@@ -1,8 +1,8 @@
 services:
-  server:
+  app:
     build:
       context: ./application
-    container_name: kotlinvcshub-server
+    container_name: kotlinhub-app
     ports:
       - 8080:8080
     environment:
@@ -17,9 +17,27 @@ services:
     depends_on:
       db-main:
         condition: service_healthy
+    volumes:
+      - ~/kotlinhub/repositories/:/var/kotlinhub/src/repositories/
+    networks:
+      - kotlinhub
+  kgit:
+    build:
+      context: ./kgit
+    container_name: kotlinhub-kgit
+    ports:
+      - 8081:8081
+    depends_on:
+      db-main:
+        condition: service_healthy
+    volumes:
+      - ~/kotlinhub/repositories/:/var/kotlinhub/src/repositories/
+    networks:
+      - kotlinhub
+
   db-main:
     image: postgres:15.0-alpine
-    container_name: kotlinvcshub-db
+    container_name: kotlinhub-db
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?No password for db-main was set}
       POSTGRES_DB: ${POSTGRES_DB:?No db name for db-main was set}
@@ -28,3 +46,8 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 1s
+    networks:
+      - kotlinhub
+
+networks:
+  kotlinhub:
