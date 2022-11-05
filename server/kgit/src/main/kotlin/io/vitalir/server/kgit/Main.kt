@@ -5,6 +5,11 @@ import org.eclipse.jetty.server.ServerConnector
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jgit.http.server.GitServlet
 
+
+// TODO:
+//  1. Create filter for auth (/git/http/auth)
+//  2. Refactor it
+//  3. You're cool
 fun main() = runServer {
     val serverConfig = readServerConfig()
 
