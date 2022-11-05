@@ -1,9 +1,15 @@
 package io.vitalir.server.kgit
 
+import javax.servlet.http.HttpServletRequest
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
 import org.eclipse.jetty.servlet.ServletContextHandler
+import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jgit.http.server.GitServlet
+import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.transport.resolver.FileResolver
+import org.eclipse.jgit.transport.resolver.RepositoryResolver
+import kotlin.io.path.Path
 
 
 // TODO:
@@ -43,10 +49,27 @@ private fun ServerConnector.withConfig(networkConfig: ServerConfig.Network): Ser
 
 private fun ServletContextHandler.setupDefaultGitServlet(serverConfig: ServerConfig): ServletContextHandler = apply {
     contextPath = "/" // TODO think
-    addServlet(GitServlet::class.java, serverConfig.network.servletPath).apply {
-        setInitParameter("base-path", serverConfig.rootDirAbsolute)
+    val servlet = GitServlet().apply {
+        setRepositoryResolver(KGitRepositoryResolver(serverConfig))
+    }
+    val servletHolder = ServletHolder(servlet)
+    addServlet(servletHolder, "/*/*.git")
+}
 
-        // Enable exporting all subdirs of the root
-        setInitParameter("export-all", "1")
+class KGitRepositoryResolver(
+    serverConfig: ServerConfig,
+) : RepositoryResolver<HttpServletRequest> {
+
+    private val delegate: FileResolver<HttpServletRequest> = FileResolver()
+
+    init {
+        with(delegate) {
+            exportDirectory(Path(serverConfig.rootDirAbsolute).toFile())
+            isExportAll = true
+        }
+    }
+
+    override fun open(req: HttpServletRequest?, name: String?): Repository {
+        return delegate.open(req, name)
     }
 }
