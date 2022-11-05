@@ -1,5 +1,10 @@
 package io.vitalir.server.kgit
 
+import io.vitalir.server.kgit.client.MockHttpClient
+import io.vitalir.server.kgit.client.Response
+import io.vitalir.server.kgit.di.ApplicationGraph
+import io.vitalir.server.kgit.git.GitAuthManagerImpl
+import io.vitalir.server.kgit.git.KGitAuthFilter
 import javax.servlet.http.HttpServletRequest
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
@@ -18,11 +23,12 @@ import kotlin.io.path.Path
 //  3. You're cool
 fun main() = runServer {
     val serverConfig = readServerConfig()
+    val appGraph = createApplicationGraph(serverConfig)
 
     val connector = ServerConnector(this).withConfig(serverConfig.network)
     addConnector(connector)
 
-    val servletHandler = ServletContextHandler().setupDefaultGitServlet(serverConfig)
+    val servletHandler = ServletContextHandler().setupDefaultGitServlet(serverConfig, appGraph.gitGraph)
     handler = servletHandler
 }
 
@@ -42,19 +48,45 @@ private fun readServerConfig(): ServerConfig {
     )
 }
 
+private fun createApplicationGraph(serverConfig: ServerConfig): ApplicationGraph {
+    val httpClient = MockHttpClient(
+        onGet = { _, _ -> Response(code = Response.HttpCode.OK) } // Used only for git auth manager
+    )
+    val gitAuthManager = GitAuthManagerImpl(httpClient)
+    val repositoryResolver = KGitRepositoryResolver(serverConfig)
+    return ApplicationGraph(
+        serverConfig = serverConfig,
+        httpClient = httpClient,
+        gitGraph = ApplicationGraph.Git(
+            gitAuthManager = gitAuthManager,
+            repositoryResolver = repositoryResolver,
+            receivePackFilters = listOf(
+                KGitAuthFilter(gitAuthManager)
+            ),
+            uploadPackFilters = emptyList(),
+        )
+    )
+}
+
 private fun ServerConnector.withConfig(networkConfig: ServerConfig.Network): ServerConnector = apply {
     host = networkConfig.host
     port = networkConfig.port
 }
 
-private fun ServletContextHandler.setupDefaultGitServlet(serverConfig: ServerConfig): ServletContextHandler = apply {
-    contextPath = "/" // TODO think
-    val servlet = GitServlet().apply {
-        setRepositoryResolver(KGitRepositoryResolver(serverConfig))
+private fun ServletContextHandler.setupDefaultGitServlet(
+    serverConfig: ServerConfig,
+    gitGraph: ApplicationGraph.Git,
+): ServletContextHandler =
+    apply {
+        contextPath = "/" // TODO think
+        val servlet = GitServlet().apply {
+            setRepositoryResolver(gitGraph.repositoryResolver)
+            gitGraph.receivePackFilters.forEach(::addReceivePackFilter)
+            gitGraph.uploadPackFilters.forEach(::addUploadPackFilter)
+        }
+        val servletHolder = ServletHolder(servlet)
+        addServlet(servletHolder, serverConfig.network.servletPath)
     }
-    val servletHolder = ServletHolder(servlet)
-    addServlet(servletHolder, "/*/*.git")
-}
 
 class KGitRepositoryResolver(
     serverConfig: ServerConfig,
