@@ -80,39 +80,6 @@ sqldelight {
     }
 }
 
-// Docker Compose custom tasks
-val environments = listOf("dev", "prod")
-for (env in environments) {
-    val capitalizedEnv = env.capitalize()
-    val buildDockerComposeTaskName = "buildDockerCompose$capitalizedEnv"
-    tasks.register(buildDockerComposeTaskName) {
-        dependsOn("buildFatJar")
-        dockerComposeTask(env, "build")
-    }
-    tasks.register("runDockerCompose$capitalizedEnv") {
-        dependsOn(buildDockerComposeTaskName)
-        dockerComposeTask(env, "up")
-    }
-    tasks.register("stopDockerCompose$capitalizedEnv") {
-        dockerComposeTask(env, "down")
-    }
-}
-
-fun Task.dockerComposeTask(env: String, arg: String) {
-    doLast {
-        exec {
-            workingDir = projectDir
-            executable = "docker"
-            args = listOf(
-                "compose",
-                "--file", "../docker-compose.yml",
-                "--env-file", "./config/.env.$env",
-                arg,
-            )
-        }
-    }
-}
-
 // Kotlin JVM Kotest dependency
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
