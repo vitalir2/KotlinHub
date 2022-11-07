@@ -1,10 +1,13 @@
 package io.vitalir.server.kgit.client
 
 internal class MockHttpClient(
-    private val onGet: (path: String, body: Any?) -> Response,
+    private val onPost: (uri: Uri, body: Any) -> Response,
 ) : KGitHttpClient {
 
-    override suspend fun get(path: String, body: Any?): Response {
-        return onGet(path, body)
+    override suspend fun post(
+        uri: Uri,
+        body: Any,
+    ): Response {
+        return onPost(uri, body)
     }
 }

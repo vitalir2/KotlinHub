@@ -14,7 +14,7 @@ fun Routing.gitRoutes() {
 
 // TODO
 private fun Route.httpBaseAuth() {
-    get("http/auth/") {
+    post("http/auth/") {
         call.respond(HttpStatusCode.OK)
     }
 }

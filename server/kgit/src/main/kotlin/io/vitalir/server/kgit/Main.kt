@@ -1,7 +1,12 @@
 package io.vitalir.server.kgit
 
-import io.vitalir.server.kgit.client.MockHttpClient
-import io.vitalir.server.kgit.client.Response
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import io.vitalir.server.kgit.client.KtorHttpClient
 import io.vitalir.server.kgit.di.ApplicationGraph
 import io.vitalir.server.kgit.git.GitAuthManagerImpl
 import io.vitalir.server.kgit.git.GitConstants
@@ -50,9 +55,17 @@ private fun readServerConfig(): ServerConfig {
 }
 
 private fun createApplicationGraph(serverConfig: ServerConfig): ApplicationGraph {
-    val httpClient = MockHttpClient(
-        onGet = { _, _ -> Response(code = Response.HttpCode.OK) } // Used only for git auth manager
-    )
+    val ktorHttpClient = HttpClient(CIO) {
+        defaultRequest {
+            url {
+                protocol = URLProtocol.HTTP
+            }
+        }
+        install(ContentNegotiation) {
+            json()
+        }
+    }
+    val httpClient = KtorHttpClient(ktorHttpClient)
     val gitAuthManager = GitAuthManagerImpl(httpClient)
     val repositoryResolver = KGitRepositoryResolver(serverConfig)
     return ApplicationGraph(
@@ -62,9 +75,11 @@ private fun createApplicationGraph(serverConfig: ServerConfig): ApplicationGraph
             gitAuthManager = gitAuthManager,
             repositoryResolver = repositoryResolver,
             receivePackFilters = listOf(
-                KGitAuthFilter(gitAuthManager)
+                KGitAuthFilter(gitAuthManager),
             ),
-            uploadPackFilters = emptyList(),
+            uploadPackFilters = listOf(
+                KGitAuthFilter(gitAuthManager),
+            ),
         )
     )
 }

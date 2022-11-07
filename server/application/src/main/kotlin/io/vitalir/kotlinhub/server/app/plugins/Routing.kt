@@ -14,6 +14,7 @@ fun Application.configureRouting(appGraph: AppGraph) {
 
     install(CallLogging)
     install(GitPlugin)
+    install(IgnoreTrailingSlash)
 
     routing {
         if (debugConfig?.isRoutesTracingEnabled == true) {

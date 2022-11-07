@@ -5,5 +5,9 @@ import io.vitalir.server.kgit.client.WorkerThread
 interface GitAuthManager {
 
     @WorkerThread
-    suspend fun hasAccess(repositoryName: String, username: String?): Boolean
+    suspend fun hasAccess(
+        repositoryName: String,
+        username: String?,
+        service: GitService,
+    ): Boolean
 }
