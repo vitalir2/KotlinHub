@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import kotlinx.coroutines.runBlocking
 import org.eclipse.jgit.http.server.GitSmartHttpTools
-import org.eclipse.jgit.transport.resolver.ServiceNotAuthorizedException
 import org.slf4j.LoggerFactory
 
 internal class KGitAuthFilter(
@@ -36,12 +35,6 @@ internal class KGitAuthFilter(
             return@runBlocking
         }
 
-        val service = getServiceOrNullFromUrl(request.requestURL?.toString()) ?: run {
-            logDebug { "Skip: Git service name is not found in URL=${request.requestURL}" }
-            chain?.doFilter(request, response)
-            return@runBlocking
-        }
-
         val repositoryPath = parseRepositoryPathFromRequestPathInfo(request.pathInfo)
         if (repositoryPath.isNullOrEmpty()) {
             GitSmartHttpTools.sendError(request, response, HttpServletResponse.SC_NOT_FOUND)
@@ -49,32 +42,48 @@ internal class KGitAuthFilter(
         }
 
         val (username, repositoryName) = repositoryPath.split("/")
+        logDebug { "Headers: ${request.headerNames.toList().joinToString(separator = ";")}" }
+        val baseAuthCredentials = request.getHeader("Authorization")
 
-        logDebug { "Request to check access for repository: repository=$repositoryPath, username=$username, service=.." }
+        logDebug { """
+                Request to check access for repository: repository=$repositoryName, username=$username, credentials=$baseAuthCredentials
+                URL=${request.requestURL}, pathInfo=${request.pathInfo}
+            """.trimIndent()
+        }
         val hasAccess = gitAuthManager.hasAccess(
             repositoryName = repositoryName,
             username = username,
-            service = service,
+            credentials = baseAuthCredentials,
         )
 
         if (hasAccess) {
             chain?.doFilter(request, response)
         } else {
-            throw ServiceNotAuthorizedException()
+            response.apply {
+                setHeader("WWW-Authenticate", "Basic")
+            }.sendError(401)
         }
-    }
-
-    private fun getServiceOrNullFromUrl(url: String?): GitService? {
-        val serviceString = url?.takeLastWhile { it != '/' }
-        return serviceString?.let(GitService::fromString)
     }
 
     private fun parseRepositoryPathFromRequestPathInfo(pathInfo: String?): String? {
         return pathInfo
-            ?.takeWhile { char -> char == '/' }
+            ?.removeWhile { char -> char == '/' }
     }
 
     private inline fun logDebug(message: () -> String) {
         logger.debug("KGitAuthFilter: ${message()}")
+    }
+
+    companion object {
+        private inline fun String.removeWhile(predicate: (Char) -> Boolean): String {
+            val newString = StringBuilder(this)
+            for (char in this) {
+                if (!predicate(char)) {
+                    break
+                }
+                newString.deleteCharAt(0)
+            }
+            return newString.toString()
+        }
     }
 }

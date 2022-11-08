@@ -16,6 +16,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":shared"))
+
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktorVersion")

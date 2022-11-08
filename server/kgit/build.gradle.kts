@@ -13,6 +13,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":shared"))
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
     // Jetty; version < 11 because org.eclipse.jgit.http.server does not support Jakarta

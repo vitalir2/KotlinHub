@@ -7,7 +7,7 @@ interface GitAuthManager {
     @WorkerThread
     suspend fun hasAccess(
         repositoryName: String,
-        username: String?,
-        service: GitService,
+        username: String,
+        credentials: String?,
     ): Boolean
 }

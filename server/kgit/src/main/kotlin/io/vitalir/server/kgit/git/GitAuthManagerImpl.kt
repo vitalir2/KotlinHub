@@ -1,5 +1,6 @@
 package io.vitalir.server.kgit.git
 
+import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
 import io.vitalir.server.kgit.client.KGitHttpClient
 import io.vitalir.server.kgit.client.Response
 import io.vitalir.server.kgit.client.Uri
@@ -10,8 +11,8 @@ internal class GitAuthManagerImpl(
 
     override suspend fun hasAccess(
         repositoryName: String,
-        username: String?,
-        service: GitService,
+        username: String,
+        credentials: String?,
     ): Boolean {
         val uri = Uri(
             protocol = Uri.Protocol.HTTP,
@@ -24,7 +25,7 @@ internal class GitAuthManagerImpl(
             body = GitAuthRequest(
                 repositoryName = repositoryName,
                 username = username,
-                service = service,
+                credentials = credentials,
             ),
         )
         return response.code == Response.HttpCode.Valid.OK
