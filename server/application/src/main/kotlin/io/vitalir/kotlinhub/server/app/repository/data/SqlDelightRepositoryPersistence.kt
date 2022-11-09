@@ -29,6 +29,10 @@ internal class SqlDelightRepositoryPersistence(
         )
     }
 
+    override suspend fun getRepository(username: String, repositoryName: String): Repository? {
+        TODO()
+    }
+
     companion object {
         private fun Repository.AccessMode.toDataModel(): Int = when (this) {
             Repository.AccessMode.PUBLIC -> 0

@@ -14,7 +14,10 @@ import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
 internal fun Routing.gitRoutes() {
     route("git/") {
         httpBaseAuth(
-            getRepositoryUseCase = GetRepositoryUseCaseImpl(),
+            getRepositoryUseCase = GetRepositoryUseCaseImpl(
+                repositoryPersistence = TODO(),
+                userPersistence = TODO(),
+            ),
         )
     }
 }
@@ -27,8 +30,8 @@ private fun Route.httpBaseAuth(
         val repository = getRepositoryUseCase(
             userName = request.username,
             repositoryName = request.repositoryName,
-        )
-        when (repository.accessMode) {
+        ).orNull()
+        when (repository?.accessMode) {
             // TODO Permit any call for now
             Repository.AccessMode.PUBLIC -> {
                 application.log.info("APP: Public repository")
@@ -42,6 +45,7 @@ private fun Route.httpBaseAuth(
                     call.respond(HttpStatusCode.Forbidden)
                 }
             }
+            null -> TODO()
         }
     }
 }

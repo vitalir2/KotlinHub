@@ -1,42 +1,28 @@
 package io.vitalir.kotlinhub.server.app.repository.domain.usecase.impl
 
-import ch.qos.logback.classic.Logger
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import io.vitalir.kotlinhub.server.app.repository.domain.model.Repository
+import io.vitalir.kotlinhub.server.app.repository.domain.model.RepositoryError
+import io.vitalir.kotlinhub.server.app.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.repository.domain.usecase.GetRepositoryUseCase
-import io.vitalir.kotlinhub.server.app.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.user.domain.model.UserCredentials
-import io.vitalir.kotlinhub.server.app.user.domain.password.PasswordManager
-import java.time.LocalDateTime
-import org.slf4j.LoggerFactory
+import io.vitalir.kotlinhub.server.app.user.domain.persistence.UserPersistence
 
-internal class GetRepositoryUseCaseImpl : GetRepositoryUseCase {
+internal class GetRepositoryUseCaseImpl(
+    private val repositoryPersistence: RepositoryPersistence,
+    private val userPersistence: UserPersistence,
+) : GetRepositoryUseCase {
 
-    private val logger = LoggerFactory.getLogger(Logger::class.java)
-
-    private val fakePasswordManager: PasswordManager = object : PasswordManager {
-        override fun encode(password: String): String {
-            return password
+    override suspend fun invoke(userName: String, repositoryName: String): Either<RepositoryError.Get, Repository> {
+        if (userPersistence.isUserExists(UserCredentials.Identifier.Login(userName)).not()) {
+            return RepositoryError.Get.InvalidUserLogin.left()
         }
-
-        override fun comparePasswords(plaintext: String, hashed: String): Boolean {
-            return plaintext == hashed
-        }
-
+        val repository = repositoryPersistence.getRepository(
+            userName, repositoryName
+        )
+        return repository?.right() ?: RepositoryError.Get.RepositoryDoesNotExist.left()
     }
 
-    // TODO remove fake
-    override suspend fun invoke(userName: String, repositoryName: String): Repository {
-        val owner = User.fromCredentials(
-            credentials = UserCredentials(UserCredentials.Identifier.Login(userName), ""),
-            passwordManager = fakePasswordManager,
-        )
-        val accessMode = Repository.AccessMode.PRIVATE
-        return Repository(
-            owner = owner,
-            name = repositoryName,
-            accessMode = accessMode,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
-        )
-    }
 }

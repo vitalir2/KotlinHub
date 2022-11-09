@@ -1,9 +1,13 @@
 package io.vitalir.kotlinhub.server.app.repository.domain.usecase
 
+import arrow.core.Either
 import io.vitalir.kotlinhub.server.app.repository.domain.model.Repository
+import io.vitalir.kotlinhub.server.app.repository.domain.model.RepositoryError
 
-// TODO handle errors
 interface GetRepositoryUseCase {
 
-    suspend operator fun invoke(userName: String, repositoryName: String): Repository
+    suspend operator fun invoke(
+        userName: String,
+        repositoryName: String,
+    ): Either<RepositoryError.Get, Repository>
 }
