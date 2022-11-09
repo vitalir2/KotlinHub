@@ -1,8 +1,10 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.di
 
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.BasicAuthManager
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.repository.domain.usecase.GetRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.user.domain.password.PasswordManager
 import io.vitalir.kotlinhub.server.app.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.user.domain.usecase.GetUserByLoginUseCase
 import io.vitalir.kotlinhub.server.app.user.domain.usecase.LoginUseCase
@@ -12,6 +14,7 @@ class AppGraph(
     val appConfig: AppConfig,
     val user: UserGraph,
     val repository: RepositoryGraph,
+    val auth: AuthGraph,
 ) {
 
     class UserGraph(
@@ -24,5 +27,10 @@ class AppGraph(
     class RepositoryGraph(
         val createRepositoryUseCase: CreateRepositoryUseCase,
         val getRepositoryUseCase: GetRepositoryUseCase,
+    )
+
+    class AuthGraph(
+        val basicAuthManager: BasicAuthManager,
+        val passwordManager: PasswordManager,
     )
 }

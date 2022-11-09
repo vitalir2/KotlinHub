@@ -9,6 +9,7 @@ import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.BasicAuthManager
 import io.vitalir.kotlinhub.server.app.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.repository.domain.usecase.GetRepositoryResult
@@ -17,6 +18,7 @@ import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
 
 internal fun Route.httpBaseAuth(
     getRepositoryUseCase: GetRepositoryUseCase,
+    basicAuthManager: BasicAuthManager,
 ) {
     post("http/auth/") {
         val request = call.receive<GitAuthRequest>()
@@ -24,20 +26,29 @@ internal fun Route.httpBaseAuth(
             username = request.username,
             repositoryName = request.repositoryName,
         )
-        handleGetRepositoryResult(request, result)
+        handleGetRepositoryResult(
+            request = request,
+            result = result,
+            basicAuthManager = basicAuthManager,
+        )
     }
 }
 
 private suspend fun PipelineContext<Unit, ApplicationCall>.handleGetRepositoryResult(
     request: GitAuthRequest,
     result: GetRepositoryResult,
+    basicAuthManager: BasicAuthManager,
 ) {
     when (result) {
         is Either.Left -> {
             call.respondWith(result.value.toErrorResponseData())
         }
         is Either.Right -> {
-            handleRepositoryFromResult(request, result.value)
+            handleRepositoryFromResult(
+                request = request,
+                repository = result.value,
+                basicAuthManager = basicAuthManager,
+            )
         }
     }
 }
@@ -45,6 +56,7 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleGetRepositoryRe
 private suspend fun PipelineContext<Unit, ApplicationCall>.handleRepositoryFromResult(
     request: GitAuthRequest,
     repository: Repository,
+    basicAuthManager: BasicAuthManager,
 ) {
     when (repository.accessMode) {
         // Permit any call for now
@@ -52,7 +64,12 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleRepositoryFromR
             call.respond(HttpStatusCode.OK)
         }
         Repository.AccessMode.PRIVATE -> {
-            val resultCode = if (isCredentialsValid(request.credentials)) {
+            application.log.info("Credentials APP: ${request.credentials}")
+            val isCredentialsValid = basicAuthManager.checkCredentials(
+                user = repository.owner,
+                headerValue = request.credentials,
+            )
+            val resultCode = if (isCredentialsValid) {
                 HttpStatusCode.OK
             } else {
                 HttpStatusCode.Forbidden
@@ -73,9 +90,4 @@ private fun RepositoryError.Get.toErrorResponseData(): ResponseData {
             errorMessage = "repository does not exist",
         )
     }
-}
-
-// TODO check credentials by some domain obj
-private fun isCredentialsValid(credentials: String?): Boolean {
-    return credentials != null
 }
