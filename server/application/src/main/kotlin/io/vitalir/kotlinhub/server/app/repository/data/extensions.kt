@@ -21,9 +21,13 @@ internal fun GetRepositoryByUsernameAndRepositoryName.toDomainModel(): Repositor
 }
 
 internal fun Int.asAccessMode(): Repository.AccessMode {
+    return Repository.AccessMode.values()
+        .first { it.asInt() == this }
+}
+
+internal fun Repository.AccessMode.asInt(): Int {
     return when (this) {
-        0 -> Repository.AccessMode.PUBLIC
-        1 -> Repository.AccessMode.PRIVATE
-        else -> error("TODO")
+        Repository.AccessMode.PUBLIC -> 0
+        Repository.AccessMode.PRIVATE -> 1
     }
 }
