@@ -30,7 +30,10 @@ internal class SqlDelightRepositoryPersistence(
     }
 
     override suspend fun getRepository(username: String, repositoryName: String): Repository? {
-        TODO()
+        return queries.getRepositoryByUsernameAndRepositoryName(
+            username = username,
+            repositoryName = repositoryName,
+        ).executeAsOneOrNull()?.toDomainModel()
     }
 
     companion object {
