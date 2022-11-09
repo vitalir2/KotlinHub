@@ -23,10 +23,6 @@ import org.eclipse.jgit.transport.resolver.RepositoryResolver
 import kotlin.io.path.Path
 
 
-// TODO:
-//  1. Create filter for auth (/git/http/auth)
-//  2. Refactor it
-//  3. You're cool
 fun main() = runServer {
     val serverConfig = readServerConfig()
     val appGraph = createApplicationGraph(serverConfig)
@@ -48,7 +44,7 @@ private fun readServerConfig(): ServerConfig {
         network = ServerConfig.Network(
             host = "localhost",
             port = 8081,
-            servletPath = "/git/*", // TODO
+            servletPath = "/git/*",
         ),
         rootDirAbsolute = GitConstants.REPOSITORIES_PATH,
     )
@@ -85,7 +81,7 @@ private fun createApplicationGraph(serverConfig: ServerConfig): ApplicationGraph
 }
 
 private fun ServerConnector.withConfig(networkConfig: ServerConfig.Network): ServerConnector = apply {
-    host = null // TODO refactor
+    host = null // TODO provide not null
     port = networkConfig.port
 }
 
@@ -94,7 +90,7 @@ private fun ServletContextHandler.setupDefaultGitServlet(
     gitGraph: ApplicationGraph.Git,
 ): ServletContextHandler =
     apply {
-        contextPath = "/" // TODO think
+        contextPath = "/"
         val servlet = GitServlet().apply {
             setRepositoryResolver(gitGraph.repositoryResolver)
             gitGraph.receivePackFilters.forEach(::addReceivePackFilter)

@@ -53,8 +53,7 @@ internal class SqlDelightUserPersistence(
         return existingUser != null
     }
 
-    // TODO
     override suspend fun isUserExists(userId: UserId): Boolean {
-        return true
+        return getUser(userId) != null
     }
 }
