@@ -16,7 +16,7 @@ fun main(args: Array<String>) = EngineMain.main(args)
 @Suppress("UNUSED")
 fun Application.mainModule() {
     val appConfig = environment.config.toAppConfig()
-    val appGraphFactory: AppGraphFactory = AppGraphFactoryImpl()
+    val appGraphFactory: AppGraphFactory = AppGraphFactoryImpl(this)
     val applicationGraph = appGraphFactory.create(appConfig)
 
     configureSecurity(jwtConfig = appConfig.jwt)

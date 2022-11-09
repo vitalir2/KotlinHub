@@ -1,5 +1,6 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.di
 
+import io.ktor.server.application.*
 import io.vitalir.kotlinhub.server.app.common.data.JavaLocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.BasicAuthManagerImpl
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
@@ -7,6 +8,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.database.createMainSqlDeli
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
 import io.vitalir.kotlinhub.server.app.infrastructure.encoding.impl.KtorBase64Manager
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManagerImpl
+import io.vitalir.kotlinhub.server.app.infrastructure.logging.impl.KtorLogger
 import io.vitalir.kotlinhub.server.app.repository.data.SqlDelightRepositoryPersistence
 import io.vitalir.kotlinhub.server.app.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
@@ -18,11 +20,14 @@ import io.vitalir.kotlinhub.server.app.user.domain.usecase.impl.LoginUseCaseImpl
 import io.vitalir.kotlinhub.server.app.user.domain.usecase.impl.RegisterUserUseCaseImpl
 import io.vitalir.kotlinhub.server.app.user.domain.validation.IdentifierValidationRule
 
-internal class AppGraphFactoryImpl : AppGraphFactory {
+internal class AppGraphFactoryImpl(
+    private val application: Application,
+) : AppGraphFactory {
 
     override fun create(
         appConfig: AppConfig,
     ): AppGraph {
+        val logger = KtorLogger(application.log)
         val database = createMainSqlDelightDatabase(appConfig.database)
         val authGraph = createAuthGraph()
         val userGraph = createUserGraph(database, authGraph)
@@ -34,6 +39,7 @@ internal class AppGraphFactoryImpl : AppGraphFactory {
                 database = database,
             ),
             auth = authGraph,
+            logger = logger,
         )
     }
 
