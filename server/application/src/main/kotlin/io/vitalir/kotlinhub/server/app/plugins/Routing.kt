@@ -28,6 +28,8 @@ fun Application.configureRouting(appGraph: AppGraph) {
         repositoryRoutes(
             repositoryGraph = appGraph.repository,
         )
-        gitRoutes()
+        gitRoutes(
+            getRepositoryUseCase = appGraph.repository.getRepositoryUseCase,
+        )
     }
 }
