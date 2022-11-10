@@ -42,7 +42,7 @@ private fun runServer(block: Server.() -> Unit) {
 private fun readServerConfig(): ServerConfig {
     return ServerConfig(
         network = ServerConfig.Network(
-            host = "localhost",
+            host = "0.0.0.0",
             port = 8081,
             servletPath = "/git/*",
         ),
@@ -81,7 +81,7 @@ private fun createApplicationGraph(serverConfig: ServerConfig): ApplicationGraph
 }
 
 private fun ServerConnector.withConfig(networkConfig: ServerConfig.Network): ServerConnector = apply {
-    host = null // TODO provide not null
+    host = networkConfig.host
     port = networkConfig.port
 }
 

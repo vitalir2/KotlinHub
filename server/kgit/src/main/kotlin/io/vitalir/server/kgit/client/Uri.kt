@@ -1,6 +1,5 @@
 package io.vitalir.server.kgit.client
 
-// TODO move to a separate library and share between services
 
 typealias QueryParams = Map<String, String>
 
