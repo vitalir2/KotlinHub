@@ -3,6 +3,7 @@ package io.vitalir.kotlinhub.server.app.plugins
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.routing.*
+import io.vitalir.kotlinhub.server.app.feature.git.routes.gitRoutes
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitPlugin
 import io.vitalir.kotlinhub.server.app.repository.routing.repositoryRoutes
@@ -12,7 +13,10 @@ fun Application.configureRouting(appGraph: AppGraph) {
     val debugConfig = appGraph.appConfig.debug
 
     install(CallLogging)
-    install(GitPlugin)
+    install(GitPlugin) {
+        baseRepositoriesPath = appGraph.appConfig.repository.baseRepositoriesPath
+    }
+    install(IgnoreTrailingSlash)
 
     routing {
         if (debugConfig?.isRoutesTracingEnabled == true) {
@@ -25,6 +29,10 @@ fun Application.configureRouting(appGraph: AppGraph) {
         )
         repositoryRoutes(
             repositoryGraph = appGraph.repository,
+        )
+        gitRoutes(
+            getRepositoryUseCase = appGraph.repository.getRepositoryUseCase,
+            authManager = appGraph.auth.authManager,
         )
     }
 }

@@ -16,7 +16,7 @@ fun main(args: Array<String>) = EngineMain.main(args)
 @Suppress("UNUSED")
 fun Application.mainModule() {
     val appConfig = environment.config.toAppConfig()
-    val appGraphFactory: AppGraphFactory = AppGraphFactoryImpl()
+    val appGraphFactory: AppGraphFactory = AppGraphFactoryImpl(this)
     val applicationGraph = appGraphFactory.create(appConfig)
 
     configureSecurity(jwtConfig = appConfig.jwt)
@@ -30,6 +30,7 @@ private fun ApplicationConfig.toAppConfig(): AppConfig {
         debug = if (isDevelopmentMode) config("debug").debugConfig else null,
         jwt = config("jwt").jwtConfig,
         database = config("database").databaseConfig,
+        repository = config("repository").repositoryConfig,
     )
 }
 
@@ -52,4 +53,9 @@ private val ApplicationConfig.databaseConfig: AppConfig.Database
 private val ApplicationConfig.debugConfig: AppConfig.Debug
     get() = AppConfig.Debug(
         isRoutesTracingEnabled = property("routeTracing").getString().toBoolean(),
+    )
+
+private val ApplicationConfig.repositoryConfig: AppConfig.Repository
+    get() = AppConfig.Repository(
+        baseRepositoriesPath = property("baseRepositoriesPath").getString(),
     )

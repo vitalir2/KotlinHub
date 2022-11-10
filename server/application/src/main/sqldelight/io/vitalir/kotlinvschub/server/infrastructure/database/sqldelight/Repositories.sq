@@ -13,7 +13,16 @@ CREATE TABLE repositories (
 getRepositoryByUserIdAndName:
 SELECT *
 FROM repositories
-WHERE user_id = :user_id AND name = :name;
+WHERE user_id = :user_id AND name = :name
+LIMIT 1;
+
+getRepositoryByUsernameAndRepositoryName:
+SELECT *
+FROM repositories AS r
+INNER JOIN users AS u
+ON r.user_id = u.id
+WHERE u.login = :username AND r.name = :repositoryName
+LIMIT 1;
 
 insertRepository:
 INSERT INTO repositories (user_id, name, access_mode,

@@ -7,6 +7,16 @@ import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
 import javax.sql.DataSource
 
+private var cachedDatabase: MainSqlDelight? = null
+private val lock = Any()
+
+fun createMainSqlDelightDatabase(databaseConfig: AppConfig.Database): MainSqlDelight = synchronized(lock) {
+    cachedDatabase?.let { db -> return db }
+    val sqlDriver = createDataSource(databaseConfig).asJdbcDriver()
+    MainSqlDelight.Schema.create(sqlDriver)
+    return MainSqlDelight(sqlDriver).also { cachedDatabase = it }
+}
+
 private fun createDataSource(databaseConfig: AppConfig.Database): DataSource {
     val hikariConfig = HikariConfig().apply {
         dataSourceClassName = "org.postgresql.ds.PGSimpleDataSource"
@@ -16,10 +26,4 @@ private fun createDataSource(databaseConfig: AppConfig.Database): DataSource {
         addDataSourceProperty("serverName", databaseConfig.serverName)
     }
     return HikariDataSource(hikariConfig)
-}
-
-fun createMainSqlDelightDatabase(databaseConfig: AppConfig.Database): MainSqlDelight {
-    val sqlDriver = createDataSource(databaseConfig).asJdbcDriver()
-    MainSqlDelight.Schema.create(sqlDriver)
-    return MainSqlDelight(sqlDriver)
 }

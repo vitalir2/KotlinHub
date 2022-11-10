@@ -22,17 +22,17 @@ internal class SqlDelightRepositoryPersistence(
         queries.insertRepository(
             user_id = repository.owner.id,
             name = repository.name,
-            access_mode = repository.accessMode.toDataModel(),
+            access_mode = repository.accessMode.asInt(),
             created_at = repository.createdAt,
             updated_at = repository.updatedAt,
             description = repository.description,
         )
     }
 
-    companion object {
-        private fun Repository.AccessMode.toDataModel(): Int = when (this) {
-            Repository.AccessMode.PUBLIC -> 0
-            Repository.AccessMode.PRIVATE -> 1
-        }
+    override suspend fun getRepository(username: String, repositoryName: String): Repository? {
+        return queries.getRepositoryByUsernameAndRepositoryName(
+            username = username,
+            repositoryName = repositoryName,
+        ).executeAsOneOrNull()?.toDomainModel()
     }
 }

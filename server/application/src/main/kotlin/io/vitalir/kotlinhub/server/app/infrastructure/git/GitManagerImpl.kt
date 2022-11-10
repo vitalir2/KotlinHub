@@ -1,11 +1,14 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.git
 
+import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.repository.domain.model.Repository
 import java.io.File
 import org.eclipse.jgit.lib.RepositoryBuilder
 import kotlin.io.path.Path
 
-internal class GitManagerImpl : GitManager {
+internal class GitManagerImpl(
+    private val repositoryConfig: AppConfig.Repository,
+) : GitManager {
 
     override suspend fun initRepository(repository: Repository) {
         RepositoryBuilder().apply {
@@ -17,6 +20,6 @@ internal class GitManagerImpl : GitManager {
     }
 
     private fun Repository.toFilePath(): File {
-        return Path(GitConstants.REPOSITORIES_PATH, owner.login, name).toFile()
+        return Path(repositoryConfig.baseRepositoriesPath, owner.login, name).toFile()
     }
 }

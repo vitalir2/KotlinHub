@@ -4,6 +4,7 @@ data class AppConfig(
     val debug: Debug?,
     val jwt: Jwt,
     val database: Database,
+    val repository: Repository,
 ) {
 
     data class Debug(
@@ -22,5 +23,9 @@ data class AppConfig(
         val password: String,
         val databaseName: String,
         val serverName: String,
+    )
+
+    data class Repository(
+        val baseRepositoriesPath: String,
     )
 }

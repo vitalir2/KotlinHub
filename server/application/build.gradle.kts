@@ -16,6 +16,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":shared"))
+
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktorVersion")
@@ -68,7 +70,7 @@ group = "io.vitalir"
 version = "0.0.1"
 
 application {
-    mainClass.set("io.vitalir.kotlinvcshub.server.ApplicationKt")
+    mainClass.set("io.vitalir.kotlinhub.server.app.ApplicationKt")
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
@@ -77,34 +79,6 @@ sqldelight {
     database("MainSqlDelight") {
         packageName = "io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight"
         dialect("app.cash.sqldelight:postgresql-dialect:2.0.0-alpha04")
-    }
-}
-
-// Docker Compose custom tasks
-val environments = listOf("dev", "prod")
-for (env in environments) {
-    val capitalizedEnv = env.capitalize()
-    val buildDockerComposeTaskName = "buildDockerCompose$capitalizedEnv"
-    tasks.register(buildDockerComposeTaskName) {
-        dependsOn("buildFatJar")
-        dockerComposeTask(env, "build")
-    }
-    tasks.register("runDockerCompose$capitalizedEnv") {
-        dependsOn(buildDockerComposeTaskName)
-        dockerComposeTask(env, "up")
-    }
-    tasks.register("stopDockerCompose$capitalizedEnv") {
-        dockerComposeTask(env, "down")
-    }
-}
-
-fun Task.dockerComposeTask(env: String, arg: String) {
-    doLast {
-        exec {
-            workingDir = projectDir
-            executable = "docker"
-            args = listOf("compose", "--env-file", "./config/.env.$env", arg)
-        }
     }
 }
 

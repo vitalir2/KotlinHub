@@ -4,7 +4,7 @@ ktor:
     port: 8080
   application:
     modules:
-      - ApplicationKt.mainModule
+      - io.vitalir.kotlinhub.server.app.ApplicationKt.mainModule
 
 jwt:
   secret: $JWT_SECRET
@@ -17,6 +17,9 @@ database:
   password: $POSTGRES_PASSWORD
   databaseName: $POSTGRES_DATABASE_NAME
   serverName: $POSTGRES_SERVER_NAME
+
+repository:
+  baseRepositoriesPath: $BASE_REPOSITORIES_PATH
 
 debug:
   routeTracing: $ROUTE_TRACING

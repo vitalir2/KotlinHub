@@ -1,0 +1,73 @@
+services:
+  app:
+    build:
+      context: ./application
+    container_name: kotlinhub-app
+    ports:
+      - 8080:8080
+    environment:
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME:?No username for db connection was set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?No password for db connection was set}
+      POSTGRES_DATABASE_NAME: ${POSTGRES_DB:?No db name was set}
+      POSTGRES_SERVER_NAME: ${POSTGRES_SERVER_NAME:?No server name for db was set}
+      JWT_SECRET: ${JWT_SECRET:?No jwt secret was set}
+      JWT_REALM: ${JWT_REALM:?No jwt realm was set}
+      IS_DEVELOPMENT: ${IS_DEVELOPMENT}
+      ROUTE_TRACING: ${ROUTE_TRACING}
+      BASE_REPOSITORIES_PATH: ${BASE_REPOSITORIES_PATH}
+    depends_on:
+      db-main:
+        condition: service_healthy
+    volumes:
+      - ~/kotlinhub/repositories/:/var/kotlinhub/src/repositories/
+    networks:
+      - kotlinhub
+  kgit:
+    build:
+      context: ./kgit
+    container_name: kotlinhub-kgit
+    environment:
+      BASE_REPOSITORIES_PATH: ${BASE_REPOSITORIES_PATH}
+      KGIT_PORT: ${KGIT_PORT}
+      KGIT_HOST: ${KGIT_HOST}
+      KGIT_SERVLET_PATH: ${KGIT_SERVLET_PATH}
+    ports:
+      - 8081:${KGIT_PORT}
+    depends_on:
+      db-main:
+        condition: service_healthy
+    volumes:
+      - ~/kotlinhub/repositories/:${BASE_REPOSITORIES_PATH}
+    networks:
+      - kotlinhub
+  db-main:
+    image: postgres:15.0-alpine
+    container_name: kotlinhub-db
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?No password for db-main was set}
+      POSTGRES_DB: ${POSTGRES_DB:?No db name for db-main was set}
+    ports:
+      - 54332:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+    networks:
+      - kotlinhub
+  nginx:
+    image: nginx:1.23.2
+    container_name: kotlinhub-nginx
+    volumes:
+      - ./reverse-proxy/templates:/etc/nginx/templates
+      - ./reverse-proxy/templates/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 80:80
+    environment:
+      - NGINX_PORT=80
+    depends_on:
+      - app
+      - kgit
+    networks:
+      - kotlinhub
+
+networks:
+  kotlinhub:
