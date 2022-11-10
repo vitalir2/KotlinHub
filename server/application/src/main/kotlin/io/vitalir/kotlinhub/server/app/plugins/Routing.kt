@@ -30,7 +30,7 @@ fun Application.configureRouting(appGraph: AppGraph) {
         )
         gitRoutes(
             getRepositoryUseCase = appGraph.repository.getRepositoryUseCase,
-            basicAuthManager = appGraph.auth.basicAuthManager,
+            authManager = appGraph.auth.authManager,
         )
     }
 }

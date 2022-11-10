@@ -1,6 +1,6 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.di
 
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.BasicAuthManager
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthManager
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.logging.Logger
 import io.vitalir.kotlinhub.server.app.repository.domain.usecase.CreateRepositoryUseCase
@@ -32,7 +32,7 @@ class AppGraph(
     )
 
     class AuthGraph(
-        val basicAuthManager: BasicAuthManager,
+        val authManager: AuthManager,
         val passwordManager: PasswordManager,
     )
 }

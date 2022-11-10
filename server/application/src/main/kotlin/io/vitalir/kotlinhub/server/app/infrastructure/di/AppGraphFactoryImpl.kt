@@ -2,7 +2,7 @@ package io.vitalir.kotlinhub.server.app.infrastructure.di
 
 import io.ktor.server.application.*
 import io.vitalir.kotlinhub.server.app.common.data.JavaLocalDateTimeProvider
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.BasicAuthManagerImpl
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.Base64AuthManager
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.database.createMainSqlDelightDatabase
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
@@ -89,7 +89,7 @@ internal class AppGraphFactoryImpl(
     private fun createAuthGraph(): AppGraph.AuthGraph {
         val passwordManager = BCryptPasswordManager()
         return AppGraph.AuthGraph(
-            basicAuthManager = BasicAuthManagerImpl(
+            authManager = Base64AuthManager(
                 base64Manager = KtorBase64Manager(),
                 passwordManager = passwordManager,
             ),
