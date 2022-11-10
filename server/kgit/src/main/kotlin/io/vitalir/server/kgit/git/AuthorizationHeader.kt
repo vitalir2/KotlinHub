@@ -1,7 +1,8 @@
-package io.vitalir.kotlinhub.server.app.infrastructure.http
+package io.vitalir.server.kgit.git
 
 data class AuthorizationHeader(
     val regex: Regex,
+    val name: String,
 ) {
 
     fun valueFromHeader(headerValue: String): String? {
@@ -9,6 +10,9 @@ data class AuthorizationHeader(
     }
 
     companion object {
-        val BASIC = AuthorizationHeader(regex = Regex("Basic (.+)"))
+        val BASIC = AuthorizationHeader(
+            regex = Regex("Basic (.+)"),
+            name = "Basic",
+        )
     }
 }

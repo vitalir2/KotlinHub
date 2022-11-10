@@ -44,6 +44,7 @@ internal class KGitAuthFilter(
         val (username, repositoryName) = repositoryPath.split("/")
         logDebug { "Headers: ${request.headerNames.toList().joinToString(separator = ";")}" }
         val baseAuthCredentials = request.getHeader("Authorization")
+            ?.let(AuthorizationHeader.BASIC::valueFromHeader)
 
         logDebug { """
                 Request to check access for repository: repository=$repositoryName, username=$username, credentials=$baseAuthCredentials
@@ -59,15 +60,19 @@ internal class KGitAuthFilter(
         if (hasAccess) {
             chain?.doFilter(request, response)
         } else {
-            response.apply {
-                setHeader("WWW-Authenticate", "Basic")
-            }.sendError(401)
+            requestCredentialsInput(response)
         }
     }
 
     private fun parseRepositoryPathFromRequestPathInfo(pathInfo: String?): String? {
         return pathInfo
             ?.removeWhile { char -> char == '/' }
+    }
+
+    private fun requestCredentialsInput(response: HttpServletResponse) {
+        response.apply {
+            setHeader("WWW-Authenticate", AuthorizationHeader.BASIC.name)
+        }.sendError(401)
     }
 
     private inline fun logDebug(message: () -> String) {

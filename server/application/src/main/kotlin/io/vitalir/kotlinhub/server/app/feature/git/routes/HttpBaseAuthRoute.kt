@@ -53,6 +53,7 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleGetRepositoryRe
     }
 }
 
+// TODO pass logger here
 private suspend fun PipelineContext<Unit, ApplicationCall>.handleRepositoryFromResult(
     request: GitAuthRequest,
     repository: Repository,
@@ -64,10 +65,11 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleRepositoryFromR
             call.respond(HttpStatusCode.OK)
         }
         Repository.AccessMode.PRIVATE -> {
-            application.log.info("Credentials APP: ${request.credentials}")
-            val isCredentialsValid = basicAuthManager.checkCredentials(
+            val credentials = request.credentials
+            application.log.debug("Credentials APP: $credentials")
+            val isCredentialsValid = credentials != null && basicAuthManager.checkCredentials(
                 user = repository.owner,
-                headerValue = request.credentials,
+                credentialsInBase64 = credentials,
             )
             val resultCode = if (isCredentialsValid) {
                 HttpStatusCode.OK
