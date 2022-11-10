@@ -14,6 +14,7 @@ services:
       JWT_REALM: ${JWT_REALM:?No jwt realm was set}
       IS_DEVELOPMENT: ${IS_DEVELOPMENT}
       ROUTE_TRACING: ${ROUTE_TRACING}
+      BASE_REPOSITORIES_PATH: ${BASE_REPOSITORIES_PATH}
     depends_on:
       db-main:
         condition: service_healthy
@@ -25,13 +26,18 @@ services:
     build:
       context: ./kgit
     container_name: kotlinhub-kgit
+    environment:
+      BASE_REPOSITORIES_PATH: ${BASE_REPOSITORIES_PATH}
+      KGIT_PORT: ${KGIT_PORT}
+      KGIT_HOST: ${KGIT_HOST}
+      KGIT_SERVLET_PATH: ${KGIT_SERVLET_PATH}
     ports:
-      - 8081:8081
+      - 8081:${KGIT_PORT}
     depends_on:
       db-main:
         condition: service_healthy
     volumes:
-      - ~/kotlinhub/repositories/:/var/kotlinhub/src/repositories/
+      - ~/kotlinhub/repositories/:${BASE_REPOSITORIES_PATH}
     networks:
       - kotlinhub
   db-main:

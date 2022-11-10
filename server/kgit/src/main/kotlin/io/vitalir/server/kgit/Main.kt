@@ -1,16 +1,8 @@
 package io.vitalir.server.kgit
 
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
-import io.vitalir.server.kgit.client.KtorHttpClient
+import ch.qos.logback.classic.Logger
 import io.vitalir.server.kgit.di.ApplicationGraph
-import io.vitalir.server.kgit.git.GitAuthManagerImpl
-import io.vitalir.server.kgit.git.GitConstants
-import io.vitalir.server.kgit.git.KGitAuthFilter
+import io.vitalir.server.kgit.di.ApplicationGraphFactoryImpl
 import javax.servlet.http.HttpServletRequest
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
@@ -20,12 +12,16 @@ import org.eclipse.jgit.http.server.GitServlet
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.transport.resolver.FileResolver
 import org.eclipse.jgit.transport.resolver.RepositoryResolver
+import org.slf4j.LoggerFactory
 import kotlin.io.path.Path
 
 
 fun main() = runServer {
+    val logger = LoggerFactory.getLogger(Logger::class.java)
     val serverConfig = readServerConfig()
-    val appGraph = createApplicationGraph(serverConfig)
+    logger.debug("Read server config=$serverConfig")
+    val appGraphFactory = ApplicationGraphFactoryImpl(serverConfig)
+    val appGraph = appGraphFactory.create()
 
     val connector = ServerConnector(this).withConfig(serverConfig.network)
     addConnector(connector)
@@ -38,45 +34,15 @@ private fun runServer(block: Server.() -> Unit) {
     Server().apply(block).start()
 }
 
-// TODO read for real
 private fun readServerConfig(): ServerConfig {
+    val environment = System.getenv()
     return ServerConfig(
         network = ServerConfig.Network(
-            host = "0.0.0.0",
-            port = 8081,
-            servletPath = "/git/*",
+            host = environment["KGIT_HOST"] ?: "0.0.0.0",
+            port = environment["KGIT_PORT"]?.toInt() ?: 8081,
+            servletPath = environment["KGIT_BASE_PATH"] ?: "/git/*",
         ),
-        rootDirAbsolute = GitConstants.REPOSITORIES_PATH,
-    )
-}
-
-private fun createApplicationGraph(serverConfig: ServerConfig): ApplicationGraph {
-    val ktorHttpClient = HttpClient(CIO) {
-        defaultRequest {
-            url {
-                protocol = URLProtocol.HTTP
-            }
-        }
-        install(ContentNegotiation) {
-            json()
-        }
-    }
-    val httpClient = KtorHttpClient(ktorHttpClient)
-    val gitAuthManager = GitAuthManagerImpl(httpClient)
-    val repositoryResolver = KGitRepositoryResolver(serverConfig)
-    return ApplicationGraph(
-        serverConfig = serverConfig,
-        httpClient = httpClient,
-        gitGraph = ApplicationGraph.Git(
-            gitAuthManager = gitAuthManager,
-            repositoryResolver = repositoryResolver,
-            receivePackFilters = listOf(
-                KGitAuthFilter(gitAuthManager),
-            ),
-            uploadPackFilters = listOf(
-                KGitAuthFilter(gitAuthManager),
-            ),
-        )
+        rootDirAbsolute = environment["BASE_REPOSITORIES_PATH"].orEmpty(),
     )
 }
 

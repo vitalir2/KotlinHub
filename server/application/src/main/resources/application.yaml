@@ -18,5 +18,8 @@ database:
   databaseName: $POSTGRES_DATABASE_NAME
   serverName: $POSTGRES_SERVER_NAME
 
+repository:
+  baseRepositoriesPath: $BASE_REPOSITORIES_PATH
+
 debug:
   routeTracing: $ROUTE_TRACING

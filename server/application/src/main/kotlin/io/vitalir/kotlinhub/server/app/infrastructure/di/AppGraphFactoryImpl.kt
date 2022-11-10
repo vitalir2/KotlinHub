@@ -37,6 +37,7 @@ internal class AppGraphFactoryImpl(
             repository = createRepositoryGraph(
                 userPersistence = userGraph.userPersistence,
                 database = database,
+                repositoryConfig = appConfig.repository,
             ),
             auth = authGraph,
             logger = logger,
@@ -66,6 +67,7 @@ internal class AppGraphFactoryImpl(
     }
 
     private fun createRepositoryGraph(
+        repositoryConfig: AppConfig.Repository,
         userPersistence: UserPersistence,
         database: MainSqlDelight,
     ): AppGraph.RepositoryGraph {
@@ -77,7 +79,9 @@ internal class AppGraphFactoryImpl(
                 userPersistence = userPersistence,
                 repositoryPersistence = repositoryPersistence,
                 localDateTimeProvider = JavaLocalDateTimeProvider(),
-                gitManager = GitManagerImpl(),
+                gitManager = GitManagerImpl(
+                    repositoryConfig = repositoryConfig,
+                ),
             ),
             getRepositoryUseCase = GetRepositoryUseCaseImpl(
                 userPersistence = userPersistence,

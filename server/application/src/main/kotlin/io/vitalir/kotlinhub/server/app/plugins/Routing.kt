@@ -13,7 +13,9 @@ fun Application.configureRouting(appGraph: AppGraph) {
     val debugConfig = appGraph.appConfig.debug
 
     install(CallLogging)
-    install(GitPlugin)
+    install(GitPlugin) {
+        baseRepositoriesPath = appGraph.appConfig.repository.baseRepositoriesPath
+    }
     install(IgnoreTrailingSlash)
 
     routing {
