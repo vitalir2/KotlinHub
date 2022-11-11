@@ -2,6 +2,15 @@ package io.vitalir.kotlinhub.server.app.infrastructure.di
 
 import io.ktor.server.application.*
 import io.vitalir.kotlinhub.server.app.common.data.JavaLocalDateTimeProvider
+import io.vitalir.kotlinhub.server.app.feature.repository.data.SqlDelightRepositoryPersistence
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.BCryptPasswordManager
+import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
+import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.GetUserByLoginUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.LoginUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.RegisterUserUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.user.domain.validation.IdentifierValidationRule
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.Base64AuthManager
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.database.createMainSqlDelightDatabase
@@ -9,16 +18,6 @@ import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSq
 import io.vitalir.kotlinhub.server.app.infrastructure.encoding.impl.KtorBase64Manager
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManagerImpl
 import io.vitalir.kotlinhub.server.app.infrastructure.logging.impl.KtorLogger
-import io.vitalir.kotlinhub.server.app.repository.data.SqlDelightRepositoryPersistence
-import io.vitalir.kotlinhub.server.app.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
-import io.vitalir.kotlinhub.server.app.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
-import io.vitalir.kotlinhub.server.app.user.data.BCryptPasswordManager
-import io.vitalir.kotlinhub.server.app.user.data.SqlDelightUserPersistence
-import io.vitalir.kotlinhub.server.app.user.domain.persistence.UserPersistence
-import io.vitalir.kotlinhub.server.app.user.domain.usecase.impl.GetUserByLoginUseCaseImpl
-import io.vitalir.kotlinhub.server.app.user.domain.usecase.impl.LoginUseCaseImpl
-import io.vitalir.kotlinhub.server.app.user.domain.usecase.impl.RegisterUserUseCaseImpl
-import io.vitalir.kotlinhub.server.app.user.domain.validation.IdentifierValidationRule
 
 internal class AppGraphFactoryImpl(
     private val application: Application,
@@ -48,7 +47,8 @@ internal class AppGraphFactoryImpl(
         database: MainSqlDelight,
         authGraph: AppGraph.AuthGraph,
     ): AppGraph.UserGraph {
-        val userPersistence: UserPersistence = SqlDelightUserPersistence(database)
+        val userPersistence: UserPersistence =
+            io.vitalir.kotlinhub.server.app.feature.user.data.SqlDelightUserPersistence(database)
         return AppGraph.UserGraph(
             userPersistence = userPersistence,
             loginUseCase = LoginUseCaseImpl(

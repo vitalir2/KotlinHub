@@ -6,9 +6,9 @@ import io.ktor.server.netty.*
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraphFactory
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraphFactoryImpl
-import io.vitalir.kotlinhub.server.app.plugins.configureRouting
-import io.vitalir.kotlinhub.server.app.plugins.configureSecurity
-import io.vitalir.kotlinhub.server.app.plugins.configureSerialization
+import io.vitalir.kotlinhub.server.app.infrastructure.routing.configureRouting
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.configureAuth
+import io.vitalir.kotlinhub.server.app.infrastructure.serialization.configureSerialization
 
 fun main(args: Array<String>) = EngineMain.main(args)
 
@@ -19,7 +19,7 @@ fun Application.mainModule() {
     val appGraphFactory: AppGraphFactory = AppGraphFactoryImpl(this)
     val applicationGraph = appGraphFactory.create(appConfig)
 
-    configureSecurity(jwtConfig = appConfig.jwt)
+    configureAuth(jwtConfig = appConfig.jwt)
     configureSerialization()
     configureRouting(applicationGraph)
 }
