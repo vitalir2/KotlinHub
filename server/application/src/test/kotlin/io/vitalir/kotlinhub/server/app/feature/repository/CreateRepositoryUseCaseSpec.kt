@@ -25,6 +25,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateR
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
 import java.time.LocalDateTime
@@ -72,6 +73,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         val someUserId = 123
+        val someUserIdIdentifier = UserIdentifier.Id(someUserId)
         val repositoryOwner = User(
             id = someUserId,
             login = "validlogin",
@@ -83,8 +85,8 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
         should("return success if data is valid") {
             val nowDateTime = dateTimeProvider.next()
 
-            coEvery { userPersistence.isUserExists(someUserId) } returns true
-            coEvery { userPersistence.getUser(someUserId) } returns repositoryOwner
+            coEvery { userPersistence.isUserExists(someUserIdIdentifier) } returns true
+            coEvery { userPersistence.getUser(someUserIdIdentifier) } returns repositoryOwner
             coEvery { repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName) } returns false
             every { localDateTimeProvider.now() } returns nowDateTime
 
@@ -112,7 +114,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
         should("return error if user does not exist") {
             val notExistingUserId = userIdProvider.next()
-            coEvery { userPersistence.isUserExists(notExistingUserId) } returns false
+            coEvery { userPersistence.isUserExists(UserIdentifier.Id(notExistingUserId)) } returns false
             coEvery { repositoryPersistence.isRepositoryExists(notExistingUserId, someRepositoryName) } returns false
 
             val result = createRepositoryUseCase(
@@ -127,7 +129,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         should("return error if repository with this name already exists") {
-            coEvery { userPersistence.isUserExists(someUserId) } returns true
+            coEvery { userPersistence.isUserExists(UserIdentifier.Id(someUserId)) } returns true
             coEvery { repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName) } returns true
 
             val result = createRepositoryUseCase(

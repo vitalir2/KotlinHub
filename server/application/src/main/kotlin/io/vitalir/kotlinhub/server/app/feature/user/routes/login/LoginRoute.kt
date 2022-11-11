@@ -14,6 +14,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.LoginUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.routes.HOUR_MS
 import io.vitalir.kotlinhub.server.app.feature.user.routes.getErrorResponseData
@@ -29,7 +30,7 @@ internal fun Route.loginRoute(
         val loginRequest = call.receive<LoginRequest>()
         val loginResult = loginUseCase(
             UserCredentials(
-                identifier = UserCredentials.Identifier.Login(loginRequest.login),
+                identifier = UserIdentifier.Login(loginRequest.login),
                 password = loginRequest.password,
             )
         )

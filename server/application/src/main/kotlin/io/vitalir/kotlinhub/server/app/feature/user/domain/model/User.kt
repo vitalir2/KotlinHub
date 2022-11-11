@@ -33,10 +33,16 @@ data class User(
             val email: String? = null,
         )
 
-        private val UserCredentials.Identifier.userIdentifiers: UserIdentifiers
+        private val UserIdentifier.userIdentifiers: UserIdentifiers
             get() = when (this) {
-                is UserCredentials.Identifier.Email -> UserIdentifiers(login = this.value, email = this.value)
-                is UserCredentials.Identifier.Login -> UserIdentifiers(login = this.value)
+                is UserIdentifier.Email -> UserIdentifiers(
+                    login = value,
+                    email = value,
+                )
+                is UserIdentifier.Id -> throw IllegalStateException("Cannot create login and email from user id which does not exist")
+                is UserIdentifier.Login -> UserIdentifiers(
+                    login = value,
+                )
             }
     }
 }

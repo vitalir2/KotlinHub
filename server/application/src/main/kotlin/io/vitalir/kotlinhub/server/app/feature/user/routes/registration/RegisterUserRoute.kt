@@ -10,6 +10,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.RegisterUserUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.routes.getErrorResponseData
 
@@ -18,7 +19,7 @@ internal fun Route.registerUserRoute(registerUserUseCase: RegisterUserUseCase) {
         val registerUserRequest = call.receive<RegisterUserRequest>()
         val registrationResult = registerUserUseCase(
             UserCredentials(
-                identifier = UserCredentials.Identifier.Login(registerUserRequest.login),
+                identifier = UserIdentifier.Login(registerUserRequest.login),
                 password = registerUserRequest.password,
             )
         )

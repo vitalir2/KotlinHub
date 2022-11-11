@@ -3,12 +3,10 @@ package io.vitalir.kotlinhub.server.app.feature.user.data
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import arrow.core.rightIfNotNull
 import io.vitalir.kotlinhub.server.app.feature.user.data.extensions.toDomainModel
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.CUsersQueries
@@ -20,24 +18,18 @@ internal class SqlDelightUserPersistence(
     private val queries: CUsersQueries
         get() = sqlDelightDatabase.cUsersQueries
 
-    override suspend fun getUser(identifier: UserCredentials.Identifier): Either<UserError.InvalidCredentials, User> {
+    override suspend fun getUser(identifier: UserIdentifier): User? {
         return when (identifier) {
-            is UserCredentials.Identifier.Email -> queries.getByEmail(identifier.value)
-            is UserCredentials.Identifier.Login -> queries.getByLogin(identifier.value)
+            is UserIdentifier.Email -> queries.getByEmail(identifier.value)
+            is UserIdentifier.Id -> queries.getById(identifier.value)
+            is UserIdentifier.Login -> queries.getByLogin(identifier.value)
         }
-            .executeAsOneOrNull()
-            ?.toDomainModel()
-            .rightIfNotNull { UserError.InvalidCredentials }
-    }
-
-    override suspend fun getUser(userId: UserId): User? {
-        return queries.getById(userId)
             .executeAsOneOrNull()
             ?.toDomainModel()
     }
 
     override suspend fun addUser(user: User): Either<UserError.UserAlreadyExists, Unit> {
-        return if (isUserExists(UserCredentials.Identifier.Login(user.login))) {
+        return if (isUserExists(UserIdentifier.Login(user.login))) {
             UserError.UserAlreadyExists.left()
         } else {
             queries.insert(
@@ -48,12 +40,7 @@ internal class SqlDelightUserPersistence(
         }
     }
 
-    override suspend fun isUserExists(identifier: UserCredentials.Identifier): Boolean {
-        val existingUser = getUser(identifier).orNull()
-        return existingUser != null
-    }
-
-    override suspend fun isUserExists(userId: UserId): Boolean {
-        return getUser(userId) != null
+    override suspend fun isUserExists(identifier: UserIdentifier): Boolean {
+        return getUser(identifier) != null
     }
 }

@@ -7,7 +7,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.Cr
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.BCryptPasswordManager
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
-import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.GetUserByLoginUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.GetUserByIdentifierUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.LoginUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.RegisterUserUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.validation.IdentifierValidationRule
@@ -60,7 +60,7 @@ internal class AppGraphFactoryImpl(
                 userPersistence = userPersistence,
                 passwordManager = authGraph.passwordManager,
             ),
-            getUserByLoginUseCase = GetUserByLoginUseCaseImpl(
+            getUserByIdentifierUseCase = GetUserByIdentifierUseCaseImpl(
                 userPersistence = userPersistence,
             ),
         )

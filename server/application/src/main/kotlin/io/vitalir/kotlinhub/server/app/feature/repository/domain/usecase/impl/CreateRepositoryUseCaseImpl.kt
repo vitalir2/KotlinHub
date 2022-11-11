@@ -10,6 +10,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repositor
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
 
@@ -22,7 +23,7 @@ internal class CreateRepositoryUseCaseImpl(
 
     override suspend fun invoke(initData: CreateRepositoryData): Either<RepositoryError.Create, Uri> {
         return when {
-            userPersistence.isUserExists(initData.ownerId).not() ->
+            userPersistence.isUserExists(UserIdentifier.Id(initData.ownerId)).not() ->
                 RepositoryError.Create.InvalidUserId.left()
             repositoryPersistence.isRepositoryExists(initData.ownerId, initData.name) ->
                 RepositoryError.Create.RepositoryAlreadyExists.left()
@@ -32,7 +33,7 @@ internal class CreateRepositoryUseCaseImpl(
 
     private suspend fun createRepositoryAfterValidation(initData: CreateRepositoryData): Uri {
         val repository = Repository.fromInitData(
-            owner = userPersistence.getUser(initData.ownerId)!!,
+            owner = userPersistence.getUser(UserIdentifier.Id(initData.ownerId))!!,
             initData = initData,
             localDateTimeProvider = localDateTimeProvider,
         )

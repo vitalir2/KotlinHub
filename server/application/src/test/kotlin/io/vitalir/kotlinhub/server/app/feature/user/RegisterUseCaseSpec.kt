@@ -13,6 +13,7 @@ import io.mockk.verify
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.PasswordManager
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.RegisterUserUseCase
@@ -22,7 +23,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.validation.UserValida
 
 class RegisterUseCaseSpec : ShouldSpec() {
 
-    private lateinit var spyIdentifierValidationRule: UserValidationRule<UserCredentials.Identifier>
+    private lateinit var spyIdentifierValidationRule: UserValidationRule<UserIdentifier>
 
     private lateinit var spyUserPersistence: UserPersistence
 
@@ -33,7 +34,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
     init {
         val anyUid = 123
         val anyString = "any"
-        val validEmail = UserCredentials.Identifier.Email("gm@gmail.com")
+        val validEmail = UserIdentifier.Email("gm@gmail.com")
         val validPassword = "validpassword"
 
         beforeEach {
@@ -48,7 +49,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
         }
 
         should("call identifier validation rule") {
-            val email = UserCredentials.Identifier.Email(anyString)
+            val email = UserIdentifier.Email(anyString)
             val credentials = UserCredentials(
                 identifier = email,
                 password = anyString,

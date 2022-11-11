@@ -18,7 +18,7 @@ internal fun Routing.userRoutes(
     route("users/") {
         registerUserRoute(userGraph.registerUserUseCase)
         loginRoute(jwtConfig, userGraph.loginUseCase)
-        getUserByLoginRoute(userGraph.getUserByLoginUseCase)
+        getUserByLoginRoute(userGraph.getUserByIdentifierUseCase)
     }
 }
 
