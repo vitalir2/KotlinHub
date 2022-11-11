@@ -40,6 +40,19 @@ internal class SqlDelightUserPersistence(
         }
     }
 
+    override suspend fun updateUser(user: User): Either<UserError.InvalidCredentials, Unit> {
+        return if (isUserExists(user.identifier).not()) {
+            UserError.InvalidCredentials.left()
+        } else {
+            queries.update(
+                userId = user.id,
+                login = user.login,
+                email = user.email,
+            )
+            Unit.right()
+        }
+    }
+
     override suspend fun isUserExists(identifier: UserIdentifier): Boolean {
         return getUser(identifier) != null
     }
