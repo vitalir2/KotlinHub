@@ -1,4 +1,4 @@
-package io.vitalir.server.kgit.client
+package io.vitalir.server.kgit.infrastructure.client
 
 /**
  * An annotation implying that the annotated method runs on a worker thread

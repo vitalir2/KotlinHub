@@ -1,4 +1,4 @@
-package io.vitalir.server.kgit
+package io.vitalir.server.kgit.infrastructure
 
 data class ServerConfig(
     val network: Network,

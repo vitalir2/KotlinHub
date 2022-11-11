@@ -1,4 +1,4 @@
-package io.vitalir.server.kgit.git
+package io.vitalir.server.kgit.infrastructure.git
 
 data class AuthorizationHeader(
     val regex: Regex,

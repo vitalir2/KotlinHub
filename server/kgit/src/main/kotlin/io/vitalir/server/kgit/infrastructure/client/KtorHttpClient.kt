@@ -1,4 +1,4 @@
-package io.vitalir.server.kgit.client
+package io.vitalir.server.kgit.infrastructure.client
 
 import ch.qos.logback.classic.Logger
 import io.ktor.client.*

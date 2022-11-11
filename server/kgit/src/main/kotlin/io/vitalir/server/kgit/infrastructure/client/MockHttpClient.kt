@@ -1,4 +1,4 @@
-package io.vitalir.server.kgit.client
+package io.vitalir.server.kgit.infrastructure.client
 
 internal class MockHttpClient(
     private val onPost: (uri: Uri, body: Any) -> Response,

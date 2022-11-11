@@ -1,9 +1,9 @@
-package io.vitalir.server.kgit.git
+package io.vitalir.server.kgit.infrastructure.git
 
 import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
-import io.vitalir.server.kgit.client.KGitHttpClient
-import io.vitalir.server.kgit.client.Response
-import io.vitalir.server.kgit.client.Uri
+import io.vitalir.server.kgit.infrastructure.client.KGitHttpClient
+import io.vitalir.server.kgit.infrastructure.client.Response
+import io.vitalir.server.kgit.infrastructure.client.Uri
 
 internal class GitAuthManagerImpl(
     private val httpClient: KGitHttpClient,

@@ -1,4 +1,4 @@
-package io.vitalir.server.kgit.di
+package io.vitalir.server.kgit.infrastructure.di
 
 internal interface ApplicationGraphFactory {
 

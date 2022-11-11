@@ -1,8 +1,9 @@
 package io.vitalir.server.kgit
 
 import ch.qos.logback.classic.Logger
-import io.vitalir.server.kgit.di.ApplicationGraph
-import io.vitalir.server.kgit.di.ApplicationGraphFactoryImpl
+import io.vitalir.server.kgit.infrastructure.di.ApplicationGraph
+import io.vitalir.server.kgit.infrastructure.di.ApplicationGraphFactoryImpl
+import io.vitalir.server.kgit.infrastructure.ServerConfig
 import javax.servlet.http.HttpServletRequest
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector

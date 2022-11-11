@@ -1,4 +1,4 @@
-package io.vitalir.server.kgit.client
+package io.vitalir.server.kgit.infrastructure.client
 
 data class Response(
     val code: HttpCode,
@@ -11,7 +11,7 @@ data class Response(
         }
 
         companion object {
-            fun fromNumber(code: Int): HttpCode = HttpCode.Valid.values()
+            fun fromNumber(code: Int): HttpCode = Valid.values()
                 .firstOrNull { it.number == code }
                 ?: Unknown
         }

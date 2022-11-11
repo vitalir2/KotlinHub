@@ -1,6 +1,6 @@
-package io.vitalir.server.kgit.git
+package io.vitalir.server.kgit.infrastructure.git
 
-import io.vitalir.server.kgit.client.WorkerThread
+import io.vitalir.server.kgit.infrastructure.client.WorkerThread
 
 interface GitAuthManager {
 

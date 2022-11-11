@@ -1,4 +1,4 @@
-package io.vitalir.server.kgit.di
+package io.vitalir.server.kgit.infrastructure.di
 
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -7,10 +7,10 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.vitalir.server.kgit.KGitRepositoryResolver
-import io.vitalir.server.kgit.ServerConfig
-import io.vitalir.server.kgit.client.KtorHttpClient
-import io.vitalir.server.kgit.git.GitAuthManagerImpl
-import io.vitalir.server.kgit.git.KGitAuthFilter
+import io.vitalir.server.kgit.infrastructure.ServerConfig
+import io.vitalir.server.kgit.infrastructure.client.KtorHttpClient
+import io.vitalir.server.kgit.infrastructure.git.GitAuthManagerImpl
+import io.vitalir.server.kgit.infrastructure.git.KGitAuthFilter
 
 internal class ApplicationGraphFactoryImpl(
     private val serverConfig: ServerConfig,

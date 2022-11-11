@@ -1,7 +1,7 @@
-package io.vitalir.server.kgit.git
+package io.vitalir.server.kgit.infrastructure.git
 
 import ch.qos.logback.classic.Logger
-import io.vitalir.server.kgit.client.WorkerThread
+import io.vitalir.server.kgit.infrastructure.client.WorkerThread
 import javax.servlet.Filter
 import javax.servlet.FilterChain
 import javax.servlet.ServletRequest

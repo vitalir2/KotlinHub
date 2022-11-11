@@ -1,8 +1,8 @@
-package io.vitalir.server.kgit.di
+package io.vitalir.server.kgit.infrastructure.di
 
-import io.vitalir.server.kgit.ServerConfig
-import io.vitalir.server.kgit.client.KGitHttpClient
-import io.vitalir.server.kgit.git.GitAuthManager
+import io.vitalir.server.kgit.infrastructure.ServerConfig
+import io.vitalir.server.kgit.infrastructure.client.KGitHttpClient
+import io.vitalir.server.kgit.infrastructure.git.GitAuthManager
 import javax.servlet.Filter
 import javax.servlet.http.HttpServletRequest
 import org.eclipse.jgit.transport.resolver.RepositoryResolver
