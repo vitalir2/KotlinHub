@@ -1,7 +1,7 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.git
 
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
-import io.vitalir.kotlinhub.server.app.repository.domain.model.Repository
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import java.io.File
 import org.eclipse.jgit.lib.RepositoryBuilder
 import kotlin.io.path.Path

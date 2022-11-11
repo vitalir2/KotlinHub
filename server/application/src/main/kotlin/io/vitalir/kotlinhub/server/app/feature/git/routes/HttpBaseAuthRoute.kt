@@ -10,10 +10,10 @@ import io.ktor.util.pipeline.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthManager
-import io.vitalir.kotlinhub.server.app.repository.domain.model.Repository
-import io.vitalir.kotlinhub.server.app.repository.domain.model.RepositoryError
-import io.vitalir.kotlinhub.server.app.repository.domain.usecase.GetRepositoryResult
-import io.vitalir.kotlinhub.server.app.repository.domain.usecase.GetRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryResult
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
 import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
 
 internal fun Route.httpBaseAuth(
