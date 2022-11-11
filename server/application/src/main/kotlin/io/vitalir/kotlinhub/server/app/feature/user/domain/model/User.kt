@@ -1,7 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.user.domain.model
 
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
-import io.vitalir.kotlinhub.server.app.feature.user.domain.password.PasswordManager
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.PasswordManager
 
 data class User(
     val id: UserId,

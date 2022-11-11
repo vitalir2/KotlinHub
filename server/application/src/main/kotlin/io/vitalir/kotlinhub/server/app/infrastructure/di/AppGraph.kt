@@ -2,7 +2,7 @@ package io.vitalir.kotlinhub.server.app.infrastructure.di
 
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
-import io.vitalir.kotlinhub.server.app.feature.user.domain.password.PasswordManager
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.PasswordManager
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.GetUserByLoginUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.LoginUseCase

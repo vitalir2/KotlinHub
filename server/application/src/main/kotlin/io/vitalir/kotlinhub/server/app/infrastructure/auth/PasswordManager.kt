@@ -1,4 +1,4 @@
-package io.vitalir.kotlinhub.server.app.feature.user.domain.password
+package io.vitalir.kotlinhub.server.app.infrastructure.auth
 
 /**
  * Interface handling password management

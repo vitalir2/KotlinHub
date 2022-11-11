@@ -5,7 +5,7 @@ import io.vitalir.kotlinhub.server.app.common.data.JavaLocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.repository.data.SqlDelightRepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
-import io.vitalir.kotlinhub.server.app.feature.user.data.BCryptPasswordManager
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.BCryptPasswordManager
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.GetUserByLoginUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.LoginUseCaseImpl

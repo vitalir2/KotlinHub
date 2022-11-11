@@ -1,6 +1,6 @@
-package io.vitalir.kotlinhub.server.app.feature.user.data
+package io.vitalir.kotlinhub.server.app.infrastructure.auth.impl
 
-import io.vitalir.kotlinhub.server.app.feature.user.domain.password.PasswordManager
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.PasswordManager
 import org.mindrot.jbcrypt.BCrypt
 
 internal class BCryptPasswordManager : PasswordManager {

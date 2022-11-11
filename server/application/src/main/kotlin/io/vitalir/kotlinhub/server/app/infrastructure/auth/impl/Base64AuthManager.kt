@@ -1,7 +1,7 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.auth.impl
 
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
-import io.vitalir.kotlinhub.server.app.feature.user.domain.password.PasswordManager
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.PasswordManager
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthManager
 import io.vitalir.kotlinhub.server.app.infrastructure.encoding.Base64Manager
 
