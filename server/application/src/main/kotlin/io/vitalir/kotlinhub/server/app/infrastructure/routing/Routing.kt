@@ -1,4 +1,4 @@
-package io.vitalir.kotlinhub.server.app.plugins
+package io.vitalir.kotlinhub.server.app.infrastructure.routing
 
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callloging.*

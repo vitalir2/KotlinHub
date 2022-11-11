@@ -1,4 +1,4 @@
-package io.vitalir.kotlinhub.server.app.plugins
+package io.vitalir.kotlinhub.server.app.infrastructure.serialization
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*

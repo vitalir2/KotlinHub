@@ -1,4 +1,4 @@
-package io.vitalir.kotlinhub.server.app.plugins
+package io.vitalir.kotlinhub.server.app.infrastructure.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
@@ -10,10 +10,9 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.vitalir.kotlinhub.server.app.common.routes.AuthVariant
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 
-internal fun Application.configureSecurity(
+internal fun Application.configureAuth(
     jwtConfig: AppConfig.Jwt,
 ) {
     authentication {
