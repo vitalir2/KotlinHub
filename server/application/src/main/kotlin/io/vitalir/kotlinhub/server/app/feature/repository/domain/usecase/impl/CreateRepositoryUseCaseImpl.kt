@@ -12,8 +12,6 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateR
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
-import io.vitalir.kotlinhub.shared.common.network.Path
-import io.vitalir.kotlinhub.shared.common.network.Scheme
 import io.vitalir.kotlinhub.shared.common.network.Url
 
 internal class CreateRepositoryUseCaseImpl(
@@ -42,14 +40,6 @@ internal class CreateRepositoryUseCaseImpl(
         repositoryPersistence.addRepository(repository)
         gitManager.initRepository(repository)
 
-        val gitPathToRepository = Path(
-            repository.owner.username,
-            "${repository.name}.git",
-        )
-        return Url(
-            scheme = Scheme.HTTP,
-            host = "localhost", // TODO replace by config value (base host)
-            path = gitPathToRepository,
-        )
+        return repository.createResourceUrl()
     }
 }
