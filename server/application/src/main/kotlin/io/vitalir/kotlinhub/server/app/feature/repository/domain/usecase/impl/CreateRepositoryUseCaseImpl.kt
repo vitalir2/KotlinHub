@@ -24,9 +24,9 @@ internal class CreateRepositoryUseCaseImpl(
     override suspend fun invoke(initData: CreateRepositoryData): CreateRepositoryResult {
         return when {
             userPersistence.isUserExists(UserIdentifier.Id(initData.ownerId)).not() ->
-                RepositoryError.Create.InvalidUserId.left()
+                RepositoryError.Create.InvalidUserId(initData.ownerId).left()
             repositoryPersistence.isRepositoryExists(initData.ownerId, initData.name) ->
-                RepositoryError.Create.RepositoryAlreadyExists.left()
+                RepositoryError.Create.RepositoryAlreadyExists(initData.ownerId, initData.name).left()
             else -> createRepositoryAfterValidation(initData).right()
         }
     }
@@ -39,7 +39,6 @@ internal class CreateRepositoryUseCaseImpl(
         )
         repositoryPersistence.addRepository(repository)
         gitManager.initRepository(repository)
-
         return repository.createResourceUrl()
     }
 }

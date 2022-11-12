@@ -64,7 +64,7 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
 
             val result = getRepositoryUseCase(username, repositoryName)
 
-            result shouldBeLeft RepositoryError.Get.InvalidUserLogin
+            result shouldBeLeft RepositoryError.Get.InvalidUsername(username)
         }
 
         should("return error if repository does not exist") {
@@ -73,7 +73,7 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
 
             val result = getRepositoryUseCase(username, repositoryName)
 
-            result shouldBeLeft RepositoryError.Get.RepositoryDoesNotExist
+            result shouldBeLeft RepositoryError.Get.RepositoryDoesNotExist(username, repositoryName)
         }
     }
 }

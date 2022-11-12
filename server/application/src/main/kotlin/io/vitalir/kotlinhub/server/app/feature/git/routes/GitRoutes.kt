@@ -1,18 +1,17 @@
 package io.vitalir.kotlinhub.server.app.feature.git.routes
 
 import io.ktor.server.routing.*
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthManager
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 
 
 internal fun Routing.gitRoutes(
-    getRepositoryUseCase: GetRepositoryUseCase,
-    authManager: AuthManager,
+    appGraph: AppGraph,
 ) {
     route("git/") {
         httpBaseAuth(
-            getRepositoryUseCase = getRepositoryUseCase,
-            authManager = authManager,
+            getRepositoryUseCase = appGraph.repository.getRepositoryUseCase,
+            authManager = appGraph.auth.authManager,
+            logger = appGraph.logger,
         )
     }
 }

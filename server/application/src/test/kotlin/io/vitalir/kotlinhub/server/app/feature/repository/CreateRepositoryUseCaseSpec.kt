@@ -124,7 +124,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 )
             )
 
-            result shouldBeLeft RepositoryError.Create.InvalidUserId
+            result shouldBeLeft RepositoryError.Create.InvalidUserId(notExistingUserId)
         }
 
         should("return error if repository with this name already exists") {
@@ -139,7 +139,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 )
             )
 
-            result shouldBeLeft RepositoryError.Create.RepositoryAlreadyExists
+            result shouldBeLeft RepositoryError.Create.RepositoryAlreadyExists(someUserId, someRepositoryName)
         }
     }
 }

@@ -62,7 +62,7 @@ private fun RepositoryError.Create.toResponseData(): ResponseData {
         )
         is RepositoryError.Create.RepositoryAlreadyExists -> ResponseData.fromErrorData(
             code = HttpStatusCode.BadRequest,
-            errorMessage = "repository already exists",
+            errorMessage = "repository $repositoryName already exists",
         )
     }
 }
