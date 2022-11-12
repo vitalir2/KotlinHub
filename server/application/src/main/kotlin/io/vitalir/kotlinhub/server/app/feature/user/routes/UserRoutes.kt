@@ -8,6 +8,8 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.routes.getuser.getUserByLoginRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.login.loginRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.registration.registerUserRoute
+import io.vitalir.kotlinhub.server.app.feature.user.routes.removeuser.removeUser
+import io.vitalir.kotlinhub.server.app.feature.user.routes.updateuser.updateUser
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 
@@ -19,6 +21,8 @@ internal fun Routing.userRoutes(
         registerUserRoute(userGraph.registerUserUseCase)
         loginRoute(jwtConfig, userGraph.loginUseCase)
         getUserByLoginRoute(userGraph.getUserByIdentifierUseCase)
+        updateUser(userGraph.updateUserUseCase)
+        removeUser(userGraph.removeUserUseCase)
     }
 }
 
