@@ -29,11 +29,7 @@ private fun Route.createRepositoryRoute(
 ) {
     authenticate(AuthVariant.JWT.authName) {
         post {
-            val userId = call.userId ?: run {
-                call.respondWith(ResponseData.unauthorized())
-                return@post
-            }
-
+            val userId = call.userId
             val request = call.receive<CreateRepositoryRequest>()
             val createRepositoryData = CreateRepositoryData(
                 ownerId = userId,

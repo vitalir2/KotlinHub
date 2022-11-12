@@ -14,11 +14,7 @@ internal fun Route.removeUser(
     removeUserUseCase: RemoveUserUseCase,
 ) {
     delete {
-        val userId = call.userId ?: run {
-            call.respondWith(ResponseData.unauthorized())
-            return@delete
-        }
-
+        val userId = call.userId
         when(val result = removeUserUseCase(userId)) {
             is Either.Left -> {
                 val errorResponseData = result.value.toErrorResponseData()

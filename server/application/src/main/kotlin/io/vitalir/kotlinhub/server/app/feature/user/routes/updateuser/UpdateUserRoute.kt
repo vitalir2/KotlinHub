@@ -17,10 +17,7 @@ internal fun Route.updateUser(
 ) {
     authenticate(AuthVariant.JWT.authName) {
         put {
-            val userId = call.userId ?: run {
-                call.respondWith(ResponseData.unauthorized())
-                return@put
-            }
+            val userId = call.userId
             val request = call.receiveNullable<UpdateUserRequest>() ?: run {
                 call.respondWith(ResponseData.emptyBody())
                 return@put

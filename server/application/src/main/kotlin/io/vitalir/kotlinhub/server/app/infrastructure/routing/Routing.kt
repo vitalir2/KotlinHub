@@ -1,8 +1,12 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.routing
 
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callloging.*
+import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.routing.*
+import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
+import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.git.routes.gitRoutes
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitPlugin
@@ -17,6 +21,7 @@ fun Application.configureRouting(appGraph: AppGraph) {
         baseRepositoriesPath = appGraph.appConfig.repository.baseRepositoriesPath
     }
     install(IgnoreTrailingSlash)
+    statusPages()
 
     routing {
         if (debugConfig?.isRoutesTracingEnabled == true) {
@@ -34,5 +39,18 @@ fun Application.configureRouting(appGraph: AppGraph) {
             getRepositoryUseCase = appGraph.repository.getRepositoryUseCase,
             authManager = appGraph.auth.authManager,
         )
+    }
+}
+
+private fun Application.statusPages() {
+    install(StatusPages) {
+        exception<ServerException> { call, exception ->
+            call.respondWith(
+                ResponseData.fromErrorData(
+                    code = HttpStatusCode.InternalServerError,
+                    errorMessage = exception.message,
+                )
+            )
+        }
     }
 }
