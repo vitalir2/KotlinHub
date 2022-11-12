@@ -28,7 +28,16 @@ insert:
 INSERT INTO users (login, password, email)
 VALUES (?, ?, ?);
 
-update:
+updateUsername:
 UPDATE users
-SET login = :login, email = :email
+SET login = :username
+WHERE id = :userId;
+
+updateEmail:
+UPDATE users
+SET email = :email
+WHERE id = :userId;
+
+remove:
+DELETE FROM users
 WHERE id = :userId;

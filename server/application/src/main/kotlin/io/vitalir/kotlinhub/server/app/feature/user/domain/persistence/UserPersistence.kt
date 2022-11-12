@@ -23,4 +23,5 @@ interface UserPersistence {
     ) : Either<UserError.InvalidCredentials, Unit>
 
     suspend fun isUserExists(identifier: UserIdentifier): Boolean
+    suspend fun removeUser(userId: UserId): Boolean
 }

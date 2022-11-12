@@ -42,27 +42,39 @@ internal class SqlDelightUserPersistence(
     }
 
     override suspend fun updateUsername(userId: UserId, username: String): Either<UserError.InvalidCredentials, Unit> {
-        TODO()
+        return try {
+            queries.updateUsername(
+                userId = userId,
+                username = username,
+            )
+            Unit.right()
+        } catch (exception: Exception) {
+            UserError.InvalidCredentials.left()
+        }
     }
 
     override suspend fun updateEmail(userId: UserId, email: String): Either<UserError.InvalidCredentials, Unit> {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun updateUser(user: User): Either<UserError.InvalidCredentials, Unit> {
-        return if (isUserExists(user.identifier).not()) {
-            UserError.InvalidCredentials.left()
-        } else {
-            queries.update(
-                userId = user.id,
-                login = user.login,
-                email = user.email,
+        return try {
+            queries.updateEmail(
+                userId = userId,
+                email = email,
             )
             Unit.right()
+        } catch (exception: Exception) {
+            UserError.InvalidCredentials.left()
         }
     }
 
     override suspend fun isUserExists(identifier: UserIdentifier): Boolean {
         return getUser(identifier) != null
+    }
+
+    override suspend fun removeUser(userId: UserId): Boolean {
+        return try {
+            queries.remove(userId)
+            true
+        } catch (exception: Exception) {
+            false
+        }
     }
 }
