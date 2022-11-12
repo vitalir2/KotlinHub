@@ -28,9 +28,9 @@ class LoginUseCaseSpec : ShouldSpec({
         passwordManager = passwordManagerMock,
     )
 
-    val login = UserIdentifier.Login("happybirthday125")
+    val username = UserIdentifier.Username("happybirthday125")
     val userLogin = "smock"
-    val validUserIdentifier = UserIdentifier.Login(userLogin)
+    val validUserIdentifier = UserIdentifier.Username(userLogin)
     val validHashedPassword = "some hashed value"
     val validUserCredentials = UserCredentials(
         identifier = validUserIdentifier,
@@ -38,7 +38,7 @@ class LoginUseCaseSpec : ShouldSpec({
     )
     val someUser = User(
         id = 123,
-        login = userLogin,
+        username = userLogin,
         password = validHashedPassword,
     )
 
@@ -75,11 +75,11 @@ class LoginUseCaseSpec : ShouldSpec({
 
     should("return invalid credentials if user does not exist") {
         val credentials = UserCredentials(
-            identifier = login,
+            identifier = username,
             password = "any",
         )
 
-        coEvery { userPersistenceMock.getUser(login) } returns null
+        coEvery { userPersistenceMock.getUser(username) } returns null
         setupAlwaysPassingPasswordManager()
 
         val loginResult = loginUseCase(credentials)
@@ -90,11 +90,11 @@ class LoginUseCaseSpec : ShouldSpec({
 
     should("return invalid credentials if user password does not match") {
         val credentials = UserCredentials(
-            identifier = login,
+            identifier = username,
             password = "notthesamepassword",
         )
 
-        coEvery { userPersistenceMock.getUser(login) } returns someUser
+        coEvery { userPersistenceMock.getUser(username) } returns someUser
         every { passwordManagerMock.comparePasswords(any(), any()) } returns false
 
         val loginResult = loginUseCase(credentials)
@@ -123,7 +123,7 @@ class LoginUseCaseSpec : ShouldSpec({
             val invalidLogins = Arb.string()
                 .filter { it.length !in 5..20 }
             checkAll(10, invalidLogins) { invalidLogin ->
-                val identifier = UserIdentifier.Login(invalidLogin)
+                val identifier = UserIdentifier.Username(invalidLogin)
                 val credentials = UserCredentials(
                     identifier = identifier,
                     password = "any",

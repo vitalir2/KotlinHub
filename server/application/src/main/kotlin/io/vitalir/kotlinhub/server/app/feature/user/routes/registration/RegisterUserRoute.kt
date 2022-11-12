@@ -19,7 +19,7 @@ internal fun Route.registerUserRoute(registerUserUseCase: RegisterUserUseCase) {
         val registerUserRequest = call.receive<RegisterUserRequest>()
         val registrationResult = registerUserUseCase(
             UserCredentials(
-                identifier = UserIdentifier.Login(registerUserRequest.login),
+                identifier = UserIdentifier.Username(registerUserRequest.login),
                 password = registerUserRequest.password,
             )
         )

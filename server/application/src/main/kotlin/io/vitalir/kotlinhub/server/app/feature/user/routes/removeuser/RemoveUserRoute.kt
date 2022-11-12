@@ -10,7 +10,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.RemoveUserUseCase
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
 
-internal fun Route.removeUser(
+internal fun Route.removeCurrentUser(
     removeUserUseCase: RemoveUserUseCase,
 ) {
     delete {

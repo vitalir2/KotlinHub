@@ -11,7 +11,7 @@ internal object IdentifierValidationRule : UserValidationRule<UserIdentifier> {
         return when (entity) {
             is UserIdentifier.Email -> EmailValidationRule.validate(entity)
             is UserIdentifier.Id -> Unit.right()
-            is UserIdentifier.Login -> LoginValidationRule.validate(entity)
+            is UserIdentifier.Username -> UsernameValidationRule.validate(entity)
         }
     }
 }

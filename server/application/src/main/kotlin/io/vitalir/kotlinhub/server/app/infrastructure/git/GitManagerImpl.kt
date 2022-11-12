@@ -20,6 +20,6 @@ internal class GitManagerImpl(
     }
 
     private fun Repository.toFilePath(): File {
-        return Path(repositoryConfig.baseRepositoriesPath, owner.login, name).toFile()
+        return Path(repositoryConfig.baseRepositoriesPath, owner.username, name).toFile()
     }
 }

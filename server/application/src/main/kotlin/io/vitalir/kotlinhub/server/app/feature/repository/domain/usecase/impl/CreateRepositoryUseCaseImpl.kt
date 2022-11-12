@@ -39,6 +39,6 @@ internal class CreateRepositoryUseCaseImpl(
         )
         repositoryPersistence.addRepository(repository)
         gitManager.initRepository(repository)
-        return Uri.create(Uri.Scheme.GIT, repository.owner.login, "${repository.name}.git")
+        return Uri.create(Uri.Scheme.GIT, repository.owner.username, "${repository.name}.git")
     }
 }

@@ -5,7 +5,7 @@ import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.Users
 
 internal fun Users.toDomainModel(): User = User(
     id = id,
-    login = login,
+    username = username,
     password = password,
     email = email,
 )

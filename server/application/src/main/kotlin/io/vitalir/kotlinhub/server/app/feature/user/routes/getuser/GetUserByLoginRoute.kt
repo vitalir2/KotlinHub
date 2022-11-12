@@ -9,7 +9,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.GetUserByIdentifierUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.asPureUser
 
-internal fun Route.getUserByLoginRoute(
+internal fun Route.getUserByUsernameRoute(
     getUserByIdentifierUseCase: GetUserByIdentifierUseCase,
 ) {
     get("{login}/") {
@@ -23,7 +23,7 @@ internal fun Route.getUserByLoginRoute(
             return@get
         }
 
-        val user = getUserByIdentifierUseCase(UserIdentifier.Login(login))
+        val user = getUserByIdentifierUseCase(UserIdentifier.Username(login))
         val resultResponseData = if (user != null) {
             ResponseData(
                 code = HttpStatusCode.OK,

@@ -32,10 +32,10 @@ internal class GetUserByLoginUseCaseSpec : ShouldSpec() {
 
     init {
 
-        val someValidLogin = UserIdentifier.Login("mamamia")
+        val someValidUsername = UserIdentifier.Username("mamamia")
         val somePassword = "any"
         val someUserCredentials = UserCredentials(
-            identifier = someValidLogin,
+            identifier = someValidUsername,
             password = somePassword,
         )
 
@@ -48,26 +48,26 @@ internal class GetUserByLoginUseCaseSpec : ShouldSpec() {
 
         should("return user if it exists by login") {
             val expectedUser = someUserCredentials.testValidUser
-            coEvery { userPersistence.getUser(someValidLogin) } returns expectedUser
+            coEvery { userPersistence.getUser(someValidUsername) } returns expectedUser
 
-            val result = getUserByIdentifierUseCase(someValidLogin)
+            val result = getUserByIdentifierUseCase(someValidUsername)
 
             result.shouldNotBeNull()
             result shouldHaveTheSameCredentialsAs expectedUser
         }
 
         should("call UserPersistence.getUser for getting user from persistence") {
-            coEvery { userPersistence.getUser(someValidLogin) } returns someUserCredentials.testValidUser
+            coEvery { userPersistence.getUser(someValidUsername) } returns someUserCredentials.testValidUser
 
-            getUserByIdentifierUseCase(someValidLogin)
+            getUserByIdentifierUseCase(someValidUsername)
 
-            coVerify { userPersistence.getUser(someValidLogin) }
+            coVerify { userPersistence.getUser(someValidUsername) }
         }
 
         should("return null if user does not exist") {
-            coEvery { userPersistence.getUser(someValidLogin) } returns null
+            coEvery { userPersistence.getUser(someValidUsername) } returns null
 
-            val result = getUserByIdentifierUseCase(someValidLogin)
+            val result = getUserByIdentifierUseCase(someValidUsername)
 
             result.shouldBeNull()
         }

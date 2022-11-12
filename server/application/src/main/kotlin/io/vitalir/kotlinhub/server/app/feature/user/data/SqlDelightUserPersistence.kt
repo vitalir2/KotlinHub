@@ -23,18 +23,18 @@ internal class SqlDelightUserPersistence(
         return when (identifier) {
             is UserIdentifier.Email -> queries.getByEmail(identifier.value)
             is UserIdentifier.Id -> queries.getById(identifier.value)
-            is UserIdentifier.Login -> queries.getByLogin(identifier.value)
+            is UserIdentifier.Username -> queries.getByUsername(identifier.value)
         }
             .executeAsOneOrNull()
             ?.toDomainModel()
     }
 
     override suspend fun addUser(user: User): Either<UserError.UserAlreadyExists, Unit> {
-        return if (isUserExists(UserIdentifier.Login(user.login))) {
+        return if (isUserExists(UserIdentifier.Username(user.username))) {
             UserError.UserAlreadyExists.left()
         } else {
             queries.insert(
-                login = user.login,
+                username = user.username,
                 password = user.password,
                 email = user.email.orEmpty(),
             ).right()
@@ -71,7 +71,7 @@ internal class SqlDelightUserPersistence(
 
     override suspend fun removeUser(userId: UserId): Boolean {
         return try {
-            queries.remove(userId)
+            queries.removeById(userId)
             true
         } catch (exception: Exception) {
             false

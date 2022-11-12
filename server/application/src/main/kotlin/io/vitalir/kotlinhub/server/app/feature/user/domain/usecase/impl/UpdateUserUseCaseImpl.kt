@@ -66,7 +66,7 @@ internal class UpdateUserUseCaseImpl(
     }
 
     private fun isUsernameValid(username: String): Boolean {
-        return userValidationRule.validate(UserIdentifier.Login(username)).isRight()
+        return userValidationRule.validate(UserIdentifier.Username(username)).isRight()
     }
 
     private fun isEmailValid(email: String): Boolean {

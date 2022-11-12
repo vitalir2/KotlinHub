@@ -28,13 +28,13 @@ internal fun Route.loginRoute(
 ) {
     post("auth/") {
         val loginRequest = call.receive<LoginRequest>()
-        val loginResult = loginUseCase(
+        val usernameResult = loginUseCase(
             UserCredentials(
-                identifier = UserIdentifier.Login(loginRequest.login),
+                identifier = UserIdentifier.Username(loginRequest.username),
                 password = loginRequest.password,
             )
         )
-        val responseData = getResponseData(jwtConfig, loginResult)
+        val responseData = getResponseData(jwtConfig, usernameResult)
         call.respondWith(responseData)
     }
 }

@@ -48,7 +48,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
                 userPersistence.isUserExists(someUserIdentifier)
             } returns true
             coEvery {
-                userIdentifierValidationRule.validate(UserIdentifier.Login(invalidUsername))
+                userIdentifierValidationRule.validate(UserIdentifier.Username(invalidUsername))
             } returns UserError.ValidationFailed.left()
 
             val result = updateUserUseCase(
@@ -102,7 +102,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
                 userPersistence.isUserExists(someUserIdentifier)
             } returns true
             coEvery {
-                userIdentifierValidationRule.validate(UserIdentifier.Login(someUsername))
+                userIdentifierValidationRule.validate(UserIdentifier.Username(someUsername))
             } returns Unit.right()
 
             val result = updateUserUseCase(

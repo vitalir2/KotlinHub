@@ -15,7 +15,7 @@ internal class GetRepositoryUseCaseImpl(
 ) : GetRepositoryUseCase {
 
     override suspend fun invoke(username: String, repositoryName: String): GetRepositoryResult {
-        val identifier = UserIdentifier.Login(username)
+        val identifier = UserIdentifier.Username(username)
         return when {
             userPersistence.isUserExists(identifier).not() -> {
                 RepositoryError.Get.InvalidUserLogin.left()

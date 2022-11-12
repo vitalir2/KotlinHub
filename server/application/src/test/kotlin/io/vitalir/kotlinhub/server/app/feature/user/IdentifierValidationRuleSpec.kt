@@ -20,7 +20,7 @@ class IdentifierValidationRuleSpec : ShouldSpec() {
 
         should("validate login correctly") {
             val randomLogins = Arb.string()
-                .map { UserIdentifier.Login(it) }
+                .map { UserIdentifier.Username(it) }
             checkAll(randomLogins) { login ->
                 val validationResult = identifierValidationRule.validate(login)
                 if (login.value.length in 5..20) {

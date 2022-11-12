@@ -25,10 +25,10 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
 
     init {
         val username = "megabrain123"
-        val usernameIdentifier = UserIdentifier.Login(username)
+        val usernameIdentifier = UserIdentifier.Username(username)
         val owner = User(
             id = 123,
-            login = username,
+            username = username,
             password = "hellopassword",
         )
         val repositoryName = "repository"

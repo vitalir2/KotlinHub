@@ -81,7 +81,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
             )
             val expectedUser = User(
                 id = anyUid,
-                login = validEmail.value,
+                username = validEmail.value,
                 password = validPassword,
                 email = validEmail.value,
             )
@@ -91,7 +91,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
             val result = registerUserUseCase(credentials)
 
             val registeredUser: User = result.shouldBeRight()
-            registeredUser.login shouldBe expectedUser.login
+            registeredUser.username shouldBe expectedUser.username
             registeredUser.email shouldBe expectedUser.email
             registeredUser.password shouldBe expectedUser.password
             confirmUserWasAddedCorrectly(credentials)

@@ -10,7 +10,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.UpdateUserUseCase
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
 
-internal fun Route.updateUser(
+internal fun Route.updateCurrentUser(
     updateUserUseCase: UpdateUserUseCase,
 ) {
     put {

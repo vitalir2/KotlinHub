@@ -3,18 +3,17 @@ package io.vitalir.kotlinhub.server.app.feature.repository.routing
 import arrow.core.Either
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.domain.Uri
-import io.vitalir.kotlinhub.server.app.common.routes.AuthVariant
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
-import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
+import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
+import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 
 internal fun Routing.repositoryRoutes(
     repositoryGraph: AppGraph.RepositoryGraph,
@@ -27,7 +26,7 @@ internal fun Routing.repositoryRoutes(
 private fun Route.createRepositoryRoute(
     createRepositoryUseCase: CreateRepositoryUseCase,
 ) {
-    authenticate(AuthVariant.JWT.authName) {
+    jwtAuth {
         post {
             val userId = call.userId
             val request = call.receive<CreateRepositoryRequest>()
