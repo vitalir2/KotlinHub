@@ -2,7 +2,6 @@ package io.vitalir.kotlinhub.server.app.feature.user.routes
 
 import io.ktor.http.*
 import io.ktor.server.routing.*
-import io.vitalir.kotlinhub.server.app.common.routes.ErrorResponse
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
@@ -53,31 +52,24 @@ private fun Route.authorizedUserRoutes(
 internal fun getErrorResponseData(userError: UserError): ResponseData {
     return when (userError) {
         is UserError.InvalidCredentials -> {
-            ResponseData(
+            ResponseData.fromErrorData(
                 code = HttpStatusCode.BadRequest,
-                body = ErrorResponse(
-                    code = HttpStatusCode.BadRequest.value,
-                    message = "invalid credentials",
-                )
+                errorMessage = "invalid credentials",
             )
         }
+
         is UserError.ValidationFailed -> {
-            ResponseData(
+            ResponseData.fromErrorData(
                 code = HttpStatusCode.BadRequest,
-                body = ErrorResponse(
-                    code = HttpStatusCode.BadRequest.value,
-                    message = "invalid credentials format",
-                )
+                errorMessage = "invalid credentials format",
             )
         }
+
         is UserError.UserAlreadyExists -> {
-            val responseBody = ErrorResponse(
-                code = HttpStatusCode.BadRequest.value,
-                message = "user already exists",
+            ResponseData.fromErrorData(
+                code = HttpStatusCode.BadRequest,
+                errorMessage = "user already exists",
             )
-            ResponseData(code = HttpStatusCode.BadRequest, body = responseBody)
         }
     }
 }
-
-internal const val HOUR_MS = 1000 * 60 * 60

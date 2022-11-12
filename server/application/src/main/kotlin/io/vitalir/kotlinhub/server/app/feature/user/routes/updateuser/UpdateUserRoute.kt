@@ -15,10 +15,7 @@ internal fun Route.updateUser(
 ) {
     put {
         val userId = call.userId
-        val request = call.receiveNullable<UpdateUserRequest>() ?: run {
-            call.respondWith(ResponseData.emptyBody())
-            return@put
-        }
+        val request = call.receive<UpdateUserRequest>()
 
         val result = updateUserUseCase(
             userId = userId,
