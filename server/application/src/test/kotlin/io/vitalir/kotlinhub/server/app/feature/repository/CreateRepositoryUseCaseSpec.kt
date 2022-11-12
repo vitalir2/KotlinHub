@@ -16,7 +16,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
-import io.vitalir.kotlinhub.server.app.common.domain.Uri
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
@@ -106,8 +105,8 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 createdAt = nowDateTime,
                 updatedAt = nowDateTime,
             )
-            val uri = result.shouldBeRight()
-            uri.value shouldBe "git://${Uri.HOST}/${repositoryOwner.username}/$someRepositoryName.git"
+            val url = result.shouldBeRight()
+            url.toString() shouldBe "http://localhost/${repositoryOwner.username}/$someRepositoryName.git"
             coVerify { repositoryPersistence.addRepository(expectedRepository) }
             coVerify { gitManager.initRepository(expectedRepository) }
         }

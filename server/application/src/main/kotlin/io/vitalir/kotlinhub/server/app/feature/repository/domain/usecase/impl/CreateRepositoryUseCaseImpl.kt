@@ -1,18 +1,20 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl
 
-import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
-import io.vitalir.kotlinhub.server.app.common.domain.Uri
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryResult
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
+import io.vitalir.kotlinhub.shared.common.network.Path
+import io.vitalir.kotlinhub.shared.common.network.Scheme
+import io.vitalir.kotlinhub.shared.common.network.Url
 
 internal class CreateRepositoryUseCaseImpl(
     private val userPersistence: UserPersistence,
@@ -21,7 +23,7 @@ internal class CreateRepositoryUseCaseImpl(
     private val gitManager: GitManager,
 ) : CreateRepositoryUseCase {
 
-    override suspend fun invoke(initData: CreateRepositoryData): Either<RepositoryError.Create, Uri> {
+    override suspend fun invoke(initData: CreateRepositoryData): CreateRepositoryResult {
         return when {
             userPersistence.isUserExists(UserIdentifier.Id(initData.ownerId)).not() ->
                 RepositoryError.Create.InvalidUserId.left()
@@ -31,7 +33,7 @@ internal class CreateRepositoryUseCaseImpl(
         }
     }
 
-    private suspend fun createRepositoryAfterValidation(initData: CreateRepositoryData): Uri {
+    private suspend fun createRepositoryAfterValidation(initData: CreateRepositoryData): Url {
         val repository = Repository.fromInitData(
             owner = userPersistence.getUser(UserIdentifier.Id(initData.ownerId))!!,
             initData = initData,
@@ -39,6 +41,15 @@ internal class CreateRepositoryUseCaseImpl(
         )
         repositoryPersistence.addRepository(repository)
         gitManager.initRepository(repository)
-        return Uri.create(Uri.Scheme.GIT, repository.owner.username, "${repository.name}.git")
+
+        val gitPathToRepository = Path(
+            repository.owner.username,
+            "${repository.name}.git",
+        )
+        return Url(
+            scheme = Scheme.HTTP,
+            host = "localhost", // TODO replace by config value (base host)
+            path = gitPathToRepository,
+        )
     }
 }

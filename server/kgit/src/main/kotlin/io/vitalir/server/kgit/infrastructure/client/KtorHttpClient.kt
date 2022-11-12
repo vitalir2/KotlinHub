@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Logger
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.vitalir.kotlinhub.shared.common.network.Scheme
+import io.vitalir.kotlinhub.shared.common.network.Url
 import org.slf4j.LoggerFactory
 
 internal class KtorHttpClient(
@@ -14,35 +16,35 @@ internal class KtorHttpClient(
     private val logger = LoggerFactory.getLogger(Logger::class.java)
 
     override suspend fun post(
-        uri: Uri,
+        url: Url,
         body: Any,
     ): Response {
         val response = httpClient.post {
-            setUrlFromUri(uri)
+            setKtorUrl(url)
             setBody(body)
             contentType(ContentType.Application.Json)
-            logger.debug("Post request: uri=$uri,body=$body,builtURL=${url.buildString()}")
+            logger.debug("Post request: uri=$url,body=$body,builtURL=${this.url.buildString()}")
         }
         val httpCode = response.status
         return Response(code = Response.HttpCode.fromNumber(httpCode.value))
     }
 
     companion object {
-        private fun HttpRequestBuilder.setUrlFromUri(uri: Uri) {
+        private fun HttpRequestBuilder.setKtorUrl(url: Url) {
             url {
-                protocol = uri.protocol.toKtorModel()
-                host = uri.host
-                port = uri.port
-                path(uri.path)
-                for ((key, value) in uri.queryParams) {
+                protocol = url.scheme.toKtorModel()
+                host = url.host
+                url.port?.let { notNullPort -> port = notNullPort }
+                path(url.path.toString())
+                for ((key, value) in url.queryParams) {
                     parameter(key, value)
                 }
             }
         }
 
-        private fun Uri.Protocol.toKtorModel(): URLProtocol = when (this) {
-            Uri.Protocol.HTTP -> URLProtocol.HTTP
-            Uri.Protocol.HTTPS -> URLProtocol.HTTPS
+        private fun Scheme.toKtorModel(): URLProtocol = when (this) {
+            Scheme.HTTP -> URLProtocol.HTTP
+            Scheme.HTTPS -> URLProtocol.HTTPS
         }
     }
 }
