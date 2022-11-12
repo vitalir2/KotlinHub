@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ErrorResponse
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
+import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.routes.getuser.getUserByLoginRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.login.loginRoute
@@ -18,9 +19,32 @@ internal fun Routing.userRoutes(
     userGraph: AppGraph.UserGraph,
 ) {
     route("users/") {
-        registerUserRoute(userGraph.registerUserUseCase)
-        loginRoute(jwtConfig, userGraph.loginUseCase)
-        getUserByLoginRoute(userGraph.getUserByIdentifierUseCase)
+        unauthorizedUserRoutes(jwtConfig, userGraph)
+
+        authIndependentUserRoutes(userGraph)
+
+        authorizedUserRoutes(userGraph)
+    }
+}
+
+private fun Route.unauthorizedUserRoutes(
+    jwtConfig: AppConfig.Jwt,
+    userGraph: AppGraph.UserGraph,
+) {
+    registerUserRoute(userGraph.registerUserUseCase)
+    loginRoute(jwtConfig, userGraph.loginUseCase)
+}
+
+private fun Route.authIndependentUserRoutes(
+    userGraph: AppGraph.UserGraph,
+) {
+    getUserByLoginRoute(userGraph.getUserByIdentifierUseCase)
+}
+
+private fun Route.authorizedUserRoutes(
+    userGraph: AppGraph.UserGraph,
+) {
+    jwtAuth {
         updateUser(userGraph.updateUserUseCase)
         removeUser(userGraph.removeUserUseCase)
     }

@@ -7,9 +7,9 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
-import io.ktor.server.response.*
 import io.vitalir.kotlinhub.server.app.common.routes.AuthVariant
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
+import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 
 internal fun Application.configureAuth(
@@ -35,7 +35,7 @@ internal fun Application.configureAuth(
                     code = HttpStatusCode.Unauthorized,
                     errorMessage = "token is not valid or has expired",
                 )
-                call.respond(responseData)
+                call.respondWith(responseData)
             }
         }
     }
