@@ -10,7 +10,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.git.routes.gitRoutes
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitPlugin
-import io.vitalir.kotlinhub.server.app.feature.repository.routing.repositoryRoutes
+import io.vitalir.kotlinhub.server.app.feature.repository.routes.repositoryRoutes
 import io.vitalir.kotlinhub.server.app.feature.user.routes.userRoutes
 
 fun Application.configureRouting(appGraph: AppGraph) {
