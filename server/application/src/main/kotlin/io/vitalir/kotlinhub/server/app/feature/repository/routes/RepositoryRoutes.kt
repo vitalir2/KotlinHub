@@ -11,6 +11,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.repository.routes.getrepository.getRepositoryRoute
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 import io.vitalir.kotlinhub.shared.common.network.Url
@@ -18,8 +19,9 @@ import io.vitalir.kotlinhub.shared.common.network.Url
 internal fun Routing.repositoryRoutes(
     repositoryGraph: AppGraph.RepositoryGraph,
 ) {
-    route("repository/") {
+    route("repositories/") {
         createRepositoryRoute(repositoryGraph.createRepositoryUseCase)
+        getRepositoryRoute(repositoryGraph.getRepositoryUseCase)
     }
 }
 
