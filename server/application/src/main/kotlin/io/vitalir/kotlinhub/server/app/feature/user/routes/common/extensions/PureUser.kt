@@ -6,7 +6,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.routes.common.PureUser
 internal val User.asPureUser: PureUser
     get() = PureUser(
         id = id,
-        login = login,
+        username = username,
         firstName = firstName,
         lastName = lastName,
         email = email,

@@ -4,7 +4,7 @@ import io.ktor.http.*
 
 data class ResponseData(
     val code: HttpStatusCode,
-    val body: Any,
+    val body: Any? = null,
 ) {
 
     companion object {
@@ -22,6 +22,13 @@ data class ResponseData(
             return ResponseData(
                 code = HttpStatusCode.Unauthorized,
                 body = ErrorResponse.unauthorized(),
+            )
+        }
+
+        fun emptyBody(): ResponseData {
+            return fromErrorData(
+                code = HttpStatusCode.BadRequest,
+                errorMessage = "empty body",
             )
         }
     }

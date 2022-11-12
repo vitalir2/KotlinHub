@@ -1,15 +1,17 @@
 package io.vitalir.kotlinhub.server.app.feature.user.domain.validation
 
 import arrow.core.Either
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
+import arrow.core.right
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 
-internal object IdentifierValidationRule : UserValidationRule<UserCredentials.Identifier> {
+internal object IdentifierValidationRule : UserValidationRule<UserIdentifier> {
 
-    override fun validate(entity: UserCredentials.Identifier): Either<UserError.ValidationFailed, Unit> {
+    override fun validate(entity: UserIdentifier): Either<UserError.ValidationFailed, Unit> {
         return when (entity) {
-            is UserCredentials.Identifier.Email -> EmailValidationRule.validate(entity)
-            is UserCredentials.Identifier.Login -> LoginValidationRule.validate(entity)
+            is UserIdentifier.Email -> EmailValidationRule.validate(entity)
+            is UserIdentifier.Id -> Unit.right()
+            is UserIdentifier.Username -> UsernameValidationRule.validate(entity)
         }
     }
 }

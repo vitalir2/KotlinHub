@@ -6,15 +6,15 @@ import arrow.core.right
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 
-internal object EmailValidationRule : UserValidationRule<UserIdentifier.Email> {
+internal object UsernameValidationRule : UserValidationRule<UserIdentifier.Username> {
 
-    override fun validate(entity: UserIdentifier.Email): Either<UserError.ValidationFailed, Unit> {
-        return if (EMAIL_REGEX.matches(entity.value)) {
+    override fun validate(entity: UserIdentifier.Username): Either<UserError.ValidationFailed, Unit> {
+        return if (entity.value.length in USERNAME_LENGTH_RANGE) {
             Unit.right()
         } else {
             UserError.ValidationFailed.left()
         }
     }
 
-    private val EMAIL_REGEX = Regex("^[a-zA-Z0-9_!#\$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    private val USERNAME_LENGTH_RANGE = 5..20
 }

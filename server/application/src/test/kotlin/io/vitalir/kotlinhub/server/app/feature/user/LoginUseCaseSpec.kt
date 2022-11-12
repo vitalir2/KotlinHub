@@ -1,7 +1,5 @@
 package io.vitalir.kotlinhub.server.app.feature.user
 
-import arrow.core.left
-import arrow.core.right
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
@@ -16,10 +14,11 @@ import io.mockk.mockk
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.PasswordManager
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.LoginUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.LoginUseCaseImpl
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.PasswordManager
 
 class LoginUseCaseSpec : ShouldSpec({
     val userPersistenceMock = mockk<UserPersistence>()
@@ -29,9 +28,9 @@ class LoginUseCaseSpec : ShouldSpec({
         passwordManager = passwordManagerMock,
     )
 
-    val login = UserCredentials.Identifier.Login("happybirthday125")
+    val username = UserIdentifier.Username("happybirthday125")
     val userLogin = "smock"
-    val validUserIdentifier = UserCredentials.Identifier.Login(userLogin)
+    val validUserIdentifier = UserIdentifier.Username(userLogin)
     val validHashedPassword = "some hashed value"
     val validUserCredentials = UserCredentials(
         identifier = validUserIdentifier,
@@ -39,7 +38,7 @@ class LoginUseCaseSpec : ShouldSpec({
     )
     val someUser = User(
         id = 123,
-        login = userLogin,
+        username = userLogin,
         password = validHashedPassword,
     )
 
@@ -48,7 +47,7 @@ class LoginUseCaseSpec : ShouldSpec({
     }
 
     should("return user if the credentials with login are valid and it exists") {
-        coEvery { userPersistenceMock.getUser(validUserIdentifier) } returns someUser.right()
+        coEvery { userPersistenceMock.getUser(validUserIdentifier) } returns someUser
         setupAlwaysPassingPasswordManager()
 
         val loginResult = loginUseCase(validUserCredentials)
@@ -59,13 +58,13 @@ class LoginUseCaseSpec : ShouldSpec({
 
     should("return user if the credentials with email are valid and it exists") {
         val validEmail = "heh123@gmail.com"
-        val identifier = UserCredentials.Identifier.Email(validEmail)
+        val identifier = UserIdentifier.Email(validEmail)
         val credentials = UserCredentials(
             identifier = identifier,
             password = "any",
         )
 
-        coEvery { userPersistenceMock.getUser(identifier) } returns someUser.right()
+        coEvery { userPersistenceMock.getUser(identifier) } returns someUser
         setupAlwaysPassingPasswordManager()
 
         val loginResult = loginUseCase(credentials)
@@ -76,11 +75,11 @@ class LoginUseCaseSpec : ShouldSpec({
 
     should("return invalid credentials if user does not exist") {
         val credentials = UserCredentials(
-            identifier = login,
+            identifier = username,
             password = "any",
         )
 
-        coEvery { userPersistenceMock.getUser(login) } returns UserError.InvalidCredentials.left()
+        coEvery { userPersistenceMock.getUser(username) } returns null
         setupAlwaysPassingPasswordManager()
 
         val loginResult = loginUseCase(credentials)
@@ -91,11 +90,11 @@ class LoginUseCaseSpec : ShouldSpec({
 
     should("return invalid credentials if user password does not match") {
         val credentials = UserCredentials(
-            identifier = login,
+            identifier = username,
             password = "notthesamepassword",
         )
 
-        coEvery { userPersistenceMock.getUser(login) } returns someUser.right()
+        coEvery { userPersistenceMock.getUser(username) } returns someUser
         every { passwordManagerMock.comparePasswords(any(), any()) } returns false
 
         val loginResult = loginUseCase(credentials)
@@ -107,7 +106,7 @@ class LoginUseCaseSpec : ShouldSpec({
     context("validation errors") {
         should("return validation error if email is not valid") {
             val invalidEmail = "heh"
-            val identifier = UserCredentials.Identifier.Email(invalidEmail)
+            val identifier = UserIdentifier.Email(invalidEmail)
             val credentials = UserCredentials(
                 identifier = identifier,
                 password = "any",
@@ -124,7 +123,7 @@ class LoginUseCaseSpec : ShouldSpec({
             val invalidLogins = Arb.string()
                 .filter { it.length !in 5..20 }
             checkAll(10, invalidLogins) { invalidLogin ->
-                val identifier = UserCredentials.Identifier.Login(invalidLogin)
+                val identifier = UserIdentifier.Username(invalidLogin)
                 val credentials = UserCredentials(
                     identifier = identifier,
                     password = "any",

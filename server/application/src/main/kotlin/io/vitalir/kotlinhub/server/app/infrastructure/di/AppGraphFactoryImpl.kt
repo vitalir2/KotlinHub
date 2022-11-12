@@ -5,11 +5,14 @@ import io.vitalir.kotlinhub.server.app.common.data.JavaLocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.repository.data.SqlDelightRepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.user.data.SqlDelightUserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.BCryptPasswordManager
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
-import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.GetUserByLoginUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.GetUserByIdentifierUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.LoginUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.RegisterUserUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.RemoveUserUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.UpdateUserUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.validation.IdentifierValidationRule
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.Base64AuthManager
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
@@ -47,8 +50,7 @@ internal class AppGraphFactoryImpl(
         database: MainSqlDelight,
         authGraph: AppGraph.AuthGraph,
     ): AppGraph.UserGraph {
-        val userPersistence: UserPersistence =
-            io.vitalir.kotlinhub.server.app.feature.user.data.SqlDelightUserPersistence(database)
+        val userPersistence: UserPersistence = SqlDelightUserPersistence(database)
         return AppGraph.UserGraph(
             userPersistence = userPersistence,
             loginUseCase = LoginUseCaseImpl(
@@ -60,7 +62,14 @@ internal class AppGraphFactoryImpl(
                 userPersistence = userPersistence,
                 passwordManager = authGraph.passwordManager,
             ),
-            getUserByLoginUseCase = GetUserByLoginUseCaseImpl(
+            getUserByIdentifierUseCase = GetUserByIdentifierUseCaseImpl(
+                userPersistence = userPersistence,
+            ),
+            updateUserUseCase = UpdateUserUseCaseImpl(
+                userPersistence = userPersistence,
+                userValidationRule = IdentifierValidationRule,
+            ),
+            removeUserUseCase = RemoveUserUseCaseImpl(
                 userPersistence = userPersistence,
             ),
         )

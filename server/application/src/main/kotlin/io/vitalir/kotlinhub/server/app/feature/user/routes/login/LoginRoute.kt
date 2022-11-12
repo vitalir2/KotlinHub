@@ -14,12 +14,13 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.LoginUseCase
-import io.vitalir.kotlinhub.server.app.feature.user.routes.HOUR_MS
 import io.vitalir.kotlinhub.server.app.feature.user.routes.getErrorResponseData
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthenticationPayload
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 internal fun Route.loginRoute(
     jwtConfig: AppConfig.Jwt,
@@ -27,13 +28,13 @@ internal fun Route.loginRoute(
 ) {
     post("auth/") {
         val loginRequest = call.receive<LoginRequest>()
-        val loginResult = loginUseCase(
+        val usernameResult = loginUseCase(
             UserCredentials(
-                identifier = UserCredentials.Identifier.Login(loginRequest.login),
+                identifier = UserIdentifier.Username(loginRequest.username),
                 password = loginRequest.password,
             )
         )
-        val responseData = getResponseData(jwtConfig, loginResult)
+        val responseData = getResponseData(jwtConfig, usernameResult)
         call.respondWith(responseData)
     }
 }
@@ -61,7 +62,7 @@ private fun createToken(jwtConfig: AppConfig.Jwt, userId: UserId): String {
         withAudience(jwtConfig.audience)
         withIssuer(jwtConfig.issuer)
         withUserId(AuthenticationPayload.UserId(userId))
-        withExpiresAt(Date(System.currentTimeMillis() + HOUR_MS))
+        withExpiresAt(Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)))
     }.sign(Algorithm.HMAC256(jwtConfig.secret))
 }
 

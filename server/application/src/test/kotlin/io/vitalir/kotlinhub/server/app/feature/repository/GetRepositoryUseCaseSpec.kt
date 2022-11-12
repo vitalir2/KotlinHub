@@ -11,7 +11,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.Rep
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import java.time.LocalDate
 
@@ -25,10 +25,10 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
 
     init {
         val username = "megabrain123"
-        val usernameIdentifier = UserCredentials.Identifier.Login(username)
+        val usernameIdentifier = UserIdentifier.Username(username)
         val owner = User(
             id = 123,
-            login = username,
+            username = username,
             password = "hellopassword",
         )
         val repositoryName = "repository"

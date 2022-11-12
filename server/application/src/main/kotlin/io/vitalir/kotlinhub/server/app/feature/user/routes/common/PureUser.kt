@@ -6,9 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class PureUser(
     val id: UserId,
-    val login: String,
+    val username: String,
     val firstName: String?,
     val lastName: String?,
     val email: String?,
-
 )

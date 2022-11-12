@@ -8,7 +8,7 @@ internal fun GetRepositoryByUsernameAndRepositoryName.toDomainModel(): Repositor
     return Repository(
         owner = User(
             id = user_id!!,
-            login = login,
+            username = username,
             password = password,
             email = email,
         ),

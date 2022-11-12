@@ -4,9 +4,11 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
+import arrow.core.rightIfNotNull
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.PasswordManager
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.LoginUseCase
@@ -19,7 +21,9 @@ internal class LoginUseCaseImpl(
 
     override suspend fun invoke(credentials: UserCredentials): Either<UserError, User> = either {
         validateCredentials(credentials).bind()
-        val user = userPersistence.getUser(credentials.identifier).bind()
+        val user = userPersistence.getUser(credentials.identifier)
+            .rightIfNotNull { UserError.InvalidCredentials }
+            .bind()
         passwordIsCorrectForUser(credentials.password, user.password).bind()
         user
     }
@@ -29,7 +33,7 @@ internal class LoginUseCaseImpl(
             validateIdentifier(credentials.identifier).bind()
         }
 
-    private fun validateIdentifier(identifier: UserCredentials.Identifier): Either<UserError.ValidationFailed, Unit> {
+    private fun validateIdentifier(identifier: UserIdentifier): Either<UserError.ValidationFailed, Unit> {
         return IdentifierValidationRule.validate(identifier)
     }
     private fun passwordIsCorrectForUser(
