@@ -6,6 +6,7 @@ import arrow.core.right
 import io.vitalir.kotlinhub.server.app.feature.user.data.extensions.toDomainModel
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
@@ -40,7 +41,15 @@ internal class SqlDelightUserPersistence(
         }
     }
 
-    override suspend fun updateUser(user: User): Either<UserError.InvalidCredentials, Unit> {
+    override suspend fun updateUsername(userId: UserId, username: String): Either<UserError.InvalidCredentials, Unit> {
+        TODO()
+    }
+
+    override suspend fun updateEmail(userId: UserId, email: String): Either<UserError.InvalidCredentials, Unit> {
+        TODO("Not yet implemented")
+    }
+
+    suspend fun updateUser(user: User): Either<UserError.InvalidCredentials, Unit> {
         return if (isUserExists(user.identifier).not()) {
             UserError.InvalidCredentials.left()
         } else {

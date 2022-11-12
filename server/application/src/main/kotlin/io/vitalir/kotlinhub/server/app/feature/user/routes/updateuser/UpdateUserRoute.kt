@@ -10,7 +10,6 @@ import io.vitalir.kotlinhub.server.app.common.routes.AuthVariant
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.UpdateUserUseCase
-import io.vitalir.kotlinhub.server.app.feature.user.routes.getErrorResponseData
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
 
 internal fun Route.updateUser(
@@ -46,6 +45,23 @@ internal fun Route.updateUser(
                     )
                 }
             }
+        }
+    }
+}
+
+private fun getErrorResponseData(error: UpdateUserUseCase.Error): ResponseData {
+    return when (error) {
+        is UpdateUserUseCase.Error.InvalidArguments -> {
+            ResponseData.fromErrorData(
+                code = HttpStatusCode.BadRequest,
+                errorMessage = error.message,
+            )
+        }
+        is UpdateUserUseCase.Error.NoUser -> {
+            ResponseData.fromErrorData(
+                code = HttpStatusCode.BadRequest,
+                errorMessage = "no user with id=${error.userId}"
+            )
         }
     }
 }
