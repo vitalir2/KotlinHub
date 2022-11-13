@@ -5,6 +5,7 @@ import io.vitalir.kotlinhub.server.app.common.data.JavaLocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.repository.data.SqlDelightRepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.RemoveRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.data.SqlDelightUserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.BCryptPasswordManager
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
@@ -93,6 +94,10 @@ internal class AppGraphFactoryImpl(
                 ),
             ),
             getRepositoryUseCase = GetRepositoryUseCaseImpl(
+                userPersistence = userPersistence,
+                repositoryPersistence = repositoryPersistence,
+            ),
+            removeRepositoryUseCase = RemoveRepositoryUseCaseImpl(
                 userPersistence = userPersistence,
                 repositoryPersistence = repositoryPersistence,
             )
