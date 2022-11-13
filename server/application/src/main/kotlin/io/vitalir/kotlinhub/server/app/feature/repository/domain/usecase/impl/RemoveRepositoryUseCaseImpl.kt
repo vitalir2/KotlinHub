@@ -14,6 +14,7 @@ internal class RemoveRepositoryUseCaseImpl(
     private val repositoryPersistence: RepositoryPersistence,
 ) : RemoveRepositoryUseCase {
 
+    // TODO remove repository really - not only in db, but in file system too
     override suspend fun invoke(userId: UserId, repositoryName: String): Either<RemoveRepositoryUseCase.Error, Unit> {
         val userIdentifier = UserIdentifier.Id(userId)
         return when {
