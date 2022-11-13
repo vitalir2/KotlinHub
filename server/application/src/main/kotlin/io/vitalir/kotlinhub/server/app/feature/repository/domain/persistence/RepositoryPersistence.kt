@@ -17,5 +17,10 @@ interface RepositoryPersistence {
         repositoryName: String,
     ): Repository?
 
-    suspend fun removeRepository(repositoryId: Int)
+    suspend fun removeRepositoryById(repositoryId: Int)
+
+    suspend fun removeRepositoryByName(
+        userId: UserId,
+        repositoryName: String,
+    )
 }

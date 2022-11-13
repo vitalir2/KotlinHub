@@ -48,7 +48,7 @@ internal class CreateRepositoryUseCaseImpl(
         val repositoryWithRealId = repository.copy(id = realRepositoryId)
         return when (val result = gitManager.initRepository(repositoryWithRealId)) {
             is Either.Left -> {
-                repositoryPersistence.removeRepository(realRepositoryId)
+                repositoryPersistence.removeRepositoryById(realRepositoryId)
                 result.value.toCreateError().left()
             }
             is Either.Right -> {
