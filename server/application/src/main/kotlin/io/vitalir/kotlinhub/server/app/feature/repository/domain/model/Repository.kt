@@ -8,6 +8,7 @@ import io.vitalir.kotlinhub.shared.common.network.Url
 import java.time.LocalDateTime
 
 data class Repository(
+    val id: RepositoryId,
     val owner: User,
     val name: String,
     val accessMode: AccessMode,
@@ -33,6 +34,7 @@ data class Repository(
     }
 
     companion object {
+        internal const val AUTOINCREMENT_ID = 0
        fun fromInitData(
            owner: User,
            initData: CreateRepositoryData,
@@ -40,6 +42,7 @@ data class Repository(
        ): Repository {
            val createdAtDateTime = localDateTimeProvider.now()
            return Repository(
+               id = AUTOINCREMENT_ID,
                owner = owner,
                name = initData.name,
                accessMode = initData.accessMode,

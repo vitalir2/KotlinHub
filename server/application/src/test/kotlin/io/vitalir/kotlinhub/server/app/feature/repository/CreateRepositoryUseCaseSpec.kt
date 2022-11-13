@@ -1,5 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.repository
 
+import arrow.core.left
+import arrow.core.right
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
@@ -78,15 +80,29 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
             username = "validlogin",
             password = "validpassword",
         )
+        val someRepositoryId = 12
         val someRepositoryName = repositoryNameProvider.next()
         val someRepositoryAccessMode = repositoryAccessModeProvider.next()
+        val nowDateTime = dateTimeProvider.next()
+        val someRepository = Repository(
+            id = someRepositoryId,
+            owner = repositoryOwner,
+            name = someRepositoryName,
+            accessMode = someRepositoryAccessMode,
+            createdAt = nowDateTime,
+            updatedAt = nowDateTime,
+        )
 
         should("return success if data is valid") {
-            val nowDateTime = dateTimeProvider.next()
-
             coEvery { userPersistence.isUserExists(someUserIdIdentifier) } returns true
             coEvery { userPersistence.getUser(someUserIdIdentifier) } returns repositoryOwner
             coEvery { repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName) } returns false
+            coEvery {
+                gitManager.initRepository(any())
+            } returns Unit.right()
+            coEvery {
+                repositoryPersistence.addRepository(any())
+            } returns someRepositoryId
             every { localDateTimeProvider.now() } returns nowDateTime
 
             val createRepositoryData = CreateRepositoryData(
@@ -98,6 +114,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
             val result = createRepositoryUseCase(createRepositoryData)
 
             val expectedRepository = Repository(
+                id = someRepositoryId,
                 owner = repositoryOwner,
                 name = createRepositoryData.name,
                 accessMode = createRepositoryData.accessMode,
@@ -107,8 +124,12 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
             )
             val url = result.shouldBeRight()
             url.toString() shouldBe "http://localhost/${repositoryOwner.username}/$someRepositoryName.git"
-            coVerify { repositoryPersistence.addRepository(expectedRepository) }
-            coVerify { gitManager.initRepository(expectedRepository) }
+            coVerify {
+                repositoryPersistence.addRepository(expectedRepository.copy(id = Repository.AUTOINCREMENT_ID))
+            }
+            coVerify {
+                gitManager.initRepository(expectedRepository)
+            }
         }
 
         should("return error if user does not exist") {
@@ -140,6 +161,71 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
             )
 
             result shouldBeLeft RepositoryError.Create.RepositoryAlreadyExists(someUserId, someRepositoryName)
+        }
+
+        should("return error if repository already exists in file system") {
+            coEvery {
+                userPersistence.isUserExists(someUserIdIdentifier)
+            } returns true
+            coEvery {
+                repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName)
+            } returns false
+            coEvery {
+                userPersistence.getUser(someUserIdIdentifier)
+            } returns repositoryOwner
+            coEvery {
+                repositoryPersistence.addRepository(any())
+            } returns someRepositoryId
+            coEvery {
+                gitManager.initRepository(any())
+            } returns GitManager.Error.RepositoryAlreadyExists(someRepository).left()
+            coEvery {
+                localDateTimeProvider.now()
+            } returns nowDateTime
+
+            val result = createRepositoryUseCase(
+                CreateRepositoryData(
+                    ownerId = someRepository.owner.id,
+                    name = someRepository.name,
+                    accessMode = someRepository.accessMode,
+                )
+            )
+
+            result shouldBeLeft RepositoryError.Create.RepositoryAlreadyExists(
+                someRepository.owner.id,
+                someRepository.name,
+            )
+        }
+
+        should("return error if unexpected error happened") {
+            coEvery {
+                userPersistence.isUserExists(someUserIdIdentifier)
+            } returns true
+            coEvery {
+                repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName)
+            } returns false
+            coEvery {
+                userPersistence.getUser(someUserIdIdentifier)
+            } returns repositoryOwner
+            coEvery {
+                repositoryPersistence.addRepository(any())
+            } returns someRepositoryId
+            coEvery {
+                gitManager.initRepository(any())
+            } returns GitManager.Error.Unknown.left()
+            coEvery {
+                localDateTimeProvider.now()
+            } returns nowDateTime
+
+            val result = createRepositoryUseCase(
+                CreateRepositoryData(
+                    ownerId = someRepository.owner.id,
+                    name = someRepository.name,
+                    accessMode = someRepository.accessMode,
+                )
+            )
+
+            result shouldBeLeft RepositoryError.Create.Unknown
         }
     }
 }

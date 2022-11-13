@@ -5,6 +5,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
 object RepositoryError {
 
     sealed interface Create {
+        object Unknown : Create
 
         data class InvalidUserId(val userId: UserId) : Create
 

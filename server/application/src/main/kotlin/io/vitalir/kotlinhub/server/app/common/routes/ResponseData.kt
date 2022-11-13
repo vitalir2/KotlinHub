@@ -24,5 +24,12 @@ data class ResponseData(
                 errorMessage = "bad request",
             )
         }
+
+        fun serverError(): ResponseData {
+            return fromErrorData(
+                code = HttpStatusCode.InternalServerError,
+                errorMessage = "internal server error",
+            )
+        }
     }
 }

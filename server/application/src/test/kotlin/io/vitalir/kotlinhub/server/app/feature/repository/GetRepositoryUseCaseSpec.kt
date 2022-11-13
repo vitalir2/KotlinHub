@@ -33,7 +33,9 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
         )
         val repositoryName = "repository"
         val createdAt = LocalDate.of(2022, 11, 15).atStartOfDay()
+        val someRepositoryId = 123
         val repository = Repository(
+            id = someRepositoryId,
             owner = owner,
             name = repositoryName,
             accessMode = Repository.AccessMode.PUBLIC,

@@ -30,4 +30,9 @@ INSERT INTO repositories (user_id, name, access_mode,
 )
 VALUES (?, ?, ?,
  ?, ?, ?
-);
+)
+RETURNING id;
+
+removeRepositoryById:
+DELETE FROM repositories
+WHERE id = :repositoryId;

@@ -6,6 +6,7 @@ import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.GetRepo
 
 internal fun GetRepositoryByUsernameAndRepositoryName.toDomainModel(): Repository {
     return Repository(
+        id = id,
         owner = User(
             id = user_id!!,
             username = username,

@@ -58,13 +58,20 @@ private fun Either<RepositoryError.Create, Url>.toCreateRepositoryResponseData()
 
 private fun RepositoryError.Create.toResponseData(): ResponseData {
     return when (this) {
-        is RepositoryError.Create.InvalidUserId -> ResponseData.fromErrorData(
-            code = HttpStatusCode.Unauthorized,
-            errorMessage = "unauthorized",
-        )
-        is RepositoryError.Create.RepositoryAlreadyExists -> ResponseData.fromErrorData(
-            code = HttpStatusCode.BadRequest,
-            errorMessage = "repository $repositoryName already exists",
-        )
+        is RepositoryError.Create.InvalidUserId -> {
+            ResponseData.fromErrorData(
+                code = HttpStatusCode.Unauthorized,
+                errorMessage = "unauthorized",
+            )
+        }
+        is RepositoryError.Create.RepositoryAlreadyExists -> {
+            ResponseData.fromErrorData(
+                code = HttpStatusCode.BadRequest,
+                errorMessage = "repository $repositoryName already exists",
+            )
+        }
+        is RepositoryError.Create.Unknown -> {
+            ResponseData.serverError()
+        }
     }
 }
