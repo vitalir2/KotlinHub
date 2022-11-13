@@ -58,7 +58,7 @@ private fun Either<RepositoryError.Create, Url>.toCreateRepositoryResponseData()
 
 private fun RepositoryError.Create.toResponseData(): ResponseData {
     return when (this) {
-        is RepositoryError.Create.InvalidUserId -> {
+        is RepositoryError.Create.UserDoesNotExist -> {
             ResponseData.fromErrorData(
                 code = HttpStatusCode.Unauthorized,
                 errorMessage = "unauthorized",

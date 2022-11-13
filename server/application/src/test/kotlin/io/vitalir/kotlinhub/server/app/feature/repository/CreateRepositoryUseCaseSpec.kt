@@ -145,7 +145,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 )
             )
 
-            result shouldBeLeft RepositoryError.Create.InvalidUserId(notExistingUserId)
+            result shouldBeLeft RepositoryError.Create.UserDoesNotExist(UserIdentifier.Id(notExistingUserId))
         }
 
         should("return error if repository with this name already exists") {

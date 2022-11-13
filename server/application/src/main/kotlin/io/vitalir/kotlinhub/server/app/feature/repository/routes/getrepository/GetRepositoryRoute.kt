@@ -43,10 +43,10 @@ internal fun Route.getRepositoryRoute(
 
 private fun RepositoryError.Get.toResponseData(): ResponseData {
     return when (this) {
-        is RepositoryError.Get.InvalidUsername -> {
+        is RepositoryError.Get.UserDoesNotExist -> {
             ResponseData.fromErrorData(
                 code = HttpStatusCode.NotFound,
-                errorMessage = "no user with username=$username was found",
+                errorMessage = "no user with username=$userIdentifier was found",
             )
         }
         is RepositoryError.Get.RepositoryDoesNotExist -> {

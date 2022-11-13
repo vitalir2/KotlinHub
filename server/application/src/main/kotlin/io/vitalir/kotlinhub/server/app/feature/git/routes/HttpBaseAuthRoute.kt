@@ -89,13 +89,13 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleRepositoryFromR
 
 private fun RepositoryError.Get.toErrorResponseData(): ResponseData {
     return when (this) {
-        is RepositoryError.Get.InvalidUsername -> ResponseData.fromErrorData(
+        is RepositoryError.Get.UserDoesNotExist -> ResponseData.fromErrorData(
             code = HttpStatusCode.BadRequest,
-            errorMessage = "user $username does not exist",
+            errorMessage = "user $userIdentifier does not exist",
         )
         is RepositoryError.Get.RepositoryDoesNotExist -> ResponseData.fromErrorData(
             code = HttpStatusCode.BadRequest,
-            errorMessage = "repository $repositoryName for user $username does not exist",
+            errorMessage = "repository $repositoryName for user $userIdentifier does not exist",
         )
     }
 }

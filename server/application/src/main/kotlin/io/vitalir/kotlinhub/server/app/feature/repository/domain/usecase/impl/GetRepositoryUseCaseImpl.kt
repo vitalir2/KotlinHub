@@ -18,11 +18,13 @@ internal class GetRepositoryUseCaseImpl(
         val identifier = UserIdentifier.Username(username)
         return when {
             userPersistence.isUserExists(identifier).not() -> {
-                RepositoryError.Get.InvalidUsername(username).left()
+                RepositoryError.Get.UserDoesNotExist(UserIdentifier.Username(username)).left()
             }
             else -> {
                 val repository = repositoryPersistence.getRepository(username, repositoryName)
-                repository.rightIfNotNull { RepositoryError.Get.RepositoryDoesNotExist(username, repositoryName) }
+                repository.rightIfNotNull {
+                    RepositoryError.Get.RepositoryDoesNotExist(UserIdentifier.Username(username), repositoryName)
+                }
             }
         }
     }

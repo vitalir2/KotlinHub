@@ -23,11 +23,15 @@ internal class CreateRepositoryUseCaseImpl(
 
     override suspend fun invoke(initData: CreateRepositoryData): CreateRepositoryResult {
         return when {
-            userPersistence.isUserExists(UserIdentifier.Id(initData.ownerId)).not() ->
-                RepositoryError.Create.InvalidUserId(initData.ownerId).left()
-            repositoryPersistence.isRepositoryExists(initData.ownerId, initData.name) ->
+            userPersistence.isUserExists(UserIdentifier.Id(initData.ownerId)).not() -> {
+                RepositoryError.Create.UserDoesNotExist(UserIdentifier.Id(initData.ownerId)).left()
+            }
+            repositoryPersistence.isRepositoryExists(initData.ownerId, initData.name) -> {
                 RepositoryError.Create.RepositoryAlreadyExists(initData.ownerId, initData.name).left()
-            else -> createRepositoryAfterPersistenceValidation(initData)
+            }
+            else -> {
+                createRepositoryAfterPersistenceValidation(initData)
+            }
         }
     }
 
