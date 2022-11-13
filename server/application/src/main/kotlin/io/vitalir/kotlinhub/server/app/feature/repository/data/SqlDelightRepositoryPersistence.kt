@@ -42,6 +42,6 @@ internal class SqlDelightRepositoryPersistence(
     }
 
     override suspend fun removeRepositoryByName(userId: UserId, repositoryName: String) {
-        TODO("Not yet implemented")
+        queries.removeRepositoryByName(userId, repositoryName)
     }
 }

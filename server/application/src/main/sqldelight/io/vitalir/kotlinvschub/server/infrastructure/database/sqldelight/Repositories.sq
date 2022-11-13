@@ -36,3 +36,7 @@ RETURNING id;
 removeRepositoryById:
 DELETE FROM repositories
 WHERE id = :repositoryId;
+
+removeRepositoryByName:
+DELETE FROM repositories
+WHERE user_id = :userId AND name = :repositoryName;
