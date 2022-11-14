@@ -12,12 +12,15 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.RemoveR
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.RemoveRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
+import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
 
 internal class RemoveRepositoryUseCaseSpec : ShouldSpec() {
 
     private lateinit var userPersistence: UserPersistence
 
     private lateinit var repositoryPersistence: RepositoryPersistence
+
+    private lateinit var gitManager: GitManager
 
     private lateinit var removeRepositoryUseCase: RemoveRepositoryUseCase
 
@@ -29,9 +32,11 @@ internal class RemoveRepositoryUseCaseSpec : ShouldSpec() {
         beforeTest {
             userPersistence = mockk()
             repositoryPersistence = spyk()
+            gitManager = spyk()
             removeRepositoryUseCase = RemoveRepositoryUseCaseImpl(
                 userPersistence = userPersistence,
                 repositoryPersistence = repositoryPersistence,
+                gitManager = gitManager,
             )
         }
 
@@ -67,12 +72,37 @@ internal class RemoveRepositoryUseCaseSpec : ShouldSpec() {
             )
         }
 
+        should("return error if removal was not successful") {
+            coEvery {
+                userPersistence.isUserExists(someUserIdentifier)
+            } returns true
+            coEvery {
+                repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName)
+            } returns true
+            coEvery {
+                gitManager.removeRepositoryByName(someUserId, someRepositoryName)
+            } returns false
+
+            val result = removeRepositoryUseCase(
+                userId = someUserId,
+                repositoryName = someRepositoryName,
+            )
+
+            result shouldBeLeft RemoveRepositoryUseCase.Error.Unknown
+            coVerify(inverse = true) {
+                repositoryPersistence.removeRepositoryByName(someUserId, someRepositoryName)
+            }
+        }
+
         should("remove repository successfully if it exists for the specific user") {
             coEvery {
                 userPersistence.isUserExists(someUserIdentifier)
             } returns true
             coEvery {
                 repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName)
+            } returns true
+            coEvery {
+                gitManager.removeRepositoryByName(someUserId, someRepositoryName)
             } returns true
 
             val result = removeRepositoryUseCase(

@@ -47,5 +47,8 @@ private fun RemoveRepositoryUseCase.Error.toResponseData(): ResponseData {
                 errorMessage = "user with identifier=$userIdentifier does not exist",
             )
         }
+        is RemoveRepositoryUseCase.Error.Unknown -> {
+            ResponseData.serverError()
+        }
     }
 }

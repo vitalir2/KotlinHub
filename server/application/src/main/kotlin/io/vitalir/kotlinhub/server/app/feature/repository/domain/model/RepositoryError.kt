@@ -7,7 +7,7 @@ object RepositoryError {
 
     // TODO move to use case classes
     sealed interface Create {
-        object Unknown : Create
+        object Unknown : Create, Common.Unknown
 
         data class UserDoesNotExist(
             override val userIdentifier: UserIdentifier,
@@ -32,6 +32,8 @@ object RepositoryError {
     }
 
     sealed interface Common {
+
+        interface Unknown : Common
 
         interface UserDoesNotExist : Common {
 

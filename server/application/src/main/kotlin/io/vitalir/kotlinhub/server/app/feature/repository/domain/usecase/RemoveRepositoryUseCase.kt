@@ -13,6 +13,8 @@ interface RemoveRepositoryUseCase {
     ): Either<Error, Unit>
 
     sealed interface Error {
+
+        object Unknown : Error, RepositoryError.Common.Unknown
         data class UserDoesNotExist(
             override val userIdentifier: UserIdentifier,
         ) : Error, RepositoryError.Common.UserDoesNotExist

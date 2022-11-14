@@ -84,14 +84,15 @@ internal class AppGraphFactoryImpl(
         val repositoryPersistence = SqlDelightRepositoryPersistence(
             mainDatabase = database,
         )
+        val gitManager = GitManagerImpl(
+            repositoryConfig = repositoryConfig,
+        )
         return AppGraph.RepositoryGraph(
             createRepositoryUseCase = CreateRepositoryUseCaseImpl(
                 userPersistence = userPersistence,
                 repositoryPersistence = repositoryPersistence,
                 localDateTimeProvider = JavaLocalDateTimeProvider(),
-                gitManager = GitManagerImpl(
-                    repositoryConfig = repositoryConfig,
-                ),
+                gitManager = gitManager,
             ),
             getRepositoryUseCase = GetRepositoryUseCaseImpl(
                 userPersistence = userPersistence,
@@ -100,6 +101,7 @@ internal class AppGraphFactoryImpl(
             removeRepositoryUseCase = RemoveRepositoryUseCaseImpl(
                 userPersistence = userPersistence,
                 repositoryPersistence = repositoryPersistence,
+                gitManager = gitManager,
             )
         )
     }
