@@ -58,7 +58,6 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleGetRepositoryRe
     }
 }
 
-// TODO pass logger here
 private suspend fun PipelineContext<Unit, ApplicationCall>.handleRepositoryFromResult(
     request: GitAuthRequest,
     repository: Repository,
