@@ -2,10 +2,10 @@ package io.vitalir.kotlinhub.shared.common.network
 
 import kotlin.text.StringBuilder
 
-class Url(
+data class Url(
     val scheme: Scheme,
     val host: String,
-    val path: Path,
+    val path: Path = Path(),
     val port: Int? = null,
     val queryParams: Map<String, String> = emptyMap(),
 ) {

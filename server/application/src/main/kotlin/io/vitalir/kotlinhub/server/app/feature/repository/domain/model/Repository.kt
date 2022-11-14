@@ -17,10 +17,8 @@ data class Repository(
     val description: String? = null,
 ) {
 
-    fun createResourceUrl(): Url {
-        return Url(
-            scheme = Scheme.HTTP, // TODO pass scheme / host
-            host = "localhost",
+    fun createResourceUrl(baseUrl: Url): Url {
+        return baseUrl.copy(
             path = Path(
                 owner.id.toString(),
                 "$name.git",

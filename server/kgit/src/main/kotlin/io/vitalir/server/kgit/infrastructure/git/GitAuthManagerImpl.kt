@@ -1,8 +1,7 @@
 package io.vitalir.server.kgit.infrastructure.git
 
 import io.vitalir.kotlinhub.shared.common.network.Path
-import io.vitalir.kotlinhub.shared.common.network.Scheme
-import io.vitalir.kotlinhub.shared.common.network.Url
+import io.vitalir.kotlinhub.shared.common.network.ServicesInfo
 import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.server.kgit.infrastructure.client.KGitHttpClient
@@ -17,14 +16,11 @@ internal class GitAuthManagerImpl(
         repositoryName: String,
         credentials: String?,
     ): Boolean {
-        val uri = Url(
-            scheme = Scheme.HTTP,
-            host = "app", // TODO make config with these values
-            port = 8080,
+        val url = ServicesInfo.App.mainUrl.copy(
             path = Path("git", "http", "auth"),
         )
         val response = httpClient.post(
-            url = uri,
+            url = url,
             body = GitAuthRequest(
                 userId = userId,
                 repositoryName = repositoryName,
