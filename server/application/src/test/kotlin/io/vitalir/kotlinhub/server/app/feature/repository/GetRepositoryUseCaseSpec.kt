@@ -54,9 +54,9 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
 
         should("return repository if it exists") {
             coEvery { userPersistence.isUserExists(usernameIdentifier) } returns true
-            coEvery { repositoryPersistence.getRepository(username, repositoryName) } returns repository
+            coEvery { repositoryPersistence.getRepository(usernameIdentifier, repositoryName) } returns repository
 
-            val result = getRepositoryUseCase(username, repositoryName)
+            val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 
             result shouldBeRight repository
         }
@@ -64,16 +64,16 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
         should("return error if user does not exist") {
             coEvery { userPersistence.isUserExists(usernameIdentifier) } returns false
 
-            val result = getRepositoryUseCase(username, repositoryName)
+            val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 
             result shouldBeLeft RepositoryError.Get.UserDoesNotExist(UserIdentifier.Username(username))
         }
 
         should("return error if repository does not exist") {
             coEvery { userPersistence.isUserExists(usernameIdentifier) } returns true
-            coEvery { repositoryPersistence.getRepository(username, repositoryName) } returns null
+            coEvery { repositoryPersistence.getRepository(usernameIdentifier, repositoryName) } returns null
 
-            val result = getRepositoryUseCase(username, repositoryName)
+            val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 
             result shouldBeLeft RepositoryError.Get.RepositoryDoesNotExist(
                 UserIdentifier.Username(username), repositoryName

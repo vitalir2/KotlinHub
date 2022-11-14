@@ -2,9 +2,9 @@ package io.vitalir.kotlinhub.server.app.feature.repository.data
 
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
-import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.GetRepositoryByUsernameAndRepositoryName
+import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.GetRepositoryByUserIdAndNameJoined
 
-internal fun GetRepositoryByUsernameAndRepositoryName.toDomainModel(): Repository {
+internal fun GetRepositoryByUserIdAndNameJoined.toDomainModel(): Repository {
     return Repository(
         id = id,
         owner = User(

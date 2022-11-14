@@ -4,6 +4,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repositor
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryId
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.RepositoriesQueries
 
@@ -30,9 +31,13 @@ internal class SqlDelightRepositoryPersistence(
         ).executeAsOne()
     }
 
-    override suspend fun getRepository(username: String, repositoryName: String): Repository? {
-        return queries.getRepositoryByUsernameAndRepositoryName(
-            username = username,
+    override suspend fun getRepository(
+        userIdentifier: UserIdentifier,
+        repositoryName: String
+    ): Repository? {
+        if (userIdentifier !is UserIdentifier.Id) return null // TODO remove and use all identifiers
+        return queries.getRepositoryByUserIdAndNameJoined(
+            userId = userIdentifier.value,
             repositoryName = repositoryName,
         ).executeAsOneOrNull()?.toDomainModel()
     }

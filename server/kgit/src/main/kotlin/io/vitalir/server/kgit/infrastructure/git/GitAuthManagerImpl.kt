@@ -4,6 +4,7 @@ import io.vitalir.kotlinhub.shared.common.network.Path
 import io.vitalir.kotlinhub.shared.common.network.Scheme
 import io.vitalir.kotlinhub.shared.common.network.Url
 import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.server.kgit.infrastructure.client.KGitHttpClient
 import io.vitalir.server.kgit.infrastructure.client.Response
 
@@ -12,8 +13,8 @@ internal class GitAuthManagerImpl(
 ) : GitAuthManager {
 
     override suspend fun hasAccess(
+        userId: UserId,
         repositoryName: String,
-        username: String,
         credentials: String?,
     ): Boolean {
         val uri = Url(
@@ -25,8 +26,8 @@ internal class GitAuthManagerImpl(
         val response = httpClient.post(
             url = uri,
             body = GitAuthRequest(
+                userId = userId,
                 repositoryName = repositoryName,
-                username = username,
                 credentials = credentials,
             ),
         )

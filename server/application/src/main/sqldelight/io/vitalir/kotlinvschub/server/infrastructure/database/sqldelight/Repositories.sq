@@ -16,12 +16,12 @@ FROM repositories
 WHERE user_id = :user_id AND name = :name
 LIMIT 1;
 
-getRepositoryByUsernameAndRepositoryName:
+getRepositoryByUserIdAndNameJoined:
 SELECT *
 FROM repositories AS r
 INNER JOIN users AS u
 ON r.user_id = u.id
-WHERE u.username = :username AND r.name = :repositoryName
+WHERE u.id = :userId AND r.name = :repositoryName
 LIMIT 1;
 
 insertRepository:

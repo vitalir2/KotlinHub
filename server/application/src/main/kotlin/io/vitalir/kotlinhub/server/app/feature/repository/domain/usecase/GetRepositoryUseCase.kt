@@ -3,11 +3,13 @@ package io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase
 import arrow.core.Either
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 
 interface GetRepositoryUseCase {
 
     suspend operator fun invoke(
-        username: String,
+        userIdentifier: UserIdentifier,
         repositoryName: String,
     ): GetRepositoryResult
 }

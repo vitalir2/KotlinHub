@@ -22,7 +22,7 @@ data class Repository(
             scheme = Scheme.HTTP, // TODO pass scheme / host
             host = "localhost",
             path = Path(
-                owner.username,
+                owner.id.toString(),
                 "$name.git",
             )
         )

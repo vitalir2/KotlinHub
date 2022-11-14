@@ -8,22 +8,25 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepo
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 
 internal class GetRepositoryUseCaseImpl(
     private val repositoryPersistence: RepositoryPersistence,
     private val userPersistence: UserPersistence,
 ) : GetRepositoryUseCase {
 
-    override suspend fun invoke(username: String, repositoryName: String): GetRepositoryResult {
-        val identifier = UserIdentifier.Username(username)
+    override suspend fun invoke(
+        userIdentifier: UserIdentifier,
+        repositoryName: String,
+    ): GetRepositoryResult {
         return when {
-            userPersistence.isUserExists(identifier).not() -> {
-                RepositoryError.Get.UserDoesNotExist(UserIdentifier.Username(username)).left()
+            userPersistence.isUserExists(userIdentifier).not() -> {
+                RepositoryError.Get.UserDoesNotExist(userIdentifier).left()
             }
             else -> {
-                val repository = repositoryPersistence.getRepository(username, repositoryName)
+                val repository = repositoryPersistence.getRepository(userIdentifier, repositoryName)
                 repository.rightIfNotNull {
-                    RepositoryError.Get.RepositoryDoesNotExist(UserIdentifier.Username(username), repositoryName)
+                    RepositoryError.Get.RepositoryDoesNotExist(userIdentifier, repositoryName)
                 }
             }
         }

@@ -14,6 +14,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repositor
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryResult
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.logging.Logger
 import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
 
@@ -25,7 +26,7 @@ internal fun Route.httpBaseAuth(
     post("http/auth/") {
         val request = call.receive<GitAuthRequest>()
         val result = getRepositoryUseCase(
-            username = request.username,
+            userIdentifier = UserIdentifier.Id(request.userId),
             repositoryName = request.repositoryName,
         )
         handleGetRepositoryResult(
