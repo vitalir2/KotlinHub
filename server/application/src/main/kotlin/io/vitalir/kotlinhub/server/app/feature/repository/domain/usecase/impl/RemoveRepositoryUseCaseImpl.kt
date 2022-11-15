@@ -5,7 +5,7 @@ import arrow.core.left
 import arrow.core.right
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.RemoveRepositoryUseCase
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager

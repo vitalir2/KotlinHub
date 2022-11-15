@@ -4,12 +4,12 @@ import arrow.core.Either
 import arrow.core.continuations.EffectScope
 import arrow.core.continuations.either
 import arrow.core.left
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.UpdateUserResult
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.UpdateUserUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.domain.validation.UserValidationRule
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 
 internal class UpdateUserUseCaseImpl(
     private val userPersistence: UserPersistence,

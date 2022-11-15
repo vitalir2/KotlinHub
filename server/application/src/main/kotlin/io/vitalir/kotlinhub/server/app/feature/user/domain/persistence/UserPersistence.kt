@@ -3,8 +3,8 @@ package io.vitalir.kotlinhub.server.app.feature.user.domain.persistence
 import arrow.core.Either
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 
 interface UserPersistence {
 

@@ -2,7 +2,7 @@ package io.vitalir.kotlinhub.server.app.infrastructure.git
 
 import arrow.core.Either
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import java.nio.file.Path
 import org.eclipse.jgit.lib.RepositoryBuilder

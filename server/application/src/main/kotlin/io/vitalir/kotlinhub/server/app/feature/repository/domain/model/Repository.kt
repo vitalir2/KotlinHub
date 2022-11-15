@@ -3,7 +3,6 @@ package io.vitalir.kotlinhub.server.app.feature.repository.domain.model
 import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.shared.common.network.Path
-import io.vitalir.kotlinhub.shared.common.network.Scheme
 import io.vitalir.kotlinhub.shared.common.network.Url
 import java.time.LocalDateTime
 

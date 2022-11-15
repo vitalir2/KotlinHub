@@ -2,7 +2,7 @@ package io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase
 
 import arrow.core.Either
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 
 interface RemoveRepositoryUseCase {

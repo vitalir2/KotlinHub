@@ -3,7 +3,7 @@ package io.vitalir.kotlinhub.server.app.feature.repository.data
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryId
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.RepositoriesQueries

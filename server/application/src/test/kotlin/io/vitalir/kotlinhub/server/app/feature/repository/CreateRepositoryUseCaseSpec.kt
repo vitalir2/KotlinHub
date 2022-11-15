@@ -25,7 +25,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.Rep
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager

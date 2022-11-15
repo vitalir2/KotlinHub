@@ -1,6 +1,6 @@
 package io.vitalir.kotlinhub.server.app.feature.user.routes.registration
 
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import kotlinx.serialization.Serializable
 
 @Serializable
