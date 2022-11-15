@@ -1,50 +1,20 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.domain.model
 
-import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 
-object RepositoryError {
+sealed interface RepositoryError {
 
-    // TODO move to use case classes
-    sealed interface Create {
-        object Unknown : Create, Common.Unknown
+    interface Unknown : RepositoryError
 
-        data class UserDoesNotExist(
-            override val userIdentifier: UserIdentifier,
-        ) : Create, Common.UserDoesNotExist
+    interface UserDoesNotExist : RepositoryError {
 
-        data class RepositoryAlreadyExists(
-            val userId: UserId,
-            val repositoryName: String,
-        ) : Create
+        val userIdentifier: UserIdentifier
     }
 
-    sealed interface Get {
+    interface RepositoryDoesNotExist : RepositoryError {
 
-        data class UserDoesNotExist(
-            override val userIdentifier: UserIdentifier,
-        ) : Get, Common.UserDoesNotExist
+        val userIdentifier: UserIdentifier
 
-        data class RepositoryDoesNotExist(
-            override val userIdentifier: UserIdentifier,
-            override val repositoryName: String,
-        ) : Get, Common.RepositoryDoesNotExist
-    }
-
-    sealed interface Common {
-
-        interface Unknown : Common
-
-        interface UserDoesNotExist : Common {
-
-            val userIdentifier: UserIdentifier
-        }
-
-        interface RepositoryDoesNotExist : Common {
-
-            val userIdentifier: UserIdentifier
-
-            val repositoryName: String
-        }
+        val repositoryName: String
     }
 }

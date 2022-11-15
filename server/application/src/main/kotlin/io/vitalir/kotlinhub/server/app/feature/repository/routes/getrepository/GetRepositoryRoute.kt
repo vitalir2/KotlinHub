@@ -7,7 +7,6 @@ import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.ApiRepository
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
@@ -42,15 +41,15 @@ internal fun Route.getRepositoryRoute(
     }
 }
 
-private fun RepositoryError.Get.toResponseData(): ResponseData {
+private fun GetRepositoryUseCase.Error.toResponseData(): ResponseData {
     return when (this) {
-        is RepositoryError.Get.UserDoesNotExist -> {
+        is GetRepositoryUseCase.Error.UserDoesNotExist -> {
             ResponseData.fromErrorData(
                 code = HttpStatusCode.NotFound,
                 errorMessage = "no user with username=$userIdentifier was found",
             )
         }
-        is RepositoryError.Get.RepositoryDoesNotExist -> {
+        is GetRepositoryUseCase.Error.RepositoryDoesNotExist -> {
             ResponseData.fromErrorData(
                 code = HttpStatusCode.NotFound,
                 errorMessage = "no repository with name=$repositoryName was found"

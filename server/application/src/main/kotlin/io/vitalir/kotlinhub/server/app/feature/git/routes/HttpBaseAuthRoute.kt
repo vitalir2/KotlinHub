@@ -9,12 +9,11 @@ import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthManager
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryResult
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthManager
 import io.vitalir.kotlinhub.server.app.infrastructure.logging.Logger
 import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
 
@@ -87,13 +86,13 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleRepositoryFromR
     }
 }
 
-private fun RepositoryError.Get.toErrorResponseData(): ResponseData {
+private fun GetRepositoryUseCase.Error.toErrorResponseData(): ResponseData {
     return when (this) {
-        is RepositoryError.Get.UserDoesNotExist -> ResponseData.fromErrorData(
+        is GetRepositoryUseCase.Error.UserDoesNotExist -> ResponseData.fromErrorData(
             code = HttpStatusCode.BadRequest,
             errorMessage = "user $userIdentifier does not exist",
         )
-        is RepositoryError.Get.RepositoryDoesNotExist -> ResponseData.fromErrorData(
+        is GetRepositoryUseCase.Error.RepositoryDoesNotExist -> ResponseData.fromErrorData(
             code = HttpStatusCode.BadRequest,
             errorMessage = "repository $repositoryName for user $userIdentifier does not exist",
         )

@@ -20,15 +20,14 @@ import io.mockk.spyk
 import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
-import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import java.time.LocalDateTime
 
 internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
@@ -145,7 +144,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 )
             )
 
-            result shouldBeLeft RepositoryError.Create.UserDoesNotExist(UserIdentifier.Id(notExistingUserId))
+            result shouldBeLeft CreateRepositoryUseCase.Error.UserDoesNotExist(UserIdentifier.Id(notExistingUserId))
         }
 
         should("return error if repository with this name already exists") {
@@ -160,7 +159,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 )
             )
 
-            result shouldBeLeft RepositoryError.Create.RepositoryAlreadyExists(someUserId, someRepositoryName)
+            result shouldBeLeft CreateRepositoryUseCase.Error.RepositoryAlreadyExists(someUserId, someRepositoryName)
         }
 
         should("return error if repository already exists in file system") {
@@ -191,7 +190,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 )
             )
 
-            result shouldBeLeft RepositoryError.Create.RepositoryAlreadyExists(
+            result shouldBeLeft CreateRepositoryUseCase.Error.RepositoryAlreadyExists(
                 someRepository.owner.id,
                 someRepository.name,
             )
@@ -225,7 +224,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 )
             )
 
-            result shouldBeLeft RepositoryError.Create.Unknown
+            result shouldBeLeft CreateRepositoryUseCase.Error.Unknown
         }
     }
 }

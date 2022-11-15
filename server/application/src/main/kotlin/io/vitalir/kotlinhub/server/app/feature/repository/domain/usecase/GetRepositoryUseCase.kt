@@ -4,7 +4,6 @@ import arrow.core.Either
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
-import io.vitalir.kotlinhub.shared.feature.user.UserId
 
 interface GetRepositoryUseCase {
 
@@ -12,6 +11,18 @@ interface GetRepositoryUseCase {
         userIdentifier: UserIdentifier,
         repositoryName: String,
     ): GetRepositoryResult
+
+    sealed interface Error {
+
+        data class UserDoesNotExist(
+            override val userIdentifier: UserIdentifier,
+        ) : Error, RepositoryError.UserDoesNotExist
+
+        data class RepositoryDoesNotExist(
+            override val userIdentifier: UserIdentifier,
+            override val repositoryName: String,
+        ) : Error, RepositoryError.RepositoryDoesNotExist
+    }
 }
 
-typealias GetRepositoryResult = Either<RepositoryError.Get, Repository>
+typealias GetRepositoryResult = Either<GetRepositoryUseCase.Error, Repository>

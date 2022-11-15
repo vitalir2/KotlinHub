@@ -14,14 +14,14 @@ interface RemoveRepositoryUseCase {
 
     sealed interface Error {
 
-        object Unknown : Error, RepositoryError.Common.Unknown
+        object Unknown : Error, RepositoryError.Unknown
         data class UserDoesNotExist(
             override val userIdentifier: UserIdentifier,
-        ) : Error, RepositoryError.Common.UserDoesNotExist
+        ) : Error, RepositoryError.UserDoesNotExist
 
         data class RepositoryDoesNotExist(
             override val userIdentifier: UserIdentifier,
             override val repositoryName: String,
-        ) : Error, RepositoryError.Common.RepositoryDoesNotExist
+        ) : Error, RepositoryError.RepositoryDoesNotExist
     }
 }

@@ -9,7 +9,6 @@ import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.getrepository.getRepositoryRoute
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.remove.removeRepositoryForCurrentUserRoute
@@ -50,7 +49,7 @@ private fun Route.createRepositoryRoute(
     }
 }
 
-private fun Either<RepositoryError.Create, Url>.toCreateRepositoryResponseData(): ResponseData {
+private fun Either<CreateRepositoryUseCase.Error, Url>.toCreateRepositoryResponseData(): ResponseData {
     return when (this) {
         is Either.Left -> value.toResponseData()
         is Either.Right -> ResponseData(
@@ -60,21 +59,21 @@ private fun Either<RepositoryError.Create, Url>.toCreateRepositoryResponseData()
     }
 }
 
-private fun RepositoryError.Create.toResponseData(): ResponseData {
+private fun CreateRepositoryUseCase.Error.toResponseData(): ResponseData {
     return when (this) {
-        is RepositoryError.Create.UserDoesNotExist -> {
+        is CreateRepositoryUseCase.Error.UserDoesNotExist -> {
             ResponseData.fromErrorData(
                 code = HttpStatusCode.Unauthorized,
                 errorMessage = "unauthorized",
             )
         }
-        is RepositoryError.Create.RepositoryAlreadyExists -> {
+        is CreateRepositoryUseCase.Error.RepositoryAlreadyExists -> {
             ResponseData.fromErrorData(
                 code = HttpStatusCode.BadRequest,
                 errorMessage = "repository $repositoryName already exists",
             )
         }
-        is RepositoryError.Create.Unknown -> {
+        is CreateRepositoryUseCase.Error.Unknown -> {
             ResponseData.serverError()
         }
     }

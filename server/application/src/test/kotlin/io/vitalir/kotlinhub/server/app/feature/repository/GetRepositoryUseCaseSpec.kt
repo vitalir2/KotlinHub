@@ -6,7 +6,6 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
@@ -66,7 +65,7 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
 
             val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 
-            result shouldBeLeft RepositoryError.Get.UserDoesNotExist(UserIdentifier.Username(username))
+            result shouldBeLeft GetRepositoryUseCase.Error.UserDoesNotExist(UserIdentifier.Username(username))
         }
 
         should("return error if repository does not exist") {
@@ -75,7 +74,7 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
 
             val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 
-            result shouldBeLeft RepositoryError.Get.RepositoryDoesNotExist(
+            result shouldBeLeft GetRepositoryUseCase.Error.RepositoryDoesNotExist(
                 UserIdentifier.Username(username), repositoryName
             )
         }

@@ -6,7 +6,6 @@ import arrow.core.right
 import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryResult
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
@@ -25,10 +24,10 @@ internal class CreateRepositoryUseCaseImpl(
     override suspend fun invoke(initData: CreateRepositoryData): CreateRepositoryResult {
         return when {
             userPersistence.isUserExists(UserIdentifier.Id(initData.ownerId)).not() -> {
-                RepositoryError.Create.UserDoesNotExist(UserIdentifier.Id(initData.ownerId)).left()
+                CreateRepositoryUseCase.Error.UserDoesNotExist(UserIdentifier.Id(initData.ownerId)).left()
             }
             repositoryPersistence.isRepositoryExists(initData.ownerId, initData.name) -> {
-                RepositoryError.Create.RepositoryAlreadyExists(initData.ownerId, initData.name).left()
+                CreateRepositoryUseCase.Error.RepositoryAlreadyExists(initData.ownerId, initData.name).left()
             }
             else -> {
                 createRepositoryAfterPersistenceValidation(initData)
@@ -61,16 +60,16 @@ internal class CreateRepositoryUseCaseImpl(
     }
 
     companion object {
-        private fun GitManager.Error.toCreateError(): RepositoryError.Create {
+        private fun GitManager.Error.toCreateError(): CreateRepositoryUseCase.Error {
             return when (this) {
                 is GitManager.Error.RepositoryAlreadyExists -> {
-                    RepositoryError.Create.RepositoryAlreadyExists(
+                    CreateRepositoryUseCase.Error.RepositoryAlreadyExists(
                         userId = repository.owner.id,
                         repositoryName = repository.name,
                     )
                 }
                 is GitManager.Error.Unknown -> {
-                    RepositoryError.Create.Unknown
+                    CreateRepositoryUseCase.Error.Unknown
                 }
             }
         }
