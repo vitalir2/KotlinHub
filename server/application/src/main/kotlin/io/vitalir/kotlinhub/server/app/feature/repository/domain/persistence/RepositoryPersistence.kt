@@ -1,6 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence
 
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 
@@ -8,6 +9,11 @@ interface RepositoryPersistence {
 
     suspend fun isRepositoryExists(
         userId: UserId,
+        name: String,
+    ): Boolean
+
+    suspend fun isRepositoryExists(
+        userIdentifier: UserIdentifier,
         name: String,
     ): Boolean
 
@@ -23,5 +29,11 @@ interface RepositoryPersistence {
     suspend fun removeRepositoryByName(
         userId: UserId,
         repositoryName: String,
+    )
+
+    fun updateRepository(
+        userIdentifier: UserIdentifier,
+        repositoryName: String,
+        updateRepositoryData: UpdateRepositoryData,
     )
 }

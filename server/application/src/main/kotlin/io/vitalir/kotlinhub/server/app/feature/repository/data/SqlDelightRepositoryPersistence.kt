@@ -3,6 +3,7 @@ package io.vitalir.kotlinhub.server.app.feature.repository.data
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryId
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
@@ -18,6 +19,10 @@ internal class SqlDelightRepositoryPersistence(
     override suspend fun isRepositoryExists(userId: UserId, name: String): Boolean {
         return queries.getRepositoryByUserIdAndName(userId, name)
             .executeAsOneOrNull() != null
+    }
+
+    override suspend fun isRepositoryExists(userIdentifier: UserIdentifier, name: String): Boolean {
+        TODO()
     }
 
     override suspend fun addRepository(repository: Repository): RepositoryId {
@@ -48,5 +53,13 @@ internal class SqlDelightRepositoryPersistence(
 
     override suspend fun removeRepositoryByName(userId: UserId, repositoryName: String) {
         queries.removeRepositoryByName(userId, repositoryName)
+    }
+
+    override fun updateRepository(
+        userIdentifier: UserIdentifier,
+        repositoryName: String,
+        updateRepositoryData: UpdateRepositoryData,
+    ) {
+        TODO("Not yet implemented")
     }
 }
