@@ -40,3 +40,13 @@ WHERE id = :repositoryId;
 removeRepositoryByName:
 DELETE FROM repositories
 WHERE user_id = :userId AND name = :repositoryName;
+
+updateRepositoryAccessMode:
+UPDATE repositories
+SET access_mode = :accessMode
+WHERE user_id = :userId AND name = :name;
+
+updateRepositoryUpdatedAt:
+UPDATE repositories
+SET updated_at = :updatedAt
+WHERE user_id = :userId AND name = :name;

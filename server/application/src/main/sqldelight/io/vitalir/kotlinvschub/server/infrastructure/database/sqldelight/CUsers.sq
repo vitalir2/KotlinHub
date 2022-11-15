@@ -24,6 +24,16 @@ SELECT * FROM users
 WHERE email = ?
 LIMIT 1;
 
+getUserIdByEmail:
+SELECT id FROM users
+WHERE email = :email
+LIMIT 1;
+
+getUserIdByUsername:
+SELECT id FROM users
+WHERE username = :username
+LIMIT 1;
+
 insert:
 INSERT INTO users (username, password, email)
 VALUES (?, ?, ?);
