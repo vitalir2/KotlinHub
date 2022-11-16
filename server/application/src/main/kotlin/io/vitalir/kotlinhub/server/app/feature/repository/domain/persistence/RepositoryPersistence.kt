@@ -2,15 +2,10 @@ package io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence
 
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
-import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 
 interface RepositoryPersistence {
-
-    suspend fun isRepositoryExists(
-        userId: UserId,
-        name: String,
-    ): Boolean
 
     suspend fun isRepositoryExists(
         userIdentifier: UserIdentifier,

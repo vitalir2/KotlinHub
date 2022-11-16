@@ -1,6 +1,6 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl
 
-import arrow.core.left
+import arrow.core.continuations.either
 import arrow.core.rightIfNotNull
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryResult
@@ -17,17 +17,13 @@ internal class GetRepositoryUseCaseImpl(
         userIdentifier: UserIdentifier,
         repositoryName: String,
     ): GetRepositoryResult {
-        return when {
-            userPersistence.isUserExists(userIdentifier).not() -> {
-                GetRepositoryUseCase.Error.UserDoesNotExist(userIdentifier).left()
-            }
-            else -> {
-                val repository = repositoryPersistence.getRepository(userIdentifier, repositoryName)
-                repository.rightIfNotNull {
-                    GetRepositoryUseCase.Error.RepositoryDoesNotExist(userIdentifier, repositoryName)
-                }
-            }
+        return either {
+            userPersistence.getUser(userIdentifier).rightIfNotNull {
+                GetRepositoryUseCase.Error.UserDoesNotExist(userIdentifier)
+            }.bind()
+            repositoryPersistence.getRepository(userIdentifier, repositoryName).rightIfNotNull {
+                GetRepositoryUseCase.Error.RepositoryDoesNotExist(userIdentifier, repositoryName)
+            }.bind()
         }
     }
-
 }

@@ -11,6 +11,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.Rep
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.UpdateRepositoryUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import java.time.LocalDateTime
@@ -35,15 +36,28 @@ internal class UpdateRepositoryUseCaseSpec : ShouldSpec() {
 
         val someUserId = 123
         val someUserIdentifier = UserIdentifier.Id(someUserId)
+        val someUser = User(
+            id = someUserId,
+            username = "someusername",
+            password = "somepassword",
+        )
         val someRepositoryName = "helloworld"
+        val someRepository = Repository(
+            id = 123,
+            owner = someUser,
+            name = someRepositoryName,
+            accessMode = Repository.AccessMode.PUBLIC,
+            createdAt = LocalDateTime.MIN,
+            updatedAt = LocalDateTime.MIN,
+        )
         val someUpdateRepositoryData = UpdateRepositoryData(accessMode = Repository.AccessMode.PRIVATE)
 
         should("return error if user does not exist") {
             val userId = 132
             val userIdentifier = UserIdentifier.Id(userId)
             coEvery {
-                userPersistence.isUserExists(userIdentifier)
-            } returns false
+                userPersistence.getUser(userIdentifier)
+            } returns null
 
             val result = updateRepositoryUseCase(
                 userIdentifier = userIdentifier,
@@ -60,11 +74,11 @@ internal class UpdateRepositoryUseCaseSpec : ShouldSpec() {
         should("return error if repository for user does not exist") {
             val repositoryName = "reponame"
             coEvery {
-                userPersistence.isUserExists(someUserIdentifier)
-            } returns true
+                userPersistence.getUser(someUserIdentifier)
+            } returns someUser
             coEvery {
-                repositoryPersistence.isRepositoryExists(someUserIdentifier, repositoryName)
-            } returns false
+                repositoryPersistence.getRepository(someUserIdentifier, repositoryName)
+            } returns null
 
             val result = updateRepositoryUseCase(
                 userIdentifier = someUserIdentifier,
@@ -83,11 +97,11 @@ internal class UpdateRepositoryUseCaseSpec : ShouldSpec() {
 
         should("return success if repository for user exists and repository name update successful") {
             coEvery {
-                userPersistence.isUserExists(someUserIdentifier)
-            } returns true
+                userPersistence.getUser(someUserIdentifier)
+            } returns someUser
             coEvery {
-                repositoryPersistence.isRepositoryExists(someUserIdentifier, someRepositoryName)
-            } returns true
+                repositoryPersistence.getRepository(someUserIdentifier, someRepositoryName)
+            } returns someRepository
             coEvery {
                 repositoryPersistence.updateRepository(any(), any(), any())
             } returns Unit

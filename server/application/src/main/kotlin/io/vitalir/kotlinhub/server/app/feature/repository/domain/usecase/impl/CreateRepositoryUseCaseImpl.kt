@@ -1,14 +1,18 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl
 
 import arrow.core.Either
+import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
+import arrow.core.rightIfNotNull
+import arrow.core.rightIfNull
 import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryResult
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
@@ -22,25 +26,24 @@ internal class CreateRepositoryUseCaseImpl(
 ) : CreateRepositoryUseCase {
 
     override suspend fun invoke(initData: CreateRepositoryData): CreateRepositoryResult {
-        return when {
-            userPersistence.isUserExists(UserIdentifier.Id(initData.ownerId)).not() -> {
-                CreateRepositoryUseCase.Error.UserDoesNotExist(UserIdentifier.Id(initData.ownerId)).left()
-            }
-            repositoryPersistence.isRepositoryExists(initData.ownerId, initData.name) -> {
-                CreateRepositoryUseCase.Error.RepositoryAlreadyExists(initData.ownerId, initData.name).left()
-            }
-            else -> {
-                createRepositoryAfterPersistenceValidation(initData)
-            }
+        return either {
+            val userIdentifier = UserIdentifier.Id(initData.ownerId)
+            val user = userPersistence.getUser(userIdentifier).rightIfNotNull {
+                CreateRepositoryUseCase.Error.UserDoesNotExist(userIdentifier)
+            }.bind()
+            repositoryPersistence.getRepository(userIdentifier, initData.name).rightIfNull {
+                CreateRepositoryUseCase.Error.RepositoryAlreadyExists(initData.ownerId, initData.name)
+            }.bind()
+            createRepositoryAfterPersistenceValidation(user, initData).bind()
         }
     }
 
     private suspend fun createRepositoryAfterPersistenceValidation(
-        initData: CreateRepositoryData
+        owner: User,
+        initData: CreateRepositoryData,
     ): CreateRepositoryResult {
         val repository = Repository.fromInitData(
-            // TODO remove double bang; it can cause crashes in multi-thread env
-            owner = userPersistence.getUser(UserIdentifier.Id(initData.ownerId))!!,
+            owner = owner,
             initData = initData,
             localDateTimeProvider = localDateTimeProvider,
         )
@@ -48,9 +51,10 @@ internal class CreateRepositoryUseCaseImpl(
         val repositoryWithRealId = repository.copy(id = realRepositoryId)
         return when (val result = gitManager.initRepository(repositoryWithRealId)) {
             is Either.Left -> {
-                repositoryPersistence.removeRepositoryById(realRepositoryId)
+                repositoryPersistence.removeRepositoryById(realRepositoryId) // TODO think about transactions
                 result.value.toCreateError().left()
             }
+
             is Either.Right -> {
                 repositoryWithRealId.createResourceUrl(
                     baseUrl = ServicesInfo.ReverseProxy.mainUrl,
@@ -68,6 +72,7 @@ internal class CreateRepositoryUseCaseImpl(
                         repositoryName = repository.name,
                     )
                 }
+
                 is GitManager.Error.Unknown -> {
                     CreateRepositoryUseCase.Error.Unknown
                 }

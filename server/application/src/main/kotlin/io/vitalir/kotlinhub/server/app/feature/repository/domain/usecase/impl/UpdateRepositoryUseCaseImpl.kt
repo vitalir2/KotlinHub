@@ -1,7 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl
 
-import arrow.core.left
-import arrow.core.right
+import arrow.core.continuations.either
+import arrow.core.rightIfNotNull
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryResult
@@ -14,25 +14,23 @@ internal class UpdateRepositoryUseCaseImpl(
     private val repositoryPersistence: RepositoryPersistence,
 ) : UpdateRepositoryUseCase {
 
-    // TODO user / repository checking used many times in app - is it a time to make a validator for it?
-    //  Like RepositoryIdentifierChecker
     override suspend fun invoke(
         userIdentifier: UserIdentifier,
         repositoryName: String,
         updateRepositoryData: UpdateRepositoryData,
     ): UpdateRepositoryResult {
-        if (userPersistence.isUserExists(userIdentifier).not()) {
-            return UpdateRepositoryUseCase.Error.UserDoesNotExist(userIdentifier).left()
+        return either {
+            userPersistence.getUser(userIdentifier).rightIfNotNull {
+                UpdateRepositoryUseCase.Error.UserDoesNotExist(userIdentifier)
+            }.bind()
+            repositoryPersistence.getRepository(userIdentifier, repositoryName).rightIfNotNull {
+                UpdateRepositoryUseCase.Error.RepositoryDoesNotExist(userIdentifier, repositoryName)
+            }.bind()
+            repositoryPersistence.updateRepository(
+                userIdentifier = userIdentifier,
+                repositoryName = repositoryName,
+                updateRepositoryData = updateRepositoryData,
+            )
         }
-        if (repositoryPersistence.isRepositoryExists(userIdentifier, repositoryName).not()) {
-            return UpdateRepositoryUseCase.Error.RepositoryDoesNotExist(userIdentifier, repositoryName).left()
-        }
-
-        repositoryPersistence.updateRepository(
-            userIdentifier = userIdentifier,
-            repositoryName = repositoryName,
-            updateRepositoryData = updateRepositoryData,
-        )
-        return Unit.right()
     }
 }

@@ -42,7 +42,7 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
             updatedAt = createdAt,
         )
 
-        beforeEach {
+        beforeTest {
             repositoryPersistence = mockk()
             userPersistence = mockk()
             getRepositoryUseCase = GetRepositoryUseCaseImpl(
@@ -52,8 +52,12 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         should("return repository if it exists") {
-            coEvery { userPersistence.isUserExists(usernameIdentifier) } returns true
-            coEvery { repositoryPersistence.getRepository(usernameIdentifier, repositoryName) } returns repository
+            coEvery {
+                userPersistence.getUser(usernameIdentifier)
+            } returns owner
+            coEvery {
+                repositoryPersistence.getRepository(usernameIdentifier, repositoryName)
+            } returns repository
 
             val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 
@@ -61,7 +65,9 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         should("return error if user does not exist") {
-            coEvery { userPersistence.isUserExists(usernameIdentifier) } returns false
+            coEvery {
+                userPersistence.getUser(usernameIdentifier)
+            } returns null
 
             val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 
@@ -69,8 +75,12 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         should("return error if repository does not exist") {
-            coEvery { userPersistence.isUserExists(usernameIdentifier) } returns true
-            coEvery { repositoryPersistence.getRepository(usernameIdentifier, repositoryName) } returns null
+            coEvery {
+                userPersistence.getUser(usernameIdentifier)
+            } returns owner
+            coEvery {
+                repositoryPersistence.getRepository(usernameIdentifier, repositoryName)
+            } returns null
 
             val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 

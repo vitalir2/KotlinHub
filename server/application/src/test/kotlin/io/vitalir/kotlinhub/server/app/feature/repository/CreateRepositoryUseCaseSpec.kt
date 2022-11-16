@@ -59,7 +59,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
     }
 
     init {
-        beforeEach {
+        beforeTest {
             userPersistence = mockk()
             repositoryPersistence = spyk()
             localDateTimeProvider = mockk()
@@ -95,7 +95,9 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
         should("return success if data is valid") {
             coEvery { userPersistence.isUserExists(someUserIdIdentifier) } returns true
             coEvery { userPersistence.getUser(someUserIdIdentifier) } returns repositoryOwner
-            coEvery { repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName) } returns false
+            coEvery {
+                repositoryPersistence.getRepository(someUserIdIdentifier, someRepositoryName)
+            } returns null
             coEvery {
                 gitManager.initRepository(any())
             } returns Unit.right()
@@ -122,7 +124,7 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 updatedAt = nowDateTime,
             )
             val url = result.shouldBeRight()
-            url.toString() shouldBe "http://localhost/${repositoryOwner.username}/$someRepositoryName.git"
+            url.toString() shouldBe "http://localhost/${repositoryOwner.id}/$someRepositoryName.git"
             coVerify {
                 repositoryPersistence.addRepository(expectedRepository.copy(id = Repository.AUTOINCREMENT_ID))
             }
@@ -133,8 +135,12 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
         should("return error if user does not exist") {
             val notExistingUserId = userIdProvider.next()
-            coEvery { userPersistence.isUserExists(UserIdentifier.Id(notExistingUserId)) } returns false
-            coEvery { repositoryPersistence.isRepositoryExists(notExistingUserId, someRepositoryName) } returns false
+            coEvery {
+                userPersistence.getUser(UserIdentifier.Id(notExistingUserId))
+            } returns null
+            coEvery {
+                repositoryPersistence.getRepository(someUserIdIdentifier, someRepositoryName)
+            } returns null
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
@@ -148,8 +154,12 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         should("return error if repository with this name already exists") {
-            coEvery { userPersistence.isUserExists(UserIdentifier.Id(someUserId)) } returns true
-            coEvery { repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName) } returns true
+            coEvery {
+                userPersistence.getUser(UserIdentifier.Id(someUserId))
+            } returns repositoryOwner
+            coEvery {
+                repositoryPersistence.getRepository(someUserIdIdentifier, someRepositoryName)
+            } returns someRepository
 
             val result = createRepositoryUseCase(
                 CreateRepositoryData(
@@ -164,11 +174,8 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
 
         should("return error if repository already exists in file system") {
             coEvery {
-                userPersistence.isUserExists(someUserIdIdentifier)
-            } returns true
-            coEvery {
-                repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName)
-            } returns false
+                repositoryPersistence.getRepository(someUserIdIdentifier, someRepositoryName)
+            } returns null
             coEvery {
                 userPersistence.getUser(someUserIdIdentifier)
             } returns repositoryOwner
@@ -201,8 +208,8 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 userPersistence.isUserExists(someUserIdIdentifier)
             } returns true
             coEvery {
-                repositoryPersistence.isRepositoryExists(someUserId, someRepositoryName)
-            } returns false
+                repositoryPersistence.getRepository(someUserIdIdentifier, someRepositoryName)
+            } returns null
             coEvery {
                 userPersistence.getUser(someUserIdIdentifier)
             } returns repositoryOwner
