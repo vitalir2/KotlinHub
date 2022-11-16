@@ -7,6 +7,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.Cr
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.RemoveRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.data.SqlDelightUserPersistence
+import io.vitalir.kotlinhub.server.app.feature.user.data.UserIdentifierConverter
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.BCryptPasswordManager
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.GetUserByIdentifierUseCaseImpl
@@ -81,8 +82,10 @@ internal class AppGraphFactoryImpl(
         userPersistence: UserPersistence,
         database: MainSqlDelight,
     ): AppGraph.RepositoryGraph {
+        val userIdentifierConverter = UserIdentifierConverter(database)
         val repositoryPersistence = SqlDelightRepositoryPersistence(
             mainDatabase = database,
+            userIdentifierConverter = userIdentifierConverter,
         )
         val gitManager = GitManagerImpl(
             repositoryConfig = repositoryConfig,

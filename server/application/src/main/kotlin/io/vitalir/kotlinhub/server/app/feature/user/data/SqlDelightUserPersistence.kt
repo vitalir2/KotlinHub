@@ -20,6 +20,7 @@ internal class SqlDelightUserPersistence(
         get() = sqlDelightDatabase.cUsersQueries
 
     override suspend fun getUser(identifier: UserIdentifier): User? {
+        // Faster without userIdentifierConverter, so let it be
         return when (identifier) {
             is UserIdentifier.Email -> queries.getByEmail(identifier.value)
             is UserIdentifier.Id -> queries.getById(identifier.value)

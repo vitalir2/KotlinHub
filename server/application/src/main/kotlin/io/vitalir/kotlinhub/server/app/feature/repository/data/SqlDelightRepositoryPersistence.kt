@@ -5,23 +5,20 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repositor
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
-import io.vitalir.kotlinhub.shared.feature.user.UserId
+import io.vitalir.kotlinhub.server.app.feature.user.data.UserIdentifierConverter
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
-import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.CUsersQueries
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.RepositoriesQueries
 import java.time.LocalDateTime
 
-// TODO create method for converting email / login -> uid
 internal class SqlDelightRepositoryPersistence(
     private val mainDatabase: MainSqlDelight,
+    private val userIdentifierConverter: UserIdentifierConverter,
 ) : RepositoryPersistence {
 
     private val queries: RepositoriesQueries
         get() = mainDatabase.repositoriesQueries
-
-    private val userQueries: CUsersQueries
-        get() = mainDatabase.cUsersQueries
 
     override suspend fun isRepositoryExists(userId: UserId, name: String): Boolean {
         return queries.getRepositoryByUserIdAndName(userId, name)
@@ -29,11 +26,8 @@ internal class SqlDelightRepositoryPersistence(
     }
 
     override suspend fun isRepositoryExists(userIdentifier: UserIdentifier, name: String): Boolean {
-        return when (userIdentifier) {
-            is UserIdentifier.Id -> isRepositoryExists(userIdentifier.value, name)
-            is UserIdentifier.Username -> isRepositoryExists(userIdentifier, name)
-            is UserIdentifier.Email -> isRepositoryExists(userIdentifier, name)
-        }
+        val userId = userIdentifierConverter.convertToUserId(userIdentifier)
+        return isRepositoryExists(userId, name)
     }
 
     override suspend fun addRepository(repository: Repository): RepositoryId {
@@ -51,9 +45,9 @@ internal class SqlDelightRepositoryPersistence(
         userIdentifier: UserIdentifier,
         repositoryName: String
     ): Repository? {
-        if (userIdentifier !is UserIdentifier.Id) return null // TODO remove and use all identifiers
+        val userId = userIdentifierConverter.convertToUserId(userIdentifier)
         return queries.getRepositoryByUserIdAndNameJoined(
-            userId = userIdentifier.value,
+            userId = userId,
             repositoryName = repositoryName,
         ).executeAsOneOrNull()?.toDomainModel()
     }
@@ -66,41 +60,21 @@ internal class SqlDelightRepositoryPersistence(
         queries.removeRepositoryByName(userId, repositoryName)
     }
 
-    private fun isRepositoryExists(
-        username: UserIdentifier.Username,
-        repositoryName: String,
-    ): Boolean {
-        return mainDatabase.transactionWithResult {
-            val userId = userQueries.getUserIdByUsername(username.value).executeAsOne()
-            queries.getRepositoryByUserIdAndName(userId, repositoryName).executeAsOneOrNull() != null
-        }
-    }
-
-    private fun isRepositoryExists(
-        email: UserIdentifier.Email,
-        repositoryName: String,
-    ): Boolean {
-        return mainDatabase.transactionWithResult {
-            val userId = userQueries.getUserIdByEmail(email.value).executeAsOne()
-            queries.getRepositoryByUserIdAndName(userId, repositoryName).executeAsOneOrNull() != null
-        }
-    }
-
     override fun updateRepository(
         userIdentifier: UserIdentifier,
         repositoryName: String,
         updateRepositoryData: UpdateRepositoryData,
     ) {
-        updateRepositoryData.accessMode?.let {
+        updateRepositoryData.accessMode?.let { accessMode ->
             updateAccessMode(
                 repositoryIdentifier = RepositoryIdentifier.OwnerIdentifierAndName(userIdentifier, repositoryName),
-                accessMode = it,
+                accessMode = accessMode,
             )
         }
-        updateRepositoryData.updatedAt?.let {
+        updateRepositoryData.updatedAt?.let { updatedAt ->
             updateUpdatedAt(
                 repositoryIdentifier = RepositoryIdentifier.OwnerIdentifierAndName(userIdentifier, repositoryName),
-                updatedAt = it,
+                updatedAt = updatedAt,
             )
         }
     }
@@ -109,35 +83,23 @@ internal class SqlDelightRepositoryPersistence(
         repositoryIdentifier: RepositoryIdentifier.OwnerIdentifierAndName,
         accessMode: Repository.AccessMode,
     ) {
-        mainDatabase.transaction {
-            when (repositoryIdentifier.ownerIdentifier) {
-                is UserIdentifier.Id -> queries.updateRepositoryAccessMode(
-                    accessMode = accessMode.asInt(),
-                    userId = repositoryIdentifier.ownerIdentifier.value,
-                    name = repositoryIdentifier.repositoryName,
-                )
-                is UserIdentifier.Email,
-                is UserIdentifier.Username,
-                    -> TODO()
-            }
-        }
+        val ownerId = userIdentifierConverter.convertToUserId(repositoryIdentifier.ownerIdentifier)
+        queries.updateRepositoryAccessMode(
+            accessMode = accessMode.asInt(),
+            userId = ownerId,
+            name = repositoryIdentifier.repositoryName,
+        )
     }
 
     private fun updateUpdatedAt(
         repositoryIdentifier: RepositoryIdentifier.OwnerIdentifierAndName,
         updatedAt: LocalDateTime,
     ) {
-        mainDatabase.transaction {
-            when (repositoryIdentifier.ownerIdentifier) {
-                is UserIdentifier.Id -> queries.updateRepositoryUpdatedAt(
-                    updatedAt = updatedAt,
-                    userId = repositoryIdentifier.ownerIdentifier.value,
-                    name = repositoryIdentifier.repositoryName,
-                )
-                is UserIdentifier.Email,
-                is UserIdentifier.Username,
-                    -> TODO()
-            }
-        }
+        val ownerId = userIdentifierConverter.convertToUserId(repositoryIdentifier.ownerIdentifier)
+        queries.updateRepositoryUpdatedAt(
+            updatedAt = updatedAt,
+            userId = ownerId,
+            name = repositoryIdentifier.repositoryName,
+        )
     }
 }
