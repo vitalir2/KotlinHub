@@ -1,4 +1,4 @@
-package io.vitalir.kotlinhub.server.app.feature.repository.routes.getrepository
+package io.vitalir.kotlinhub.server.app.feature.repository.routes.get
 
 import arrow.core.Either
 import io.ktor.http.*
