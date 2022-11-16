@@ -2,7 +2,6 @@ package io.vitalir.kotlinhub.server.app.feature.repository.data
 
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryId
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.user.data.UserIdentifierConverter
@@ -10,7 +9,6 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.RepositoriesQueries
-import java.time.LocalDateTime
 
 internal class SqlDelightRepositoryPersistence(
     private val mainDatabase: MainSqlDelight,
@@ -65,41 +63,20 @@ internal class SqlDelightRepositoryPersistence(
         repositoryName: String,
         updateRepositoryData: UpdateRepositoryData,
     ) {
+        val ownerId = userIdentifierConverter.convertToUserId(userIdentifier)
         updateRepositoryData.accessMode?.let { accessMode ->
-            updateAccessMode(
-                repositoryIdentifier = RepositoryIdentifier.OwnerIdentifierAndName(userIdentifier, repositoryName),
-                accessMode = accessMode,
+            queries.updateRepositoryAccessMode(
+                accessMode = accessMode.asInt(),
+                userId = ownerId,
+                name = repositoryName,
             )
         }
         updateRepositoryData.updatedAt?.let { updatedAt ->
-            updateUpdatedAt(
-                repositoryIdentifier = RepositoryIdentifier.OwnerIdentifierAndName(userIdentifier, repositoryName),
+            queries.updateRepositoryUpdatedAt(
                 updatedAt = updatedAt,
+                userId = ownerId,
+                name = repositoryName,
             )
         }
-    }
-
-    private fun updateAccessMode(
-        repositoryIdentifier: RepositoryIdentifier.OwnerIdentifierAndName,
-        accessMode: Repository.AccessMode,
-    ) {
-        val ownerId = userIdentifierConverter.convertToUserId(repositoryIdentifier.ownerIdentifier)
-        queries.updateRepositoryAccessMode(
-            accessMode = accessMode.asInt(),
-            userId = ownerId,
-            name = repositoryIdentifier.repositoryName,
-        )
-    }
-
-    private fun updateUpdatedAt(
-        repositoryIdentifier: RepositoryIdentifier.OwnerIdentifierAndName,
-        updatedAt: LocalDateTime,
-    ) {
-        val ownerId = userIdentifierConverter.convertToUserId(repositoryIdentifier.ownerIdentifier)
-        queries.updateRepositoryUpdatedAt(
-            updatedAt = updatedAt,
-            userId = ownerId,
-            name = repositoryIdentifier.repositoryName,
-        )
     }
 }
