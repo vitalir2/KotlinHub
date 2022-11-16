@@ -4,6 +4,6 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repositor
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateRepositoryRequest(
+internal data class UpdateRepositoryRequest(
     val accessMode: Repository.AccessMode? = null,
 )
