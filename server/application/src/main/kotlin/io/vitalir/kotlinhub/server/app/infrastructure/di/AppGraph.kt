@@ -3,6 +3,7 @@ package io.vitalir.kotlinhub.server.app.infrastructure.di
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.RemoveRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.PasswordManager
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.GetUserByIdentifierUseCase
@@ -35,6 +36,7 @@ class AppGraph(
         val createRepositoryUseCase: CreateRepositoryUseCase,
         val getRepositoryUseCase: GetRepositoryUseCase,
         val removeRepositoryUseCase: RemoveRepositoryUseCase,
+        val updateRepositoryUseCase: UpdateRepositoryUseCase,
     )
 
     class AuthGraph(

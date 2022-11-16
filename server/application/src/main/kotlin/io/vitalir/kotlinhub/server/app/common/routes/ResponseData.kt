@@ -18,10 +18,10 @@ data class ResponseData(
             )
         }
 
-        fun badRequest(): ResponseData {
+        fun badRequest(message: String? = null): ResponseData {
             return fromErrorData(
                 code = HttpStatusCode.BadRequest,
-                errorMessage = "bad request",
+                errorMessage = message ?: "bad request",
             )
         }
 
