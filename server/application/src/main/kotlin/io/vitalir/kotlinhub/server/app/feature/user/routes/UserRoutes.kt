@@ -4,8 +4,11 @@ import io.ktor.http.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
+import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.GetUsersUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.routes.get.getUserByUsernameRoute
+import io.vitalir.kotlinhub.server.app.feature.user.routes.get.getUsersRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.login.loginRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.registration.registerUserRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.removeuser.removeCurrentUser
@@ -38,6 +41,11 @@ private fun Route.authIndependentUserRoutes(
     userGraph: AppGraph.UserGraph,
 ) {
     getUserByUsernameRoute(userGraph.getUserByIdentifierUseCase)
+    getUsersRoute(object : GetUsersUseCase { // TODO
+        override suspend fun invoke(): List<User> {
+            return emptyList()
+        }
+    })
 }
 
 private fun Route.authorizedUserRoutes(
