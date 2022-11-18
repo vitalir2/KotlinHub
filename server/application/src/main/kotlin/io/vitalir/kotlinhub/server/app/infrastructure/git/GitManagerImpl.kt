@@ -31,6 +31,10 @@ internal class GitManagerImpl(
                 setBare()
             }.build().use { fileSystemRepository ->
                 fileSystemRepository.create(true)
+                fileSystemRepository.config.apply {
+                    setBoolean("http", null, "uploadpack", true)
+                    setBoolean("http", null, "receivepack", true)
+                }.save()
             }
         }
     }
