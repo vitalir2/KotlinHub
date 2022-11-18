@@ -31,4 +31,6 @@ interface RepositoryPersistence {
         repositoryName: String,
         updateRepositoryData: UpdateRepositoryData,
     )
+
+    suspend fun getRepositories(userIdentifier: UserIdentifier): List<Repository>
 }

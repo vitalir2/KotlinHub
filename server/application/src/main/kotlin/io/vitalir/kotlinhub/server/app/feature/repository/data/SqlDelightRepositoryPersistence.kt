@@ -5,6 +5,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repositor
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.user.data.UserIdentifierConverter
+import io.vitalir.kotlinhub.server.app.feature.user.data.extensions.toDomainModel
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
 import io.vitalir.kotlinhub.shared.feature.user.UserId
@@ -74,5 +75,12 @@ internal class SqlDelightRepositoryPersistence(
                 name = repositoryName,
             )
         }
+    }
+
+    override suspend fun getRepositories(userIdentifier: UserIdentifier): List<Repository> {
+        val userId = userIdentifierConverter.convertToUserId(userIdentifier)
+        val user = mainDatabase.cUsersQueries.getById(userId).executeAsOne().toDomainModel()
+        return queries.getRepositoriesByUserId(userId).executeAsList()
+            .map { it.toDomainModel(user) }
     }
 }

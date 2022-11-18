@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.vitalir.kotlinhub.server.app.common.data.JavaLocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.repository.data.SqlDelightRepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoriesForUserUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.RemoveRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.UpdateRepositoryUseCaseImpl
@@ -99,6 +100,10 @@ internal class AppGraphFactoryImpl(
                 gitManager = gitManager,
             ),
             getRepositoryUseCase = GetRepositoryUseCaseImpl(
+                userPersistence = userPersistence,
+                repositoryPersistence = repositoryPersistence,
+            ),
+            getRepositoriesForUserUseCase = GetRepositoriesForUserUseCaseImpl(
                 userPersistence = userPersistence,
                 repositoryPersistence = repositoryPersistence,
             ),

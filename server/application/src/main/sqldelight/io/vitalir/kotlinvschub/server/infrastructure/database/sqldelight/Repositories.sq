@@ -16,6 +16,11 @@ FROM repositories
 WHERE user_id = :user_id AND name = :name
 LIMIT 1;
 
+getRepositoriesByUserId:
+SELECT *
+FROM repositories
+WHERE user_id = :userId;
+
 getRepositoryByUserIdAndNameJoined:
 SELECT *
 FROM repositories AS r

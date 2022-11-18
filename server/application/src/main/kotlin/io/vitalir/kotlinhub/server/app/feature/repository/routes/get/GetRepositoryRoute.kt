@@ -8,7 +8,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
-import io.vitalir.kotlinhub.server.app.feature.repository.routes.ApiRepository
+import io.vitalir.kotlinhub.server.app.feature.repository.routes.toApiModel
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 
 internal fun Route.getRepositoryRoute(
@@ -60,14 +60,7 @@ private fun GetRepositoryUseCase.Error.toResponseData(): ResponseData {
 
 private fun Repository.toResponseData(): ResponseData {
     val response = GetRepositoryResponse(
-        repository = ApiRepository(
-            ownerId = owner.id,
-            name = name,
-            accessMode = accessMode,
-            createdAt = createdAt,
-            updatedAt = updatedAt,
-            description = description,
-        )
+        repository = toApiModel(),
     )
     return ResponseData(
         code = HttpStatusCode.OK,

@@ -17,3 +17,14 @@ data class ApiRepository(
     val updatedAt: LocalDateTime,
     val description: String?,
 )
+
+internal fun Repository.toApiModel(): ApiRepository {
+    return ApiRepository(
+        ownerId = owner.id,
+        name = name,
+        accessMode = accessMode,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        description = description,
+    )
+}
