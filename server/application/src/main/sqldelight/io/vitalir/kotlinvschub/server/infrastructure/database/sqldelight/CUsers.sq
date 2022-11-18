@@ -51,3 +51,7 @@ WHERE id = :userId;
 removeById:
 DELETE FROM users
 WHERE id = :userId;
+
+getUsers:
+SELECT *
+FROM users;

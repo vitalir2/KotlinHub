@@ -13,6 +13,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.data.UserIdentifierConverter
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.impl.BCryptPasswordManager
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.GetUserByIdentifierUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.GetUsersUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.LoginUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.RegisterUserUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.RemoveUserUseCaseImpl
@@ -74,6 +75,9 @@ internal class AppGraphFactoryImpl(
                 userValidationRule = IdentifierValidationRule,
             ),
             removeUserUseCase = RemoveUserUseCaseImpl(
+                userPersistence = userPersistence,
+            ),
+            getUsersUseCase = GetUsersUseCaseImpl(
                 userPersistence = userPersistence,
             ),
         )
