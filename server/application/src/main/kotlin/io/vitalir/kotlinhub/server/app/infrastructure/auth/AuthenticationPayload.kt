@@ -1,7 +1,7 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.auth
 
 import com.auth0.jwt.interfaces.Payload
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId as UserIdValue
+import io.vitalir.kotlinhub.shared.feature.user.UserId as UserIdValue
 
 sealed class AuthenticationPayload<out T>(
     val name: String,

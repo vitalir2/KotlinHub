@@ -18,17 +18,17 @@ data class ResponseData(
             )
         }
 
-        fun unauthorized(): ResponseData {
-            return ResponseData(
-                code = HttpStatusCode.Unauthorized,
-                body = ErrorResponse.unauthorized(),
+        fun badRequest(message: String? = null): ResponseData {
+            return fromErrorData(
+                code = HttpStatusCode.BadRequest,
+                errorMessage = message ?: "bad request",
             )
         }
 
-        fun emptyBody(): ResponseData {
+        fun serverError(): ResponseData {
             return fromErrorData(
-                code = HttpStatusCode.BadRequest,
-                errorMessage = "empty body",
+                code = HttpStatusCode.InternalServerError,
+                errorMessage = "internal server error",
             )
         }
     }

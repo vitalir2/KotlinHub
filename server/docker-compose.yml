@@ -19,7 +19,7 @@ services:
       db-main:
         condition: service_healthy
     volumes:
-      - ~/kotlinhub/repositories/:/var/kotlinhub/src/repositories/
+      - ~/kotlinhub/repositories/:${BASE_REPOSITORIES_PATH}
     networks:
       - kotlinhub
   kgit:
@@ -53,6 +53,8 @@ services:
       interval: 1s
     networks:
       - kotlinhub
+    volumes:
+      - ~/kotlinhub/app_main_db:/var/lib/postgresql/data
   nginx:
     image: nginx:1.23.2
     container_name: kotlinhub-nginx

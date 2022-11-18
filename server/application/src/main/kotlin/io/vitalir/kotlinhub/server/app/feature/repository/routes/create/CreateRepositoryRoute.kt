@@ -1,29 +1,19 @@
-package io.vitalir.kotlinhub.server.app.feature.repository.routing
+package io.vitalir.kotlinhub.server.app.feature.repository.routes.create
 
 import arrow.core.Either
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
-import io.vitalir.kotlinhub.server.app.common.domain.Uri
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
-import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
+import io.vitalir.kotlinhub.shared.common.network.Url
 
-internal fun Routing.repositoryRoutes(
-    repositoryGraph: AppGraph.RepositoryGraph,
-) {
-    route("repository/") {
-        createRepositoryRoute(repositoryGraph.createRepositoryUseCase)
-    }
-}
-
-private fun Route.createRepositoryRoute(
+internal fun Route.createRepositoryRoute(
     createRepositoryUseCase: CreateRepositoryUseCase,
 ) {
     jwtAuth {
@@ -44,25 +34,32 @@ private fun Route.createRepositoryRoute(
     }
 }
 
-private fun Either<RepositoryError.Create, Uri>.toCreateRepositoryResponseData(): ResponseData {
+private fun Either<CreateRepositoryUseCase.Error, Url>.toCreateRepositoryResponseData(): ResponseData {
     return when (this) {
         is Either.Left -> value.toResponseData()
         is Either.Right -> ResponseData(
             code = HttpStatusCode.Created,
-            body = CreateRepositoryResponse(repositoryUrl = value.value),
+            body = CreateRepositoryResponse(repositoryUrl = value.toString()),
         )
     }
 }
 
-private fun RepositoryError.Create.toResponseData(): ResponseData {
+private fun CreateRepositoryUseCase.Error.toResponseData(): ResponseData {
     return when (this) {
-        is RepositoryError.Create.InvalidUserId -> ResponseData.fromErrorData(
-            code = HttpStatusCode.Unauthorized,
-            errorMessage = "unauthorized",
-        )
-        is RepositoryError.Create.RepositoryAlreadyExists -> ResponseData.fromErrorData(
-            code = HttpStatusCode.BadRequest,
-            errorMessage = "repository already exists",
-        )
+        is CreateRepositoryUseCase.Error.UserDoesNotExist -> {
+            ResponseData.fromErrorData(
+                code = HttpStatusCode.Unauthorized,
+                errorMessage = "unauthorized",
+            )
+        }
+        is CreateRepositoryUseCase.Error.RepositoryAlreadyExists -> {
+            ResponseData.fromErrorData(
+                code = HttpStatusCode.BadRequest,
+                errorMessage = "repository $repositoryName already exists",
+            )
+        }
+        is CreateRepositoryUseCase.Error.Unknown -> {
+            ResponseData.serverError()
+        }
     }
 }

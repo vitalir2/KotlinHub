@@ -1,7 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.user.domain.usecase
 
 import arrow.core.Either
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 
 interface RemoveUserUseCase {
 

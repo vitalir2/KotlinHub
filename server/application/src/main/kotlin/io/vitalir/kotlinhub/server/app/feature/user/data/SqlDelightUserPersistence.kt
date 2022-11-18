@@ -6,7 +6,7 @@ import arrow.core.right
 import io.vitalir.kotlinhub.server.app.feature.user.data.extensions.toDomainModel
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
@@ -20,6 +20,7 @@ internal class SqlDelightUserPersistence(
         get() = sqlDelightDatabase.cUsersQueries
 
     override suspend fun getUser(identifier: UserIdentifier): User? {
+        // Faster without userIdentifierConverter, so let it be
         return when (identifier) {
             is UserIdentifier.Email -> queries.getByEmail(identifier.value)
             is UserIdentifier.Id -> queries.getById(identifier.value)

@@ -13,12 +13,12 @@ import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.LoginUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.routes.getErrorResponseData
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthenticationPayload
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 import java.util.*
 import java.util.concurrent.TimeUnit
 

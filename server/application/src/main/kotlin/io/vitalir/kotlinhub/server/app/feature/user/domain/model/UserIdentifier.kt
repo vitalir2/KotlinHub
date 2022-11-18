@@ -1,5 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.user.domain.model
 
+import io.vitalir.kotlinhub.shared.feature.user.UserId
+
 sealed interface UserIdentifier {
 
     @JvmInline

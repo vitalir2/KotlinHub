@@ -16,12 +16,17 @@ FROM repositories
 WHERE user_id = :user_id AND name = :name
 LIMIT 1;
 
-getRepositoryByUsernameAndRepositoryName:
+getRepositoriesByUserId:
+SELECT *
+FROM repositories
+WHERE user_id = :userId;
+
+getRepositoryByUserIdAndNameJoined:
 SELECT *
 FROM repositories AS r
 INNER JOIN users AS u
 ON r.user_id = u.id
-WHERE u.username = :username AND r.name = :repositoryName
+WHERE u.id = :userId AND r.name = :repositoryName
 LIMIT 1;
 
 insertRepository:
@@ -30,4 +35,23 @@ INSERT INTO repositories (user_id, name, access_mode,
 )
 VALUES (?, ?, ?,
  ?, ?, ?
-);
+)
+RETURNING id;
+
+removeRepositoryById:
+DELETE FROM repositories
+WHERE id = :repositoryId;
+
+removeRepositoryByName:
+DELETE FROM repositories
+WHERE user_id = :userId AND name = :repositoryName;
+
+updateRepositoryAccessMode:
+UPDATE repositories
+SET access_mode = :accessMode
+WHERE user_id = :userId AND name = :name;
+
+updateRepositoryUpdatedAt:
+UPDATE repositories
+SET updated_at = :updatedAt
+WHERE user_id = :userId AND name = :name;

@@ -1,18 +1,20 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.domain.model
 
-object RepositoryError {
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 
-    sealed interface Create {
+sealed interface RepositoryError {
 
-        object InvalidUserId : Create
+    interface Unknown : RepositoryError
 
-        object RepositoryAlreadyExists : Create
+    interface UserDoesNotExist : RepositoryError {
+
+        val userIdentifier: UserIdentifier
     }
 
-    sealed interface Get {
+    interface RepositoryDoesNotExist : RepositoryError {
 
-        object InvalidUserLogin : Get
+        val userIdentifier: UserIdentifier
 
-        object RepositoryDoesNotExist : Get
+        val repositoryName: String
     }
 }

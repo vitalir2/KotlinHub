@@ -6,7 +6,6 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
@@ -33,7 +32,9 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
         )
         val repositoryName = "repository"
         val createdAt = LocalDate.of(2022, 11, 15).atStartOfDay()
+        val someRepositoryId = 123
         val repository = Repository(
+            id = someRepositoryId,
             owner = owner,
             name = repositoryName,
             accessMode = Repository.AccessMode.PUBLIC,
@@ -41,7 +42,7 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
             updatedAt = createdAt,
         )
 
-        beforeEach {
+        beforeTest {
             repositoryPersistence = mockk()
             userPersistence = mockk()
             getRepositoryUseCase = GetRepositoryUseCaseImpl(
@@ -51,29 +52,41 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         should("return repository if it exists") {
-            coEvery { userPersistence.isUserExists(usernameIdentifier) } returns true
-            coEvery { repositoryPersistence.getRepository(username, repositoryName) } returns repository
+            coEvery {
+                userPersistence.getUser(usernameIdentifier)
+            } returns owner
+            coEvery {
+                repositoryPersistence.getRepository(usernameIdentifier, repositoryName)
+            } returns repository
 
-            val result = getRepositoryUseCase(username, repositoryName)
+            val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 
             result shouldBeRight repository
         }
 
         should("return error if user does not exist") {
-            coEvery { userPersistence.isUserExists(usernameIdentifier) } returns false
+            coEvery {
+                userPersistence.getUser(usernameIdentifier)
+            } returns null
 
-            val result = getRepositoryUseCase(username, repositoryName)
+            val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 
-            result shouldBeLeft RepositoryError.Get.InvalidUserLogin
+            result shouldBeLeft GetRepositoryUseCase.Error.UserDoesNotExist(UserIdentifier.Username(username))
         }
 
         should("return error if repository does not exist") {
-            coEvery { userPersistence.isUserExists(usernameIdentifier) } returns true
-            coEvery { repositoryPersistence.getRepository(username, repositoryName) } returns null
+            coEvery {
+                userPersistence.getUser(usernameIdentifier)
+            } returns owner
+            coEvery {
+                repositoryPersistence.getRepository(usernameIdentifier, repositoryName)
+            } returns null
 
-            val result = getRepositoryUseCase(username, repositoryName)
+            val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
 
-            result shouldBeLeft RepositoryError.Get.RepositoryDoesNotExist
+            result shouldBeLeft GetRepositoryUseCase.Error.RepositoryDoesNotExist(
+                UserIdentifier.Username(username), repositoryName
+            )
         }
     }
 }

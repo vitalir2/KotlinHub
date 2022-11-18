@@ -1,4 +1,4 @@
-package io.vitalir.kotlinhub.server.app.feature.repository.routing
+package io.vitalir.kotlinhub.server.app.feature.repository.routes.create
 
 import kotlinx.serialization.Serializable
 

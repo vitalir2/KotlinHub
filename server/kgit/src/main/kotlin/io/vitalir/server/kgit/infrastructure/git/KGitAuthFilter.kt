@@ -41,19 +41,19 @@ internal class KGitAuthFilter(
             return@runBlocking
         }
 
-        val (username, repositoryName) = repositoryPath.split("/")
+        val (userId, repositoryName) = repositoryPath.split("/")
         logDebug { "Headers: ${request.headerNames.toList().joinToString(separator = ";")}" }
         val baseAuthCredentials = request.getHeader("Authorization")
             ?.let(AuthorizationHeader.BASIC::valueFromHeader)
 
         logDebug { """
-                Request to check access for repository: repository=$repositoryName, username=$username, credentials=$baseAuthCredentials
+                Request to check access for repository: repository=$repositoryName, userId=$userId, credentials=$baseAuthCredentials
                 URL=${request.requestURL}, pathInfo=${request.pathInfo}
             """.trimIndent()
         }
         val hasAccess = gitAuthManager.hasAccess(
+            userId = userId.toInt(),
             repositoryName = repositoryName,
-            username = username,
             credentials = baseAuthCredentials,
         )
 
