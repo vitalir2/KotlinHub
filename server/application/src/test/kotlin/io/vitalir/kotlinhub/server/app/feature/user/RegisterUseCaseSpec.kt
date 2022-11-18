@@ -1,5 +1,6 @@
 package io.vitalir.kotlinhub.server.app.feature.user
 
+import arrow.core.left
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
@@ -21,11 +22,11 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.Register
 import io.vitalir.kotlinhub.server.app.feature.user.domain.validation.IdentifierValidationRule
 import io.vitalir.kotlinhub.server.app.feature.user.domain.validation.UserValidationRule
 
-class RegisterUseCaseSpec : ShouldSpec() {
+internal class RegisterUseCaseSpec : ShouldSpec() {
 
     private lateinit var spyIdentifierValidationRule: UserValidationRule<UserIdentifier>
 
-    private lateinit var spyUserPersistence: UserPersistence
+    private lateinit var userPersistence: UserPersistence
 
     private lateinit var spyPasswordManager: PasswordManager
 
@@ -39,11 +40,11 @@ class RegisterUseCaseSpec : ShouldSpec() {
 
         beforeEach {
             spyIdentifierValidationRule = spyk(IdentifierValidationRule)
-            spyUserPersistence = spyk()
+            userPersistence = spyk()
             spyPasswordManager = spyk()
             registerUserUseCase = RegisterUserUseCaseImpl(
                 identifierValidationRule = spyIdentifierValidationRule,
-                userPersistence = spyUserPersistence,
+                userPersistence = userPersistence,
                 passwordManager = spyPasswordManager,
             )
         }
@@ -65,13 +66,33 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 identifier = validEmail,
                 password = anyString,
             )
-            coEvery { spyUserPersistence.isUserExists(credentials.identifier) } returns true
+            coEvery {
+                userPersistence.isUserExists(credentials.identifier)
+            } returns true
             setupSimplePasswordManager()
 
             val result = registerUserUseCase(credentials)
 
             result shouldBeLeft UserError.UserAlreadyExists
-            coVerify { spyUserPersistence.addUser(any()) wasNot called }
+            coVerify { userPersistence.addUser(any()) wasNot called }
+        }
+
+        should("return error if user exists") {
+            val credentials = UserCredentials(
+                identifier = validEmail,
+                password = anyString,
+            )
+            coEvery {
+                userPersistence.isUserExists(credentials.identifier)
+            } returns false
+            coEvery {
+                userPersistence.addUser(any())
+            } returns UserError.UserAlreadyExists.left()
+            setupSimplePasswordManager()
+
+            val result = registerUserUseCase(credentials)
+
+            result shouldBeLeft UserError.UserAlreadyExists
         }
 
         should("return user if user credentials with email are valid and user does not exist") {
@@ -85,7 +106,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 password = validPassword,
                 email = validEmail.value,
             )
-            coEvery { spyUserPersistence.isUserExists(credentials.identifier) } returns false
+            coEvery { userPersistence.isUserExists(credentials.identifier) } returns false
             setupSimplePasswordManager()
 
             val result = registerUserUseCase(credentials)
@@ -102,7 +123,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
                 identifier = validEmail,
                 password = validPassword,
             )
-            coEvery { spyUserPersistence.isUserExists(credentials.identifier) } returns false
+            coEvery { userPersistence.isUserExists(credentials.identifier) } returns false
             setupSimplePasswordManager()
 
             registerUserUseCase(credentials)
@@ -118,7 +139,7 @@ class RegisterUseCaseSpec : ShouldSpec() {
     private fun confirmUserWasAddedCorrectly(
         credentials: UserCredentials,
     ) {
-        coVerify { spyUserPersistence.addUser(any()) }
+        coVerify { userPersistence.addUser(any()) }
         verify { spyPasswordManager.encode(credentials.password) }
     }
 }

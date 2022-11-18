@@ -23,7 +23,7 @@ internal class RegisterUserUseCaseImpl(
         validateCredentials(credentials).bind()
         checkIfUserExists(credentials.identifier).bind()
         val newUser = User.fromCredentials(credentials, passwordManager)
-        userPersistence.addUser(newUser)
+        userPersistence.addUser(newUser).bind()
         newUser
     }
 
