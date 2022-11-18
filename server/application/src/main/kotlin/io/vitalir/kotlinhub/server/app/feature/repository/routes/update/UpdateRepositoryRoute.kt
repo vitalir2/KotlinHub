@@ -27,6 +27,7 @@ internal fun Route.updateRepositoryForCurrentUserRoute(
             repositoryName = repositoryName,
             updateRepositoryData = UpdateRepositoryData(
                 accessMode = requestBody.accessMode,
+                updatedAt = UpdateRepositoryData.Time.Now,
             )
         )
 

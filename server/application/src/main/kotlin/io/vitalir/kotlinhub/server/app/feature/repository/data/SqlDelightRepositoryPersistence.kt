@@ -1,5 +1,6 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.data
 
+import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryId
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
@@ -10,10 +11,12 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.RepositoriesQueries
+import java.time.LocalDateTime
 
 internal class SqlDelightRepositoryPersistence(
     private val mainDatabase: MainSqlDelight,
     private val userIdentifierConverter: UserIdentifierConverter,
+    private val localDateTimeProvider: LocalDateTimeProvider,
 ) : RepositoryPersistence {
 
     private val queries: RepositoriesQueries
@@ -60,20 +63,22 @@ internal class SqlDelightRepositoryPersistence(
         repositoryName: String,
         updateRepositoryData: UpdateRepositoryData,
     ) {
-        val ownerId = userIdentifierConverter.convertToUserId(userIdentifier)
-        updateRepositoryData.accessMode?.let { accessMode ->
-            queries.updateRepositoryAccessMode(
-                accessMode = accessMode.asInt(),
-                userId = ownerId,
-                name = repositoryName,
-            )
-        }
-        updateRepositoryData.updatedAt?.let { updatedAt ->
-            queries.updateRepositoryUpdatedAt(
-                updatedAt = updatedAt,
-                userId = ownerId,
-                name = repositoryName,
-            )
+        mainDatabase.transaction {
+            val ownerId = userIdentifierConverter.convertToUserId(userIdentifier)
+            updateRepositoryData.accessMode?.let { accessMode ->
+                queries.updateRepositoryAccessMode(
+                    accessMode = accessMode.asInt(),
+                    userId = ownerId,
+                    name = repositoryName,
+                )
+            }
+            updateRepositoryData.updatedAt?.let { updatedAt ->
+                queries.updateRepositoryUpdatedAt(
+                    updatedAt = updatedAt.toLocalDateTime(localDateTimeProvider),
+                    userId = ownerId,
+                    name = repositoryName,
+                )
+            }
         }
     }
 
@@ -82,5 +87,16 @@ internal class SqlDelightRepositoryPersistence(
         val user = mainDatabase.cUsersQueries.getById(userId).executeAsOne().toDomainModel()
         return queries.getRepositoriesByUserId(userId).executeAsList()
             .map { it.toDomainModel(user) }
+    }
+
+    companion object {
+        private fun UpdateRepositoryData.Time.toLocalDateTime(
+            localDateTimeProvider: LocalDateTimeProvider,
+        ): LocalDateTime {
+            return when (this) {
+                is UpdateRepositoryData.Time.Custom -> time
+                is UpdateRepositoryData.Time.Now -> localDateTimeProvider.now()
+            }
+        }
     }
 }

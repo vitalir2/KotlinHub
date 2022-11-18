@@ -12,6 +12,8 @@ import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryResult
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthManager
 import io.vitalir.kotlinhub.server.app.infrastructure.logging.Logger
@@ -19,6 +21,7 @@ import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
 
 internal fun Route.httpBaseAuth(
     getRepositoryUseCase: GetRepositoryUseCase,
+    updateRepositoryUseCase: UpdateRepositoryUseCase,
     authManager: AuthManager,
     logger: Logger,
 ) {
@@ -31,6 +34,7 @@ internal fun Route.httpBaseAuth(
         handleGetRepositoryResult(
             request = request,
             result = result,
+            updateRepositoryUseCase = updateRepositoryUseCase,
             authManager = authManager,
             logger = logger,
         )
@@ -40,6 +44,7 @@ internal fun Route.httpBaseAuth(
 private suspend fun PipelineContext<Unit, ApplicationCall>.handleGetRepositoryResult(
     request: GitAuthRequest,
     result: GetRepositoryResult,
+    updateRepositoryUseCase: UpdateRepositoryUseCase,
     authManager: AuthManager,
     logger: Logger,
 ) {
@@ -51,6 +56,7 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleGetRepositoryRe
             handleRepositoryFromResult(
                 request = request,
                 repository = result.value,
+                updateRepositoryUseCase = updateRepositoryUseCase,
                 authManager = authManager,
                 logger = logger,
             )
@@ -61,6 +67,7 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleGetRepositoryRe
 private suspend fun PipelineContext<Unit, ApplicationCall>.handleRepositoryFromResult(
     request: GitAuthRequest,
     repository: Repository,
+    updateRepositoryUseCase: UpdateRepositoryUseCase,
     authManager: AuthManager,
     logger: Logger,
 ) {
@@ -77,6 +84,12 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleRepositoryFromR
                 credentials = credentials,
             )
             val resultCode = if (isCredentialsValid) {
+                // TODO may broke easily. To fix it - we need to use our custom reverse proxy server
+                updateRepositoryUseCase(
+                    userIdentifier = repository.owner.identifier,
+                    repositoryName = repository.name,
+                    updateRepositoryData = UpdateRepositoryData(updatedAt = UpdateRepositoryData.Time.Now),
+                )
                 HttpStatusCode.OK
             } else {
                 HttpStatusCode.Forbidden

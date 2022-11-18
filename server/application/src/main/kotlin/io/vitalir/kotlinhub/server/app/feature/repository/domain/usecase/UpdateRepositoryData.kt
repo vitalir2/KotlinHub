@@ -8,5 +8,12 @@ import java.time.LocalDateTime
 //  To fix it, we need to build a proxy between app / kgit server that maps repository name to its id
 data class UpdateRepositoryData(
     val accessMode: Repository.AccessMode? = null,
-    val updatedAt: LocalDateTime? = null,
-)
+    val updatedAt: Time? = null,
+) {
+
+    sealed interface Time {
+        object Now : Time
+        @JvmInline
+        value class Custom(val time: LocalDateTime) : Time
+    }
+}
