@@ -108,7 +108,7 @@ internal class UpdateRepositoryUseCaseSpec : ShouldSpec() {
 
             val updateRepositoryDataList = listOf(
                 UpdateRepositoryData(accessMode = Repository.AccessMode.PRIVATE),
-                UpdateRepositoryData(updatedAt = LocalDateTime.MIN),
+                UpdateRepositoryData(updatedAt = UpdateRepositoryData.Time.Custom(LocalDateTime.MIN)),
             )
 
             for (updateRepositoryData in updateRepositoryDataList) {
