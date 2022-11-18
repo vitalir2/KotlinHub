@@ -1,4 +1,4 @@
-package io.vitalir.kotlinhub.server.app.feature.user.routes.getuser
+package io.vitalir.kotlinhub.server.app.feature.user.routes.get
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -7,7 +7,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.GetUserByIdentifierUseCase
-import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.asPureUser
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.asApiUser
 
 internal fun Route.getUserByUsernameRoute(
     getUserByIdentifierUseCase: GetUserByIdentifierUseCase,
@@ -27,7 +27,7 @@ internal fun Route.getUserByUsernameRoute(
         val resultResponseData = if (user != null) {
             ResponseData(
                 code = HttpStatusCode.OK,
-                body = GetUserByLoginResponse(user = user.asPureUser),
+                body = GetUserByLoginResponse(user = user.asApiUser),
             )
         } else {
             ResponseData.fromErrorData(

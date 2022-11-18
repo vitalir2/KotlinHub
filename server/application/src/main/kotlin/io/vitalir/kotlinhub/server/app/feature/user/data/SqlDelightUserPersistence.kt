@@ -11,6 +11,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.CUsersQueries
+import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.Users
 
 internal class SqlDelightUserPersistence(
     private val sqlDelightDatabase: MainSqlDelight,
@@ -77,5 +78,11 @@ internal class SqlDelightUserPersistence(
         } catch (exception: Exception) {
             false
         }
+    }
+
+    override suspend fun getUsers(): List<User> {
+        return queries.getUsers()
+            .executeAsList()
+            .map(Users::toDomainModel)
     }
 }

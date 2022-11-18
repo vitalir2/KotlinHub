@@ -24,4 +24,5 @@ interface UserPersistence {
 
     suspend fun isUserExists(identifier: UserIdentifier): Boolean
     suspend fun removeUser(userId: UserId): Boolean
+    suspend fun getUsers(): List<User>
 }
