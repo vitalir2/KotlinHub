@@ -23,8 +23,8 @@ internal class RegisterUserUseCaseImpl(
         validateCredentials(credentials).bind()
         checkIfUserExists(credentials.identifier).bind()
         val newUser = User.fromCredentials(credentials, passwordManager)
-        userPersistence.addUser(newUser).bind()
-        newUser
+        val userId = userPersistence.addUser(newUser).bind()
+        newUser.copy(id = userId)
     }
 
     private fun validateCredentials(credentials: UserCredentials): Either<UserError.ValidationFailed, Unit> {

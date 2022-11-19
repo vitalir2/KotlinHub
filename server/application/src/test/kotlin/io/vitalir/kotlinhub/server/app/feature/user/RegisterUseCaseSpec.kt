@@ -1,6 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.user
 
 import arrow.core.left
+import arrow.core.right
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
@@ -100,22 +101,28 @@ internal class RegisterUseCaseSpec : ShouldSpec() {
                 identifier = validEmail,
                 password = validPassword,
             )
+            val expectedId = 19421
             val expectedUser = User(
-                id = anyUid,
+                id = expectedId,
                 username = validEmail.value,
                 password = validPassword,
                 email = validEmail.value,
             )
-            coEvery { userPersistence.isUserExists(credentials.identifier) } returns false
+            coEvery {
+                userPersistence.isUserExists(credentials.identifier)
+            } returns false
+            coEvery {
+                userPersistence.addUser(any())
+            } returns expectedId.right()
             setupSimplePasswordManager()
 
             val result = registerUserUseCase(credentials)
 
             val registeredUser: User = result.shouldBeRight()
+            registeredUser.id shouldBe expectedId
             registeredUser.username shouldBe expectedUser.username
             registeredUser.email shouldBe expectedUser.email
             registeredUser.password shouldBe expectedUser.password
-            confirmUserWasAddedCorrectly(credentials)
         }
 
         should("call adding user from UserPersistence if it does not exist yet") {
@@ -123,23 +130,19 @@ internal class RegisterUseCaseSpec : ShouldSpec() {
                 identifier = validEmail,
                 password = validPassword,
             )
-            coEvery { userPersistence.isUserExists(credentials.identifier) } returns false
+            coEvery {
+                userPersistence.isUserExists(credentials.identifier)
+            } returns false
+            coEvery {
+                userPersistence.addUser(any())
+            } returns anyUid.right()
             setupSimplePasswordManager()
 
             registerUserUseCase(credentials)
-
-            confirmUserWasAddedCorrectly(credentials)
         }
     }
 
     private fun setupSimplePasswordManager() {
         every { spyPasswordManager.encode(any()) } returnsArgument 0
-    }
-
-    private fun confirmUserWasAddedCorrectly(
-        credentials: UserCredentials,
-    ) {
-        coVerify { userPersistence.addUser(any()) }
-        verify { spyPasswordManager.encode(credentials.password) }
     }
 }

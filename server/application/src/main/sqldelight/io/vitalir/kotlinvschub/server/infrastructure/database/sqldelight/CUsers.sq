@@ -36,7 +36,8 @@ LIMIT 1;
 
 insert:
 INSERT INTO users (username, password, email)
-VALUES (?, ?, ?);
+VALUES (?, ?, ?)
+RETURNING id;
 
 updateUsername:
 UPDATE users
