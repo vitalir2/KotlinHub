@@ -12,6 +12,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.spyk
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
@@ -53,7 +54,9 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
 
             val result = updateUserUseCase(
                 userId = someUserId,
-                username = invalidUsername,
+                updateData = UpdateUserUseCase.UpdateData(
+                    username = invalidUsername.asNewValue,
+                ),
             )
 
             result.shouldBeLeft()
@@ -71,7 +74,9 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
 
             val result = updateUserUseCase(
                 userId = someUserId,
-                email = invalidEmail,
+                updateData = UpdateUserUseCase.UpdateData(
+                    email = invalidEmail.asNewValue,
+                ),
             )
 
             result.shouldBeLeft()
@@ -89,7 +94,9 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
 
             val result = updateUserUseCase(
                 userId = notExistingUserId,
-                username = someUsername,
+                updateData = UpdateUserUseCase.UpdateData(
+                    username = someUsername.asNewValue,
+                ),
             )
 
             result.shouldBeLeft()
@@ -99,15 +106,17 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
 
         should("return success if user exists and username to change is valid") {
             coEvery {
-                userPersistence.isUserExists(someUserIdentifier)
-            } returns true
+                userPersistence.getUser(someUserIdentifier)
+            } returns User.any
             coEvery {
                 userIdentifierValidationRule.validate(UserIdentifier.Username(someUsername))
             } returns Unit.right()
 
             val result = updateUserUseCase(
                 userId = someUserId,
-                username = someUsername,
+                updateData = UpdateUserUseCase.UpdateData(
+                    username = someUsername.asNewValue,
+                ),
             )
 
             result shouldBeRight Unit
@@ -121,15 +130,17 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
 
         should("return success if user exists and email to change is valid") {
             coEvery {
-                userPersistence.isUserExists(someUserIdentifier)
-            } returns true
+                userPersistence.getUser(someUserIdentifier)
+            } returns User.any
             coEvery {
                 userIdentifierValidationRule.validate(UserIdentifier.Email(someEmail))
             } returns Unit.right()
 
             val result = updateUserUseCase(
                 userId = someUserId,
-                email = someEmail,
+                updateData = UpdateUserUseCase.UpdateData(
+                    email = someEmail.asNewValue,
+                ),
             )
 
             result shouldBeRight Unit
@@ -146,10 +157,13 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
                 userPersistence.isUserExists(someUserIdentifier)
             } returns true
 
-            val result = updateUserUseCase(userId = someUserId)
+            val result = updateUserUseCase(userId = someUserId, UpdateUserUseCase.UpdateData())
 
             result.shouldBeLeft()
             result.value should beOfType<UpdateUserUseCase.Error.InvalidArguments>()
         }
     }
 }
+
+private val <T> T.asNewValue: UpdateUserUseCase.UpdateData.Value.New<T>
+    get() = UpdateUserUseCase.UpdateData.Value.New(this)

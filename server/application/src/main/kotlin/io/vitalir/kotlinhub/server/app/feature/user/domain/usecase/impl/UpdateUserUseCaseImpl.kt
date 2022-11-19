@@ -1,9 +1,10 @@
 package io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl
 
 import arrow.core.Either
-import arrow.core.continuations.EffectScope
 import arrow.core.continuations.either
 import arrow.core.left
+import arrow.core.rightIfNotNull
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.UpdateUserResult
@@ -18,58 +19,55 @@ internal class UpdateUserUseCaseImpl(
 
     override suspend fun invoke(
         userId: UserId,
-        username: String?,
-        email: String?,
+        updateData: UpdateUserUseCase.UpdateData,
     ): UpdateUserResult = either {
-        when {
-            userPersistence.isUserExists(UserIdentifier.Id(userId)).not() -> {
-                UpdateUserUseCase.Error.NoUser(userId).left().bind()
-            }
-            username != null && email != null -> {
-                validOrReturnError(username, ::isUsernameValid) {
-                    userPersistence.updateUsername(userId, username)
-                }
-                validOrReturnError(email, ::isEmailValid) {
-                    userPersistence.updateEmail(userId, email)
-                }
-            }
-            username != null -> {
-                validOrReturnError(username, ::isUsernameValid) {
-                    userPersistence.updateUsername(userId, username)
-                }
-            }
-            email != null -> {
-                validOrReturnError(email, ::isEmailValid) {
-                    userPersistence.updateEmail(userId, email)
-                }
-            }
-            else -> {
-                val error: Either<UpdateUserUseCase.Error, Unit> =
-                    UpdateUserUseCase.Error.InvalidArguments("Both arguments are null").left()
-                error.bind()
-            }
-        }
+        validateUpdateData(updateData).bind()
+        val user = userPersistence.getUser(UserIdentifier.Id(userId)).rightIfNotNull {
+            UpdateUserUseCase.Error.NoUser(userId)
+        }.bind()
+        updateUsername(updateData.username, user)
+        updateEmail(updateData.email, user)
     }
 
-    private suspend inline fun EffectScope<UpdateUserUseCase.Error>.validOrReturnError(
-        value: String,
-        validate: (value: String) -> Boolean,
-        onValidationPassed: () -> Unit,
+    private suspend fun updateEmail(
+        emailWrapper: UpdateUserUseCase.UpdateData.Value<String>,
+        user: User,
     ) {
-        if (validate(value)) {
-            onValidationPassed()
-        } else {
-            val error: Either<UpdateUserUseCase.Error.InvalidArguments, Unit> =
-                UpdateUserUseCase.Error.InvalidArguments("value=$value is not valid").left()
-            error.bind()
+        if (emailWrapper !is UpdateUserUseCase.UpdateData.Value.New<String>) return
+        val email = emailWrapper.value
+        userPersistence.updateEmail(user.id, email)
+    }
+
+    private suspend fun updateUsername(
+        usernameWrapper: UpdateUserUseCase.UpdateData.Value<String>,
+        user: User,
+    ) {
+        if (usernameWrapper !is UpdateUserUseCase.UpdateData.Value.New<String>) return
+        val username = usernameWrapper.value
+        userPersistence.updateUsername(user.id, username)
+    }
+
+    private suspend fun validateUpdateData(
+        updateData: UpdateUserUseCase.UpdateData,
+    ): Either<UpdateUserUseCase.Error.InvalidArguments, Unit> {
+        return when {
+            updateData.hasNoPotentialUpdates -> {
+                UpdateUserUseCase.Error.InvalidArguments("No updates found").left()
+            }
+            else -> either {
+                if (updateData.username is UpdateUserUseCase.UpdateData.Value.New<String>) {
+                    val username = updateData.username.value
+                    userValidationRule.validate(UserIdentifier.Username(username))
+                        .mapLeft { UpdateUserUseCase.Error.InvalidArguments("username $username is not valid") }
+                        .bind()
+                }
+                if (updateData.email is UpdateUserUseCase.UpdateData.Value.New<String>) {
+                    val email = updateData.email.value
+                    userValidationRule.validate(UserIdentifier.Email(email))
+                        .mapLeft { UpdateUserUseCase.Error.InvalidArguments("email $email is not valid") }
+                        .bind()
+                }
+            }
         }
-    }
-
-    private fun isUsernameValid(username: String): Boolean {
-        return userValidationRule.validate(UserIdentifier.Username(username)).isRight()
-    }
-
-    private fun isEmailValid(email: String): Boolean {
-        return userValidationRule.validate(UserIdentifier.Email(email)).isRight()
     }
 }

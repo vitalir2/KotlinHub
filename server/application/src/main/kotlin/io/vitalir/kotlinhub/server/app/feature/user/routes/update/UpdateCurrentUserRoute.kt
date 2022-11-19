@@ -19,8 +19,7 @@ internal fun Route.updateCurrentUser(
 
         val result = updateUserUseCase(
             userId = userId,
-            username = request.username,
-            email = request.email,
+            updateData = request.toUpdateData(),
         )
 
         val responseData = when (result) {
@@ -30,6 +29,21 @@ internal fun Route.updateCurrentUser(
             )
         }
         call.respondWith(responseData)
+    }
+}
+
+private fun UpdateCurrentUserRequest.toUpdateData(): UpdateUserUseCase.UpdateData {
+    return UpdateUserUseCase.UpdateData(
+        username =  username.newValueOrOld(),
+        email = email.newValueOrOld(),
+    )
+}
+
+private fun <T> T?.newValueOrOld(): UpdateUserUseCase.UpdateData.Value<T> {
+    return if (this !== null) {
+        UpdateUserUseCase.UpdateData.Value.New(this)
+    } else {
+        UpdateUserUseCase.UpdateData.Value.Old
     }
 }
 
