@@ -15,7 +15,7 @@ internal fun Route.updateCurrentUser(
 ) {
     put {
         val userId = call.userId
-        val request = call.receive<UpdateUserRequest>()
+        val request = call.receive<UpdateCurrentUserRequest>()
 
         val result = updateUserUseCase(
             userId = userId,
@@ -23,36 +23,29 @@ internal fun Route.updateCurrentUser(
             email = request.email,
         )
 
-        when (result) {
-            is Either.Left -> {
-                val responseData = getErrorResponseData(result.value)
-                call.respondWith(responseData)
-            }
-
-            is Either.Right -> {
-                call.respondWith(
-                    ResponseData(
-                        code = HttpStatusCode.OK,
-                    )
-                )
-            }
+        val responseData = when (result) {
+            is Either.Left -> result.value.toResponseData()
+            is Either.Right -> ResponseData(
+                code = HttpStatusCode.OK,
+            )
         }
+        call.respondWith(responseData)
     }
 }
 
-private fun getErrorResponseData(error: UpdateUserUseCase.Error): ResponseData {
-    return when (error) {
+private fun UpdateUserUseCase.Error.toResponseData(): ResponseData {
+    return when (this) {
         is UpdateUserUseCase.Error.InvalidArguments -> {
             ResponseData.fromErrorData(
                 code = HttpStatusCode.BadRequest,
-                errorMessage = error.message,
+                errorMessage = message,
             )
         }
 
         is UpdateUserUseCase.Error.NoUser -> {
             ResponseData.fromErrorData(
                 code = HttpStatusCode.BadRequest,
-                errorMessage = "no user with id=${error.userId}"
+                errorMessage = "no user with id=$userId"
             )
         }
     }
