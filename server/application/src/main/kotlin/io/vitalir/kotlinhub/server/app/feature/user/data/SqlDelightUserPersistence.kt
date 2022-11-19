@@ -31,7 +31,7 @@ internal class SqlDelightUserPersistence(
             ?.toDomainModel()
     }
 
-    override suspend fun addUser(user: User): Either<UserError.UserAlreadyExists, Unit> {
+    override suspend fun addUser(user: User): Either<UserError.UserAlreadyExists, UserId> {
         return if (isUserExists(UserIdentifier.Username(user.username))) {
             UserError.UserAlreadyExists.left()
         } else {
@@ -39,7 +39,7 @@ internal class SqlDelightUserPersistence(
                 username = user.username,
                 password = user.password,
                 email = user.email.orEmpty(),
-            ).right()
+            ).executeAsOne().right()
         }
     }
 

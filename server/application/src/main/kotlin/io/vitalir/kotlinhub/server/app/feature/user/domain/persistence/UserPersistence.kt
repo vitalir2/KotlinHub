@@ -10,7 +10,7 @@ interface UserPersistence {
 
     suspend fun getUser(identifier: UserIdentifier): User?
 
-    suspend fun addUser(user: User): Either<UserError.UserAlreadyExists, Unit>
+    suspend fun addUser(user: User): Either<UserError.UserAlreadyExists, UserId>
 
     suspend fun updateUsername(
         userId: UserId,
