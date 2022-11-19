@@ -3,6 +3,7 @@ package io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
+import arrow.core.right
 import arrow.core.rightIfNotNull
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
@@ -25,26 +26,44 @@ internal class UpdateUserUseCaseImpl(
         val user = userPersistence.getUser(UserIdentifier.Id(userId)).rightIfNotNull {
             UpdateUserUseCase.Error.NoUser(userId)
         }.bind()
-        updateUsername(updateData.username, user)
-        updateEmail(updateData.email, user)
+        updateUsername(updateData.username, user).bind()
+        updateEmail(updateData.email, user).bind()
     }
 
     private suspend fun updateEmail(
         emailWrapper: UpdateUserUseCase.UpdateData.Value<String>,
         user: User,
-    ) {
-        if (emailWrapper !is UpdateUserUseCase.UpdateData.Value.New<String>) return
+    ): Either<UpdateUserUseCase.Error.Conflict, Unit> {
+        if (emailWrapper !is UpdateUserUseCase.UpdateData.Value.New<String>) {
+            return Unit.right()
+        }
+
         val email = emailWrapper.value
-        userPersistence.updateEmail(user.id, email)
+        val isUserWithNewEmailExists = userPersistence.isUserExists(UserIdentifier.Email(email))
+        return if (isUserWithNewEmailExists) {
+            UpdateUserUseCase.Error.Conflict("User with email=$email already exists").left()
+        } else {
+            userPersistence.updateEmail(user.id, email)
+            Unit.right()
+        }
     }
 
     private suspend fun updateUsername(
         usernameWrapper: UpdateUserUseCase.UpdateData.Value<String>,
         user: User,
-    ) {
-        if (usernameWrapper !is UpdateUserUseCase.UpdateData.Value.New<String>) return
+    ): Either<UpdateUserUseCase.Error.Conflict, Unit> {
+        if (usernameWrapper !is UpdateUserUseCase.UpdateData.Value.New<String>) {
+            return Unit.right()
+        }
+
         val username = usernameWrapper.value
-        userPersistence.updateUsername(user.id, username)
+        val isUserWithNewUsernameExists = userPersistence.isUserExists(UserIdentifier.Username(username))
+        return if (isUserWithNewUsernameExists) {
+            UpdateUserUseCase.Error.Conflict("User with username=$username already exists").left()
+        } else {
+            userPersistence.updateUsername(user.id, username)
+            Unit.right()
+        }
     }
 
     private suspend fun validateUpdateData(

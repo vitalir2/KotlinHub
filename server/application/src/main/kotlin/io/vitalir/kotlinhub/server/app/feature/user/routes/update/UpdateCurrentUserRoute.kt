@@ -62,5 +62,8 @@ private fun UpdateUserUseCase.Error.toResponseData(): ResponseData {
                 errorMessage = "no user with id=$userId"
             )
         }
+        is UpdateUserUseCase.Error.Conflict -> {
+            ResponseData.badRequest(message)
+        }
     }
 }

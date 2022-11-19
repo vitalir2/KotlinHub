@@ -28,6 +28,8 @@ interface UpdateUserUseCase {
 
         data class NoUser(val userId: UserId) : Error
         data class InvalidArguments(val message: String) : Error
+
+        data class Conflict(val message: String) : Error
     }
 }
 

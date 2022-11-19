@@ -12,6 +12,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.spyk
+import io.vitalir.kotlinhub.server.app.common.shouldBeLeftWithType
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
@@ -111,6 +112,9 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
             coEvery {
                 userIdentifierValidationRule.validate(UserIdentifier.Username(someUsername))
             } returns Unit.right()
+            coEvery {
+                userPersistence.isUserExists(UserIdentifier.Username(someUsername))
+            } returns false
 
             val result = updateUserUseCase(
                 userId = someUserId,
@@ -135,6 +139,9 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
             coEvery {
                 userIdentifierValidationRule.validate(UserIdentifier.Email(someEmail))
             } returns Unit.right()
+            coEvery {
+                userPersistence.isUserExists(UserIdentifier.Email(someEmail))
+            } returns false
 
             val result = updateUserUseCase(
                 userId = someUserId,
@@ -161,6 +168,50 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
 
             result.shouldBeLeft()
             result.value should beOfType<UpdateUserUseCase.Error.InvalidArguments>()
+        }
+
+        should("return error if user with such updated username exists (conflict)") {
+            val existingUsername = "imexistingusername"
+            coEvery {
+                userPersistence.getUser(someUserIdentifier)
+            } returns User.any
+            coEvery {
+                userPersistence.isUserExists(UserIdentifier.Username(existingUsername))
+            } returns true
+            coEvery {
+                userIdentifierValidationRule.validate(any())
+            } returns Unit.right()
+
+            val result = updateUserUseCase(
+                userId = someUserId,
+                updateData = UpdateUserUseCase.UpdateData(
+                    username = existingUsername.asNewValue,
+                ),
+            )
+
+            result.shouldBeLeftWithType<UpdateUserUseCase.Error.Conflict>()
+        }
+
+        should("return error if user with such updated email exists (conflict)") {
+            val existingEmail = "imexistingusername"
+            coEvery {
+                userPersistence.getUser(someUserIdentifier)
+            } returns User.any
+            coEvery {
+                userPersistence.isUserExists(UserIdentifier.Email(existingEmail))
+            } returns true
+            coEvery {
+                userIdentifierValidationRule.validate(any())
+            } returns Unit.right()
+
+            val result = updateUserUseCase(
+                userId = someUserId,
+                updateData = UpdateUserUseCase.UpdateData(
+                    email = existingEmail.asNewValue,
+                ),
+            )
+
+            result.shouldBeLeftWithType<UpdateUserUseCase.Error.Conflict>()
         }
     }
 }
