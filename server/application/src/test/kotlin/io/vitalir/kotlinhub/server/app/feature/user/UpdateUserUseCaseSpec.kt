@@ -5,9 +5,6 @@ import arrow.core.right
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
-import io.kotest.matchers.should
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.beOfType
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -60,8 +57,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
                 ),
             )
 
-            result.shouldBeLeft()
-            result.value should beOfType<UpdateUserUseCase.Error.InvalidArguments>()
+            result.shouldBeLeftWithType<UpdateUserUseCase.Error.InvalidArguments>()
         }
 
         should("return error if new email is not valid") {
@@ -80,8 +76,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
                 ),
             )
 
-            result.shouldBeLeft()
-            result.value should beOfType<UpdateUserUseCase.Error.InvalidArguments>()
+            result.shouldBeLeftWithType<UpdateUserUseCase.Error.InvalidArguments>()
         }
 
         should("return error if user does not exist") {
@@ -100,9 +95,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
                 ),
             )
 
-            result.shouldBeLeft()
-            result.value should beOfType<UpdateUserUseCase.Error.NoUser>()
-            result.value shouldBe UpdateUserUseCase.Error.NoUser(userId = notExistingUserId)
+            result shouldBeLeft UpdateUserUseCase.Error.NoUser(userId = notExistingUserId)
         }
 
         should("return success if user exists and username to change is valid") {
@@ -166,8 +159,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
 
             val result = updateUserUseCase(userId = someUserId, UpdateUserUseCase.UpdateData())
 
-            result.shouldBeLeft()
-            result.value should beOfType<UpdateUserUseCase.Error.InvalidArguments>()
+            result.shouldBeLeftWithType<UpdateUserUseCase.Error.InvalidArguments>()
         }
 
         should("return error if user with such updated username exists (conflict)") {
