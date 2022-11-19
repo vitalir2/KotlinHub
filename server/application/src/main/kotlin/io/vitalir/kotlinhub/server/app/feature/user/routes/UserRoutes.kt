@@ -10,7 +10,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.routes.get.getUsersRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.login.loginRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.registration.registerUserRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.removeuser.removeCurrentUser
-import io.vitalir.kotlinhub.server.app.feature.user.routes.updateuser.updateCurrentUser
+import io.vitalir.kotlinhub.server.app.feature.user.routes.update.updateCurrentUser
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 
