@@ -70,7 +70,7 @@ internal class UpdateUserUseCaseImpl(
         updateData: UpdateUserUseCase.UpdateData,
     ): Either<UpdateUserUseCase.Error, Unit> {
         return when {
-            updateData.hasNoPotentialUpdates -> {
+            updateData.isEmpty -> {
                 UpdateUserUseCase.Error.NoUpdates.left()
             }
             else -> either {

@@ -17,7 +17,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.UpdateUserUse
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.impl.UpdateUserUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.user.domain.validation.UserValidationRule
 
-class UpdateUserUseCaseSpec : ShouldSpec() {
+internal class UpdateUserUseCaseSpec : ShouldSpec() {
 
     private lateinit var userPersistence: UserPersistence
 

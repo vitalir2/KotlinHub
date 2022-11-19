@@ -15,7 +15,7 @@ interface UpdateUserUseCase {
         val email: Value<String> = Value.Old,
     ) {
         
-        val hasNoPotentialUpdates: Boolean
+        val isEmpty: Boolean
             get() = username is Value.Old && email is Value.Old
         
         sealed interface Value<out T> {
