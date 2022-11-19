@@ -56,6 +56,9 @@ dependencies {
     // Security
     implementation("org.mindrot:jbcrypt:0.4")
 
+    // OpenAPI
+    implementation("io.bkbn:kompendium-core:3.9.0")
+
     // Testing
     val kotestVersion = "5.5.1"
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")

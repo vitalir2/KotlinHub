@@ -8,6 +8,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraphFactory
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraphFactoryImpl
 import io.vitalir.kotlinhub.server.app.infrastructure.routing.configureRouting
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.configureAuth
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.configureDocs
 import io.vitalir.kotlinhub.server.app.infrastructure.serialization.configureSerialization
 
 fun main(args: Array<String>) = EngineMain.main(args)
@@ -22,6 +23,7 @@ fun Application.mainModule() {
     configureAuth(jwtConfig = appConfig.jwt)
     configureSerialization()
     configureRouting(applicationGraph)
+    configureDocs()
 }
 
 private fun ApplicationConfig.toAppConfig(): AppConfig {
