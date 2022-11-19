@@ -25,11 +25,11 @@ interface UpdateUserUseCase {
     }
 
     sealed interface Error {
-
+        object NoUpdates : Error
         data class NoUser(val userId: UserId) : Error
-        data class InvalidArguments(val message: String) : Error
+        data class InvalidArgument(val nameToValue: Pair<String, String>) : Error
 
-        data class Conflict(val message: String) : Error
+        data class Conflict(val nameToValue: Pair<String, String>) : Error
     }
 }
 

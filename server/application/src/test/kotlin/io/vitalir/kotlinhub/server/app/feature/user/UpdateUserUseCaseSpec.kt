@@ -9,7 +9,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.spyk
-import io.vitalir.kotlinhub.server.app.common.shouldBeLeftWithType
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
@@ -41,7 +40,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
             )
         }
 
-        should("return error if new login is not valid") {
+        should("return error if new username is not valid") {
             val invalidUsername = "a"
             coEvery {
                 userPersistence.isUserExists(someUserIdentifier)
@@ -57,7 +56,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
                 ),
             )
 
-            result.shouldBeLeftWithType<UpdateUserUseCase.Error.InvalidArguments>()
+            result shouldBeLeft UpdateUserUseCase.Error.InvalidArgument("username" to invalidUsername)
         }
 
         should("return error if new email is not valid") {
@@ -76,7 +75,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
                 ),
             )
 
-            result.shouldBeLeftWithType<UpdateUserUseCase.Error.InvalidArguments>()
+            result shouldBeLeft UpdateUserUseCase.Error.InvalidArgument("email" to invalidEmail)
         }
 
         should("return error if user does not exist") {
@@ -159,7 +158,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
 
             val result = updateUserUseCase(userId = someUserId, UpdateUserUseCase.UpdateData())
 
-            result.shouldBeLeftWithType<UpdateUserUseCase.Error.InvalidArguments>()
+            result shouldBeLeft UpdateUserUseCase.Error.NoUpdates
         }
 
         should("return error if user with such updated username exists (conflict)") {
@@ -181,7 +180,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
                 ),
             )
 
-            result.shouldBeLeftWithType<UpdateUserUseCase.Error.Conflict>()
+            result shouldBeLeft UpdateUserUseCase.Error.Conflict("username" to existingUsername)
         }
 
         should("return error if user with such updated email exists (conflict)") {
@@ -203,7 +202,7 @@ class UpdateUserUseCaseSpec : ShouldSpec() {
                 ),
             )
 
-            result.shouldBeLeftWithType<UpdateUserUseCase.Error.Conflict>()
+            result shouldBeLeft UpdateUserUseCase.Error.Conflict("email" to existingEmail)
         }
     }
 }

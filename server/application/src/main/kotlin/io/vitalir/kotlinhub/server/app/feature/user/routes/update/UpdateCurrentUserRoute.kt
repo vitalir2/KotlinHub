@@ -49,21 +49,18 @@ private fun <T> T?.newValueOrOld(): UpdateUserUseCase.UpdateData.Value<T> {
 
 private fun UpdateUserUseCase.Error.toResponseData(): ResponseData {
     return when (this) {
-        is UpdateUserUseCase.Error.InvalidArguments -> {
-            ResponseData.fromErrorData(
-                code = HttpStatusCode.BadRequest,
-                errorMessage = message,
-            )
-        }
+        is UpdateUserUseCase.Error.InvalidArgument -> ResponseData.badRequest(
+            "argument ${nameToValue.first}=${nameToValue.second} is not valid"
+        )
 
-        is UpdateUserUseCase.Error.NoUser -> {
-            ResponseData.fromErrorData(
-                code = HttpStatusCode.BadRequest,
-                errorMessage = "no user with id=$userId"
-            )
-        }
-        is UpdateUserUseCase.Error.Conflict -> {
-            ResponseData.badRequest(message)
-        }
+        is UpdateUserUseCase.Error.NoUser -> ResponseData.badRequest(
+            "no user with id=$userId"
+        )
+        is UpdateUserUseCase.Error.Conflict -> ResponseData.badRequest(
+            "conflict: user with ${nameToValue.first}=${nameToValue.second} already exists"
+        )
+        is UpdateUserUseCase.Error.NoUpdates -> ResponseData.badRequest(
+            "no new values were passed"
+        )
     }
 }

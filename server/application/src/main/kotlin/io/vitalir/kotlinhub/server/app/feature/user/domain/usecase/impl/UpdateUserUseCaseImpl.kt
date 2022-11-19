@@ -41,7 +41,7 @@ internal class UpdateUserUseCaseImpl(
         val email = emailWrapper.value
         val isUserWithNewEmailExists = userPersistence.isUserExists(UserIdentifier.Email(email))
         return if (isUserWithNewEmailExists) {
-            UpdateUserUseCase.Error.Conflict("User with email=$email already exists").left()
+            UpdateUserUseCase.Error.Conflict("email" to email).left()
         } else {
             userPersistence.updateEmail(user.id, email)
             Unit.right()
@@ -59,7 +59,7 @@ internal class UpdateUserUseCaseImpl(
         val username = usernameWrapper.value
         val isUserWithNewUsernameExists = userPersistence.isUserExists(UserIdentifier.Username(username))
         return if (isUserWithNewUsernameExists) {
-            UpdateUserUseCase.Error.Conflict("User with username=$username already exists").left()
+            UpdateUserUseCase.Error.Conflict("username" to username).left()
         } else {
             userPersistence.updateUsername(user.id, username)
             Unit.right()
@@ -68,25 +68,33 @@ internal class UpdateUserUseCaseImpl(
 
     private suspend fun validateUpdateData(
         updateData: UpdateUserUseCase.UpdateData,
-    ): Either<UpdateUserUseCase.Error.InvalidArguments, Unit> {
+    ): Either<UpdateUserUseCase.Error, Unit> {
         return when {
             updateData.hasNoPotentialUpdates -> {
-                UpdateUserUseCase.Error.InvalidArguments("No updates found").left()
+                UpdateUserUseCase.Error.NoUpdates.left()
             }
             else -> either {
                 if (updateData.username is UpdateUserUseCase.UpdateData.Value.New<String>) {
-                    val username = updateData.username.value
-                    userValidationRule.validate(UserIdentifier.Username(username))
-                        .mapLeft { UpdateUserUseCase.Error.InvalidArguments("username $username is not valid") }
-                        .bind()
+                    validateUsername(updateData.username.value).bind()
                 }
                 if (updateData.email is UpdateUserUseCase.UpdateData.Value.New<String>) {
-                    val email = updateData.email.value
-                    userValidationRule.validate(UserIdentifier.Email(email))
-                        .mapLeft { UpdateUserUseCase.Error.InvalidArguments("email $email is not valid") }
-                        .bind()
+                    validateEmail(updateData.email.value).bind()
                 }
             }
         }
+    }
+
+    private fun validateUsername(
+        username: String,
+    ): Either<UpdateUserUseCase.Error.InvalidArgument, Unit> {
+        return userValidationRule.validate(UserIdentifier.Username(username))
+            .mapLeft { UpdateUserUseCase.Error.InvalidArgument("username" to username) }
+    }
+
+    private fun validateEmail(
+        email: String,
+    ): Either<UpdateUserUseCase.Error.InvalidArgument, Unit> {
+        return userValidationRule.validate(UserIdentifier.Email(email))
+            .mapLeft { UpdateUserUseCase.Error.InvalidArgument("email" to email) }
     }
 }
