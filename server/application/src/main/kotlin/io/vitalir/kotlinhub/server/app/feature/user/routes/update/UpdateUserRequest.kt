@@ -1,4 +1,4 @@
-package io.vitalir.kotlinhub.server.app.feature.user.routes.updateuser
+package io.vitalir.kotlinhub.server.app.feature.user.routes.update
 
 import kotlinx.serialization.Serializable
 
