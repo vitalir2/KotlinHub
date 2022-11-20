@@ -7,6 +7,7 @@ import io.bkbn.kompendium.core.metadata.ResponseInfo
 import io.bkbn.kompendium.core.plugin.NotarizedApplication
 import io.bkbn.kompendium.core.plugin.NotarizedRoute
 import io.bkbn.kompendium.json.schema.KotlinXSchemaConfigurator
+import io.bkbn.kompendium.json.schema.definition.TypeDefinition
 import io.bkbn.kompendium.oas.OpenApiSpec
 import io.bkbn.kompendium.oas.component.Components
 import io.bkbn.kompendium.oas.info.Info
@@ -18,6 +19,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.AuthVariant
 import io.vitalir.kotlinhub.server.app.common.routes.ErrorResponse
+import java.time.LocalDateTime
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -44,6 +46,9 @@ internal fun Application.configureDocs() {
                 ),
             ),
         )
+        customTypes = mapOf(
+            typeOf<LocalDateTime>() to TypeDefinition(type = "string", format = "date-time"),
+        )
         openApiJson = {
             // TODO replace by user role when it will be implemented
             if (application.environment.developmentMode) {
@@ -66,6 +71,14 @@ internal fun MethodInfo.Builder<*>.badRequestResponse() {
         resType<ErrorResponse>()
         responseCode(HttpStatusCode.BadRequest)
         description("Error, see 'message' for more details")
+    }
+}
+
+internal fun MethodInfo.Builder<*>.serverErrorResponse() {
+    canRespond {
+        resType<ErrorResponse>()
+        responseCode(HttpStatusCode.InternalServerError)
+        description("Server error")
     }
 }
 

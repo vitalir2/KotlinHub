@@ -17,7 +17,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.LoginUseCase
-import io.vitalir.kotlinhub.server.app.feature.user.routes.common.userTag
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.usersTag
 import io.vitalir.kotlinhub.server.app.feature.user.routes.getErrorResponseData
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthenticationPayload
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
@@ -35,7 +35,7 @@ internal fun Route.authRoute(
 ) {
     route("/auth") {
         kompendiumDocs {
-            userTag()
+            usersTag()
             loginDocs()
         }
         loginRoute(jwtConfig, loginUseCase)

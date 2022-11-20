@@ -16,7 +16,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.GetUserByIdentifierUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.asApiUser
-import io.vitalir.kotlinhub.server.app.feature.user.routes.common.userTag
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.usersTag
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.requireParameter
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
@@ -27,7 +27,7 @@ internal fun Route.userByIdentifierRoute(
 ) {
     route("/{identifier}") {
         kompendiumDocs {
-            userTag()
+            usersTag()
             getUserByIdentifierDocs()
         }
         get {

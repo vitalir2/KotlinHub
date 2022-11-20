@@ -5,7 +5,7 @@ import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
-import io.vitalir.kotlinhub.server.app.feature.user.routes.common.userTag
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.usersTag
 import io.vitalir.kotlinhub.server.app.feature.user.routes.get.getUsersDocs
 import io.vitalir.kotlinhub.server.app.feature.user.routes.get.getUsersRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.get.userByIdentifierRoute
@@ -26,7 +26,7 @@ internal fun Routing.userRoutes(
 ) {
     route("users/") {
         kompendiumDocs {
-            userTag()
+            usersTag()
             registerDocs()
             getUsersDocs()
         }
@@ -45,7 +45,7 @@ private fun Route.authenticatedRoutes(
 ) {
     jwtAuth {
         kompendiumDocs {
-            userTag()
+            usersTag()
             updateCurrentUserDocs()
             removeCurrentUserDocs()
         }
