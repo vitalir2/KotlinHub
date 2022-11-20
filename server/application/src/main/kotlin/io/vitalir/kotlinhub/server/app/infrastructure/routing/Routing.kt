@@ -12,6 +12,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitPlugin
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.repositoryRoutes
 import io.vitalir.kotlinhub.server.app.feature.user.routes.userRoutes
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.openAPI
 
 fun Application.configureRouting(appGraph: AppGraph) {
     val debugConfig = appGraph.appConfig.debug
@@ -27,6 +28,7 @@ fun Application.configureRouting(appGraph: AppGraph) {
         if (debugConfig?.isRoutesTracingEnabled == true) {
             trace { application.log.trace(it.buildText()) }
         }
+        openAPI("/swagger")
 
         userRoutes(
             jwtConfig = appGraph.appConfig.jwt,

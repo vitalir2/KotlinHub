@@ -22,8 +22,8 @@ fun Application.mainModule() {
 
     configureAuth(jwtConfig = appConfig.jwt)
     configureSerialization()
-    configureRouting(applicationGraph)
     configureDocs()
+    configureRouting(applicationGraph)
 }
 
 private fun ApplicationConfig.toAppConfig(): AppConfig {

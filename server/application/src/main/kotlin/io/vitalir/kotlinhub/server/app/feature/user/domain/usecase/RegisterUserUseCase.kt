@@ -5,6 +5,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 
+// TODO make error scope narrower
 interface RegisterUserUseCase {
 
     suspend operator fun invoke(credentials: UserCredentials): Either<UserError, User>

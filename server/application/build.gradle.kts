@@ -59,6 +59,11 @@ dependencies {
     // OpenAPI
     implementation("io.bkbn:kompendium-core:3.9.0")
 
+    implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
+    implementation("io.swagger.codegen.v3:swagger-codegen:3.0.35")
+    implementation("io.swagger.codegen.v3:swagger-codegen-generators:1.0.35")
+    implementation("io.swagger.parser.v3:swagger-parser:2.1.1")
+
     // Testing
     val kotestVersion = "5.5.1"
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")

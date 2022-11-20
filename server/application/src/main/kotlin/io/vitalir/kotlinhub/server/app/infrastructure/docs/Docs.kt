@@ -20,10 +20,8 @@ internal fun Application.configureDocs() {
         openApiJson = {
             // TODO replace by user role when it will be implemented
             if (application.environment.developmentMode) {
-                route("/openapi.json") {
-                    get {
-                        call.respond(HttpStatusCode.OK, this@route.application.attributes[KompendiumAttributes.openApiSpec])
-                    }
+                get("/openapi.json") {
+                    call.respond(HttpStatusCode.OK, application.attributes[KompendiumAttributes.openApiSpec])
                 }
             }
         }
