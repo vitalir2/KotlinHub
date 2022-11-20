@@ -31,5 +31,12 @@ data class ResponseData(
                 errorMessage = "internal server error",
             )
         }
+
+        fun forbidden(): ResponseData {
+            return fromErrorData(
+                code = HttpStatusCode.Forbidden,
+                errorMessage = "forbidden",
+            )
+        }
     }
 }

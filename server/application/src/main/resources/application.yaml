@@ -24,3 +24,7 @@ repository:
 debug:
   routeTracing: $ROUTE_TRACING
   docs: $DOCS
+
+defaultAdmin:
+  username: $DEFAULT_ADMIN_USERNAME
+  password: $DEFAULT_ADMIN_PASSWORD

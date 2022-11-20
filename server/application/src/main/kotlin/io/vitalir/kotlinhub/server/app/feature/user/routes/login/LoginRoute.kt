@@ -30,7 +30,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 internal fun Route.authRoute(
-    jwtConfig: AppConfig.Jwt,
+    jwtConfig: AppConfig.Auth.Jwt,
     loginUseCase: LoginUseCase,
 ) {
     route("/auth") {
@@ -43,7 +43,7 @@ internal fun Route.authRoute(
 }
 
 private fun Route.loginRoute(
-    jwtConfig: AppConfig.Jwt,
+    jwtConfig: AppConfig.Auth.Jwt,
     loginUseCase: LoginUseCase,
 ) {
     post {
@@ -76,7 +76,10 @@ private fun NotarizedRoute.Config.loginDocs() {
     }
 }
 
-private fun getResponseData(jwtConfig: AppConfig.Jwt, loginResult: Either<UserError, User>): ResponseData {
+private fun getResponseData(
+    jwtConfig: AppConfig.Auth.Jwt,
+    loginResult: Either<UserError, User>,
+): ResponseData {
     return when (loginResult) {
         is Either.Left -> {
             getErrorResponseData(loginResult.value)
@@ -95,7 +98,10 @@ private fun getResponseData(jwtConfig: AppConfig.Jwt, loginResult: Either<UserEr
     }
 }
 
-private fun createToken(jwtConfig: AppConfig.Jwt, userId: UserId): String {
+private fun createToken(
+    jwtConfig: AppConfig.Auth.Jwt,
+    userId: UserId,
+): String {
     return JWT.create().apply {
         withAudience(jwtConfig.audience)
         withIssuer(jwtConfig.issuer)
