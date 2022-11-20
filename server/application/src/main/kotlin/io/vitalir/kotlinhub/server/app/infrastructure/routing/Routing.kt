@@ -1,5 +1,6 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.routing
 
+import io.bkbn.kompendium.core.routes.redoc
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callloging.*
@@ -8,11 +9,10 @@ import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.git.routes.gitRoutes
-import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
-import io.vitalir.kotlinhub.server.app.infrastructure.git.GitPlugin
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.repositoryRoutes
 import io.vitalir.kotlinhub.server.app.feature.user.routes.userRoutes
-import io.vitalir.kotlinhub.server.app.infrastructure.docs.openAPI
+import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
+import io.vitalir.kotlinhub.server.app.infrastructure.git.GitPlugin
 
 fun Application.configureRouting(appGraph: AppGraph) {
     val debugConfig = appGraph.appConfig.debug
@@ -28,7 +28,6 @@ fun Application.configureRouting(appGraph: AppGraph) {
         if (debugConfig?.isRoutesTracingEnabled == true) {
             trace { application.log.trace(it.buildText()) }
         }
-        openAPI("/swagger")
 
         userRoutes(
             jwtConfig = appGraph.appConfig.jwt,
@@ -40,6 +39,9 @@ fun Application.configureRouting(appGraph: AppGraph) {
         gitRoutes(
             appGraph = appGraph,
         )
+
+        // Order is important here
+        redoc(path = "/docs")
     }
 }
 

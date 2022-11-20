@@ -1,6 +1,8 @@
 package io.vitalir.kotlinhub.server.app.feature.user.routes
 
+import io.bkbn.kompendium.core.plugin.NotarizedRoute
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
@@ -8,6 +10,7 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.routes.get.getUserByUsernameRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.get.getUsersRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.login.loginRoute
+import io.vitalir.kotlinhub.server.app.feature.user.routes.registration.registerDocs
 import io.vitalir.kotlinhub.server.app.feature.user.routes.registration.registerUserRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.removeuser.removeCurrentUser
 import io.vitalir.kotlinhub.server.app.feature.user.routes.update.updateCurrentUser
@@ -19,11 +22,20 @@ internal fun Routing.userRoutes(
     userGraph: AppGraph.UserGraph,
 ) {
     route("users/") {
+        userDocs()
+
         unauthorizedUserRoutes(jwtConfig, userGraph)
 
         authIndependentUserRoutes(userGraph)
 
         authorizedUserRoutes(userGraph)
+    }
+}
+
+private fun Route.userDocs() {
+    install(NotarizedRoute()) {
+        tags = setOf("user")
+        registerDocs()
     }
 }
 
