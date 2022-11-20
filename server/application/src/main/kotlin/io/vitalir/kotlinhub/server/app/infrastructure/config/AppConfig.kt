@@ -9,6 +9,7 @@ data class AppConfig(
 
     data class Debug(
         val isRoutesTracingEnabled: Boolean,
+        val isDocsEnabled: Boolean,
     )
 
     data class Jwt(

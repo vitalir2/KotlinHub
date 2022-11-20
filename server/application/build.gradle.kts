@@ -24,7 +24,6 @@ dependencies {
     implementation("io.ktor:ktor-server-host-common-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-webjars-jvm:$ktorVersion")
-    implementation("org.webjars:jquery:3.4.1")
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
@@ -56,6 +55,11 @@ dependencies {
     // Security
     implementation("org.mindrot:jbcrypt:0.4")
 
+    // OpenAPI
+    implementation("io.bkbn:kompendium-core:3.9.0")
+
+    implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
+
     // Testing
     val kotestVersion = "5.5.1"
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
@@ -85,4 +89,10 @@ sqldelight {
 // Kotlin JVM Kotest dependency
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }

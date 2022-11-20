@@ -4,6 +4,8 @@ import arrow.core.Either
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.algorithms.Algorithm
+import io.bkbn.kompendium.core.metadata.PostInfo
+import io.bkbn.kompendium.core.plugin.NotarizedRoute
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -15,18 +17,36 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.LoginUseCase
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.usersTag
 import io.vitalir.kotlinhub.server.app.feature.user.routes.getErrorResponseData
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthenticationPayload
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.reqType
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-internal fun Route.loginRoute(
+internal fun Route.authRoute(
     jwtConfig: AppConfig.Jwt,
     loginUseCase: LoginUseCase,
 ) {
-    post("auth/") {
+    route("/auth") {
+        kompendiumDocs {
+            usersTag()
+            loginDocs()
+        }
+        loginRoute(jwtConfig, loginUseCase)
+    }
+}
+
+private fun Route.loginRoute(
+    jwtConfig: AppConfig.Jwt,
+    loginUseCase: LoginUseCase,
+) {
+    post {
         val loginRequest = call.receive<LoginRequest>()
         val usernameResult = loginUseCase(
             UserCredentials(
@@ -39,11 +59,29 @@ internal fun Route.loginRoute(
     }
 }
 
+private fun NotarizedRoute.Config.loginDocs() {
+    post = PostInfo.builder {
+        summary("Login to KotlinGit")
+        description("Login using credentials")
+        request {
+            reqType<LoginRequest>()
+            description("Credentials")
+        }
+        response {
+            resType<LoginResponse>()
+            responseCode(HttpStatusCode.OK)
+            description("JWT token")
+        }
+        badRequestResponse()
+    }
+}
+
 private fun getResponseData(jwtConfig: AppConfig.Jwt, loginResult: Either<UserError, User>): ResponseData {
     return when (loginResult) {
         is Either.Left -> {
             getErrorResponseData(loginResult.value)
         }
+
         is Either.Right -> {
             val user = loginResult.value
             val token = createToken(jwtConfig, user.id)

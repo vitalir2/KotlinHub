@@ -5,47 +5,50 @@ import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
-import io.vitalir.kotlinhub.server.app.feature.user.routes.get.getUserByUsernameRoute
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.usersTag
+import io.vitalir.kotlinhub.server.app.feature.user.routes.get.getUsersDocs
 import io.vitalir.kotlinhub.server.app.feature.user.routes.get.getUsersRoute
-import io.vitalir.kotlinhub.server.app.feature.user.routes.login.loginRoute
+import io.vitalir.kotlinhub.server.app.feature.user.routes.get.userByIdentifierRoute
+import io.vitalir.kotlinhub.server.app.feature.user.routes.login.authRoute
+import io.vitalir.kotlinhub.server.app.feature.user.routes.registration.registerDocs
 import io.vitalir.kotlinhub.server.app.feature.user.routes.registration.registerUserRoute
 import io.vitalir.kotlinhub.server.app.feature.user.routes.removeuser.removeCurrentUser
+import io.vitalir.kotlinhub.server.app.feature.user.routes.removeuser.removeCurrentUserDocs
 import io.vitalir.kotlinhub.server.app.feature.user.routes.update.updateCurrentUser
+import io.vitalir.kotlinhub.server.app.feature.user.routes.update.updateCurrentUserDocs
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 
 internal fun Routing.userRoutes(
     jwtConfig: AppConfig.Jwt,
     userGraph: AppGraph.UserGraph,
 ) {
     route("users/") {
-        unauthorizedUserRoutes(jwtConfig, userGraph)
+        kompendiumDocs {
+            usersTag()
+            registerDocs()
+            getUsersDocs()
+        }
+        registerUserRoute(userGraph.registerUserUseCase)
+        getUsersRoute(userGraph.getUsersUseCase)
 
-        authIndependentUserRoutes(userGraph)
+        authRoute(jwtConfig, userGraph.loginUseCase)
+        userByIdentifierRoute(userGraph.getUserByIdentifierUseCase)
 
-        authorizedUserRoutes(userGraph)
+        authenticatedRoutes(userGraph)
     }
 }
 
-private fun Route.unauthorizedUserRoutes(
-    jwtConfig: AppConfig.Jwt,
-    userGraph: AppGraph.UserGraph,
-) {
-    registerUserRoute(userGraph.registerUserUseCase)
-    loginRoute(jwtConfig, userGraph.loginUseCase)
-}
-
-private fun Route.authIndependentUserRoutes(
-    userGraph: AppGraph.UserGraph,
-) {
-    getUserByUsernameRoute(userGraph.getUserByIdentifierUseCase)
-    getUsersRoute(userGraph.getUsersUseCase)
-}
-
-private fun Route.authorizedUserRoutes(
+private fun Route.authenticatedRoutes(
     userGraph: AppGraph.UserGraph,
 ) {
     jwtAuth {
+        kompendiumDocs {
+            usersTag()
+            updateCurrentUserDocs()
+            removeCurrentUserDocs()
+        }
         updateCurrentUser(userGraph.updateUserUseCase)
         removeCurrentUser(userGraph.removeUserUseCase)
     }
