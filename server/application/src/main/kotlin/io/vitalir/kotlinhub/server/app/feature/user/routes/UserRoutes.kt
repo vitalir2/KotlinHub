@@ -21,7 +21,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 
 internal fun Routing.userRoutes(
-    jwtConfig: AppConfig.Jwt,
+    jwtConfig: AppConfig.Auth.Jwt,
     userGraph: AppGraph.UserGraph,
 ) {
     route("users/") {

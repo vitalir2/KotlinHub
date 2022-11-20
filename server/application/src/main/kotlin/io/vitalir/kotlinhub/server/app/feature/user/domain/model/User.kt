@@ -12,6 +12,7 @@ data class User(
     val lastName: String? = null,
     val email: String? = null,
     val repositories: List<Repository> = emptyList(),
+    val isAdmin: Boolean = false,
 ) {
 
     val identifier: UserIdentifier = UserIdentifier.Id(id)

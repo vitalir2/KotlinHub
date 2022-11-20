@@ -20,7 +20,7 @@ fun Application.mainModule() {
     val appGraphFactory: AppGraphFactory = AppGraphFactoryImpl(this)
     val applicationGraph = appGraphFactory.create(appConfig)
 
-    configureAuth(jwtConfig = appConfig.jwt)
+    configureAuth(applicationGraph)
     configureSerialization()
     if (appConfig.debug?.isDocsEnabled == true) {
         configureDocs()
@@ -32,19 +32,35 @@ private fun ApplicationConfig.toAppConfig(): AppConfig {
     val isDevelopmentMode = property("ktor.development").getString().toBoolean()
     return AppConfig(
         debug = if (isDevelopmentMode) config("debug").debugConfig else null,
-        jwt = config("jwt").jwtConfig,
+        auth = authConfig,
         database = config("database").databaseConfig,
         repository = config("repository").repositoryConfig,
     )
 }
 
-private val ApplicationConfig.jwtConfig: AppConfig.Jwt
-    get() = AppConfig.Jwt(
-        secret = property("secret").getString(),
-        issuer = property("issuer").getString(),
-        audience = property("audience").getString(),
-        realm = property("realm").getString(),
+private val ApplicationConfig.authConfig: AppConfig.Auth
+    get() = AppConfig.Auth(
+        jwt = config("jwt").jwtConfig,
+        defaultAdmin = config("defaultAdmin").defaultAdminConfig,
     )
+
+private val ApplicationConfig.jwtConfig: AppConfig.Auth.Jwt
+    get() {
+        return AppConfig.Auth.Jwt(
+            secret = property("secret").getString(),
+            issuer = property("issuer").getString(),
+            audience = property("audience").getString(),
+            realm = property("realm").getString(),
+        )
+    }
+
+private val ApplicationConfig.defaultAdminConfig: AppConfig.Auth.DefaultAdmin
+    get() {
+        return AppConfig.Auth.DefaultAdmin(
+            username = property("username").getString(),
+            password = property("password").getString(),
+        )
+    }
 
 private val ApplicationConfig.databaseConfig: AppConfig.Database
     get() = AppConfig.Database(

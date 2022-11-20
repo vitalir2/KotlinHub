@@ -30,7 +30,7 @@ fun Application.configureRouting(appGraph: AppGraph) {
         }
 
         userRoutes(
-            jwtConfig = appGraph.appConfig.jwt,
+            jwtConfig = appGraph.appConfig.auth.jwt,
             userGraph = appGraph.user,
         )
         repositoryRoutes(
