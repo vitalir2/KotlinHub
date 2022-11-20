@@ -39,6 +39,7 @@ internal class SqlDelightUserPersistence(
                 username = user.username,
                 password = user.password,
                 email = user.email.orEmpty(),
+                isAdmin = user.isAdmin,
             ).executeAsOne().right()
         }
     }

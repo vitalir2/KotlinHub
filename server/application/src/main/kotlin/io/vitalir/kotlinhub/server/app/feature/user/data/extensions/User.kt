@@ -8,4 +8,5 @@ internal fun Users.toDomainModel(): User = User(
     username = username,
     password = password,
     email = email,
+    isAdmin = isAdmin ?: false,
 )
