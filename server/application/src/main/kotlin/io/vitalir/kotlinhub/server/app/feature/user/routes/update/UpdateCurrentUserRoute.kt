@@ -1,6 +1,8 @@
 package io.vitalir.kotlinhub.server.app.feature.user.routes.update
 
 import arrow.core.Either
+import io.bkbn.kompendium.core.metadata.PutInfo
+import io.bkbn.kompendium.core.plugin.NotarizedRoute
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -9,6 +11,9 @@ import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.UpdateUserUseCase
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.reqType
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
 
 internal fun Route.updateCurrentUser(
     updateUserUseCase: UpdateUserUseCase,
@@ -29,6 +34,23 @@ internal fun Route.updateCurrentUser(
             )
         }
         call.respondWith(responseData)
+    }
+}
+
+internal fun NotarizedRoute.Config.updateCurrentUserDocs() {
+    put = PutInfo.builder {
+        summary("Update current user")
+        description("")
+        request {
+            reqType<UpdateCurrentUserRequest>()
+            description("Data to update")
+        }
+        response {
+            resType<Int>()
+            responseCode(HttpStatusCode.OK)
+            description("OK status code")
+        }
+        badRequestResponse()
     }
 }
 

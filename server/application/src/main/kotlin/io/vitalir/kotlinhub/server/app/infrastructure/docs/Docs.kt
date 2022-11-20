@@ -1,18 +1,23 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.docs
 
 import io.bkbn.kompendium.core.attribute.KompendiumAttributes
+import io.bkbn.kompendium.core.metadata.MethodInfo
 import io.bkbn.kompendium.core.metadata.RequestInfo
 import io.bkbn.kompendium.core.metadata.ResponseInfo
 import io.bkbn.kompendium.core.plugin.NotarizedApplication
 import io.bkbn.kompendium.core.plugin.NotarizedRoute
 import io.bkbn.kompendium.json.schema.KotlinXSchemaConfigurator
 import io.bkbn.kompendium.oas.OpenApiSpec
+import io.bkbn.kompendium.oas.component.Components
 import io.bkbn.kompendium.oas.info.Info
+import io.bkbn.kompendium.oas.security.BearerAuth
 import io.bkbn.kompendium.oas.serialization.KompendiumSerializersModule
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.vitalir.kotlinhub.server.app.common.routes.AuthVariant
+import io.vitalir.kotlinhub.server.app.common.routes.ErrorResponse
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -33,6 +38,11 @@ internal fun Application.configureDocs() {
                 version = "0.0.1",
                 description = "KotlinHub is a TODO",
             ),
+            components = Components(
+                securitySchemes = mutableMapOf(
+                    AuthVariant.JWT.authName to BearerAuth(),
+                ),
+            ),
         )
         openApiJson = {
             // TODO replace by user role when it will be implemented
@@ -48,8 +58,14 @@ internal fun Application.configureDocs() {
 }
 
 internal fun Route.kompendiumDocs(block: NotarizedRoute.Config.() -> Unit) {
-    install(NotarizedRoute()) {
-        block()
+    install(NotarizedRoute(), block)
+}
+
+internal fun MethodInfo.Builder<*>.badRequestResponse() {
+    canRespond {
+        resType<ErrorResponse>()
+        responseCode(HttpStatusCode.BadRequest)
+        description("Error, see 'message' for more details")
     }
 }
 
