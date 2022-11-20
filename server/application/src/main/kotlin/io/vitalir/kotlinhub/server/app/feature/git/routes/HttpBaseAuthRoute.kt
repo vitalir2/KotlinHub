@@ -1,6 +1,8 @@
 package io.vitalir.kotlinhub.server.app.feature.git.routes
 
 import arrow.core.Either
+import io.bkbn.kompendium.core.metadata.PostInfo
+import io.bkbn.kompendium.core.plugin.NotarizedRoute
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -16,6 +18,10 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateR
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthManager
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.reqType
+import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
 import io.vitalir.kotlinhub.server.app.infrastructure.logging.Logger
 import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
 
@@ -25,19 +31,47 @@ internal fun Route.httpBaseAuth(
     authManager: AuthManager,
     logger: Logger,
 ) {
-    post("http/auth/") {
-        val request = call.receive<GitAuthRequest>()
-        val result = getRepositoryUseCase(
-            userIdentifier = UserIdentifier.Id(request.userId),
-            repositoryName = request.repositoryName,
-        )
-        handleGetRepositoryResult(
-            request = request,
-            result = result,
-            updateRepositoryUseCase = updateRepositoryUseCase,
-            authManager = authManager,
-            logger = logger,
-        )
+    route("http/auth/") {
+        kompendiumDocs {
+            tags = setOf("git")
+            httpBaseAuthDocs()
+        }
+        post {
+            val request = call.receive<GitAuthRequest>()
+            val result = getRepositoryUseCase(
+                userIdentifier = UserIdentifier.Id(request.userId),
+                repositoryName = request.repositoryName,
+            )
+            handleGetRepositoryResult(
+                request = request,
+                result = result,
+                updateRepositoryUseCase = updateRepositoryUseCase,
+                authManager = authManager,
+                logger = logger,
+            )
+        }
+    }
+}
+
+private fun NotarizedRoute.Config.httpBaseAuthDocs() {
+    post = PostInfo.builder {
+        summary("Handles base auth requests from Git Client")
+        description("")
+        request {
+            reqType<GitAuthRequest>()
+            description("Auth request")
+        }
+        response {
+            resType<Int>()
+            responseCode(HttpStatusCode.OK)
+            description("OK")
+        }
+        canRespond {
+            resType<Int>()
+            responseCode(HttpStatusCode.Forbidden)
+            description("Forbidden")
+        }
+        badRequestResponse()
     }
 }
 
