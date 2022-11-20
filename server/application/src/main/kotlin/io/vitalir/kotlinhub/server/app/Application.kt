@@ -3,12 +3,12 @@ package io.vitalir.kotlinhub.server.app
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.netty.*
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.configureAuth
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraphFactory
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraphFactoryImpl
-import io.vitalir.kotlinhub.server.app.infrastructure.routing.configureRouting
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.configureAuth
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.configureDocs
+import io.vitalir.kotlinhub.server.app.infrastructure.routing.configureRouting
 import io.vitalir.kotlinhub.server.app.infrastructure.serialization.configureSerialization
 
 fun main(args: Array<String>) = EngineMain.main(args)
@@ -22,7 +22,9 @@ fun Application.mainModule() {
 
     configureAuth(jwtConfig = appConfig.jwt)
     configureSerialization()
-    configureDocs()
+    if (appConfig.debug?.isDocsEnabled == true) {
+        configureDocs()
+    }
     configureRouting(applicationGraph)
 }
 
@@ -55,6 +57,7 @@ private val ApplicationConfig.databaseConfig: AppConfig.Database
 private val ApplicationConfig.debugConfig: AppConfig.Debug
     get() = AppConfig.Debug(
         isRoutesTracingEnabled = property("routeTracing").getString().toBoolean(),
+        isDocsEnabled = property("docs").getString().toBoolean(),
     )
 
 private val ApplicationConfig.repositoryConfig: AppConfig.Repository

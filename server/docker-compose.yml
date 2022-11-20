@@ -14,6 +14,7 @@ services:
       JWT_REALM: ${JWT_REALM:?No jwt realm was set}
       IS_DEVELOPMENT: ${IS_DEVELOPMENT}
       ROUTE_TRACING: ${ROUTE_TRACING}
+      DOCS: ${DOCS}
       BASE_REPOSITORIES_PATH: ${BASE_REPOSITORIES_PATH}
     depends_on:
       db-main:

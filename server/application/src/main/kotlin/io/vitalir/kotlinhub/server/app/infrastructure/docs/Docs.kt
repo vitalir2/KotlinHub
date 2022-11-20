@@ -50,19 +50,26 @@ internal fun Application.configureDocs() {
             typeOf<LocalDateTime>() to TypeDefinition(type = "string", format = "date-time"),
         )
         openApiJson = {
-            // TODO replace by user role when it will be implemented
-            if (application.environment.developmentMode) {
-                get("/openapi.json") {
-                    val stringSpec = kompendiumJson.encodeToString(application.attributes[KompendiumAttributes.openApiSpec])
-                    call.respond(HttpStatusCode.OK, stringSpec)
-                }
+            get("/openapi.json") {
+                val stringSpec =
+                    kompendiumJson.encodeToString(application.attributes[KompendiumAttributes.openApiSpec])
+                call.respond(HttpStatusCode.OK, stringSpec)
             }
         }
         schemaConfigurator = KotlinXSchemaConfigurator()
     }
 }
 
-internal fun Route.kompendiumDocs(block: NotarizedRoute.Config.() -> Unit) {
+// TODO
+internal val Application.isDocsEnabled: Boolean
+    get() {
+        return environment.config.property("debug.docs").getString().toBoolean()
+    }
+
+internal fun Route.kompendiumDocs(
+    block: NotarizedRoute.Config.() -> Unit,
+) {
+    if (application.isDocsEnabled.not()) return
     install(NotarizedRoute(), block)
 }
 
