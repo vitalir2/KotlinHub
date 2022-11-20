@@ -18,14 +18,12 @@ fun main(args: Array<String>) = EngineMain.main(args)
 fun Application.mainModule() {
     val appConfig = environment.config.toAppConfig()
     val appGraphFactory: AppGraphFactory = AppGraphFactoryImpl(this)
-    val applicationGraph = appGraphFactory.create(appConfig)
+    val appGraph = appGraphFactory.create(appConfig)
 
-    configureAuth(applicationGraph)
+    configureAuth(appGraph)
     configureSerialization()
-    if (appConfig.debug?.isDocsEnabled == true) {
-        configureDocs()
-    }
-    configureRouting(applicationGraph)
+    configureDocs(appGraph)
+    configureRouting(appGraph)
 }
 
 private fun ApplicationConfig.toAppConfig(): AppConfig {

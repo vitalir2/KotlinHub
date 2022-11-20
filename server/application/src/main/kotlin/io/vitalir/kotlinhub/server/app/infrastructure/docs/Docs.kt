@@ -17,8 +17,15 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.pipeline.*
 import io.vitalir.kotlinhub.server.app.common.routes.AuthVariant
 import io.vitalir.kotlinhub.server.app.common.routes.ErrorResponse
+import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
+import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
+import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
+import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 import java.time.LocalDateTime
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
@@ -32,13 +39,13 @@ private val kompendiumJson = Json {
     explicitNulls = false
 }
 
-internal fun Application.configureDocs() {
+internal fun Application.configureDocs(appGraph: AppGraph) {
     install(NotarizedApplication()) {
         spec = OpenApiSpec(
             info = Info(
                 title = "KotlinHub",
                 version = "0.0.1",
-                description = "KotlinHub is a TODO",
+                description = "KotlinHub is a Git repositories storage platform",
             ),
             components = Components(
                 securitySchemes = mutableMapOf(
@@ -49,27 +56,46 @@ internal fun Application.configureDocs() {
         customTypes = mapOf(
             typeOf<LocalDateTime>() to TypeDefinition(type = "string", format = "date-time"),
         )
-        openApiJson = {
-            get("/openapi.json") {
-                val stringSpec =
-                    kompendiumJson.encodeToString(application.attributes[KompendiumAttributes.openApiSpec])
-                call.respond(HttpStatusCode.OK, stringSpec)
-            }
-        }
+        openApiJson = createOpenAPIJsonRouting(appGraph)
         schemaConfigurator = KotlinXSchemaConfigurator()
     }
 }
 
-// TODO
-internal val Application.isDocsEnabled: Boolean
-    get() {
-        return environment.config.property("debug.docs").getString().toBoolean()
+private fun createOpenAPIJsonRouting(appGraph: AppGraph): Routing.() -> Unit {
+    return {
+        route("/openapi.json") {
+            if (appGraph.appConfig.debug?.isDocsEnabled == true) {
+                get {
+                    respondOpenAPIJson()
+                }
+            } else {
+                jwtAuth {
+                    get {
+                        val userId = call.userId
+                        // If performance issues - create isAdminUseCase or save this info in JWT ?
+                        val user = appGraph.user.getUserByIdentifierUseCase(UserIdentifier.Id(userId))
+                        if (user?.isAdmin == false) {
+                            call.respondWith(ResponseData.forbidden())
+                            return@get
+                        }
+
+                        respondOpenAPIJson()
+                    }
+                }
+            }
+        }
     }
+}
+
+private suspend fun PipelineContext<Unit, ApplicationCall>.respondOpenAPIJson() {
+    val stringSpec =
+        kompendiumJson.encodeToString(application.attributes[KompendiumAttributes.openApiSpec])
+    call.respond(HttpStatusCode.OK, stringSpec)
+}
 
 internal fun Route.kompendiumDocs(
     block: NotarizedRoute.Config.() -> Unit,
 ) {
-    if (application.isDocsEnabled.not()) return
     install(NotarizedRoute(), block)
 }
 
