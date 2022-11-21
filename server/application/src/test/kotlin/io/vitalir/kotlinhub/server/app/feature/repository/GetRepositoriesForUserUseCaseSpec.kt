@@ -24,7 +24,11 @@ internal class GetRepositoriesForUserUseCaseSpec : ShouldSpec() {
     private lateinit var getRepositoriesForUserUseCase: GetRepositoriesForUserUseCase
 
     init {
+        val sampleUserId = 123
+        val sampleUserIdentifier = UserIdentifier.Id(sampleUserId)
+
         beforeTest {
+            repositoryIdIncrement = 0
             userPersistence = mockk()
             repositoryPersistence = mockk()
             getRepositoriesForUserUseCase = GetRepositoriesForUserUseCaseImpl(
@@ -34,38 +38,96 @@ internal class GetRepositoriesForUserUseCaseSpec : ShouldSpec() {
         }
 
         should("return error if user does not exist") {
-            val userId = 123
-            val userIdentifier = UserIdentifier.Id(userId)
-            userDoesNotExist(userIdentifier)
+            userDoesNotExist(sampleUserIdentifier)
 
             val result = getRepositoriesForUserUseCase(
-                userIdentifier = userIdentifier,
+                currentUserId = null,
+                userIdentifier = sampleUserIdentifier,
             )
 
-            result shouldBeLeft GetRepositoriesForUserUseCase.Error.UserDoesNotExist(userIdentifier)
+            result shouldBeLeft GetRepositoriesForUserUseCase.Error.UserDoesNotExist(sampleUserIdentifier)
         }
 
-        should("return repositories for user which exists") {
-            val userId = 123
-            val userIdentifier = UserIdentifier.Id(userId)
+        should("return all public repositories for user which exists") {
             val repositories = listOf(
-                sampleRepository(userId, "repositoryOne"),
-                sampleRepository(userId, "repositoryTwo"),
+                sampleRepository(sampleUserId, "repositoryOne"),
+                sampleRepository(sampleUserId, "repositoryTwo"),
             )
-            userExists(userIdentifier)
-            coEvery {
-                repositoryPersistence.getRepositories(userIdentifier)
-            } returns repositories
+            userExists(sampleUserIdentifier)
+            userHasRepositories(sampleUserIdentifier, repositories, listOf(Repository.AccessMode.PUBLIC))
 
             val result = getRepositoriesForUserUseCase(
-                userIdentifier = userIdentifier,
+                currentUserId = null,
+                userIdentifier = sampleUserIdentifier,
             )
 
             result shouldBeRight repositories
         }
+
+        should("return only public repositories for user without login") {
+            val userRepositories = listOf(
+                sampleRepository(sampleUserId),
+                sampleRepository(sampleUserId, accessMode = Repository.AccessMode.PRIVATE),
+            )
+            userExists(sampleUserIdentifier)
+            userHasRepositories(sampleUserIdentifier, userRepositories, listOf(Repository.AccessMode.PUBLIC))
+
+            val result = getRepositoriesForUserUseCase(
+                currentUserId = null,
+                userIdentifier = sampleUserIdentifier,
+            )
+
+            // Only first one is not private
+            result shouldBeRight userRepositories.subList(0, 1)
+        }
+
+        should("return only public user for user that does not have access to another user repositories") {
+            val userRepositories = listOf(
+                sampleRepository(sampleUserId),
+                sampleRepository(sampleUserId, accessMode = Repository.AccessMode.PRIVATE),
+            )
+            userExists(sampleUserIdentifier)
+            userHasRepositories(
+                userIdentifier = sampleUserIdentifier,
+                repositories = userRepositories,
+                accessibleRepositories = listOf(Repository.AccessMode.PUBLIC),
+            )
+
+            val result = getRepositoriesForUserUseCase(
+                currentUserId = 292,
+                userIdentifier = sampleUserIdentifier,
+            )
+
+            // Only first one is not private
+            result shouldBeRight userRepositories.subList(0, 1)
+        }
+
+        should("return all repositories for user which asks its own repos") {
+            val userRepositories = listOf(
+                sampleRepository(sampleUserId),
+                sampleRepository(sampleUserId, accessMode = Repository.AccessMode.PRIVATE),
+            )
+            userExists(sampleUserIdentifier)
+            userHasRepositories(
+                userIdentifier = sampleUserIdentifier,
+                repositories = userRepositories,
+                accessibleRepositories = listOf(Repository.AccessMode.PUBLIC, Repository.AccessMode.PRIVATE),
+            )
+
+            val result = getRepositoriesForUserUseCase(
+                currentUserId = sampleUserId,
+                userIdentifier = sampleUserIdentifier,
+            )
+
+            result shouldBeRight userRepositories
+        }
     }
 
-    private fun sampleRepository(userId: UserId, repositoryName: String): Repository {
+    private fun sampleRepository(
+        userId: UserId,
+        repositoryName: String = "repository$repositoryIdIncrement",
+        accessMode: Repository.AccessMode = Repository.AccessMode.PUBLIC,
+    ): Repository {
         return Repository(
             id = repositoryIdIncrement++,
             owner = User(
@@ -74,7 +136,7 @@ internal class GetRepositoriesForUserUseCaseSpec : ShouldSpec() {
                 password = "somepassword",
             ),
             name = repositoryName,
-            accessMode = Repository.AccessMode.PUBLIC,
+            accessMode = accessMode,
             createdAt = LocalDateTime.MIN,
             updatedAt = LocalDateTime.MIN,
         )
@@ -94,6 +156,16 @@ internal class GetRepositoriesForUserUseCaseSpec : ShouldSpec() {
         coEvery {
             userPersistence.getUser(userIdentifier)
         } returns null
+    }
+
+    private fun userHasRepositories(
+        userIdentifier: UserIdentifier,
+        repositories: List<Repository>,
+        accessibleRepositories: List<Repository.AccessMode>,
+    ) {
+        coEvery {
+            repositoryPersistence.getRepositories(userIdentifier, accessibleRepositories)
+        } returns repositories.filter { it.accessMode in accessibleRepositories }
     }
 
     companion object {

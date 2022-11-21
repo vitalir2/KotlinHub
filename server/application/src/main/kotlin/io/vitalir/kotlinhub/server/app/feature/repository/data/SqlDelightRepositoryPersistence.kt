@@ -82,10 +82,17 @@ internal class SqlDelightRepositoryPersistence(
         }
     }
 
-    override suspend fun getRepositories(userIdentifier: UserIdentifier): List<Repository> {
+    override suspend fun getRepositories(
+        userIdentifier: UserIdentifier,
+        accessModes: List<Repository.AccessMode>,
+    ): List<Repository> {
         val userId = userIdentifierConverter.convertToUserId(userIdentifier)
         val user = mainDatabase.cUsersQueries.getById(userId).executeAsOne().toDomainModel()
-        return queries.getRepositoriesByUserId(userId).executeAsList()
+        return queries.getRepositoriesByUserId(
+            userId = userId,
+            accessModes = accessModes.map(Repository.AccessMode::asInt),
+        )
+            .executeAsList()
             .map { it.toDomainModel(user) }
     }
 
