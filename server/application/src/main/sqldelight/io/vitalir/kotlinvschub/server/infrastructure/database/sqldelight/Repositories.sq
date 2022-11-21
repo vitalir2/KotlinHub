@@ -19,7 +19,7 @@ LIMIT 1;
 getRepositoriesByUserId:
 SELECT *
 FROM repositories
-WHERE user_id = :userId;
+WHERE user_id = :userId AND access_mode IN :accessModes;
 
 getRepositoryByUserIdAndNameJoined:
 SELECT *

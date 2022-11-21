@@ -88,7 +88,11 @@ internal class SqlDelightRepositoryPersistence(
     ): List<Repository> {
         val userId = userIdentifierConverter.convertToUserId(userIdentifier)
         val user = mainDatabase.cUsersQueries.getById(userId).executeAsOne().toDomainModel()
-        return queries.getRepositoriesByUserId(userId).executeAsList()
+        return queries.getRepositoriesByUserId(
+            userId = userId,
+            accessModes = accessModes.map(Repository.AccessMode::asInt),
+        )
+            .executeAsList()
             .map { it.toDomainModel(user) }
     }
 
