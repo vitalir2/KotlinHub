@@ -32,5 +32,8 @@ interface RepositoryPersistence {
         updateRepositoryData: UpdateRepositoryData,
     )
 
-    suspend fun getRepositories(userIdentifier: UserIdentifier): List<Repository>
+    suspend fun getRepositories(
+        userIdentifier: UserIdentifier,
+        accessModes: List<Repository.AccessMode>,
+    ): List<Repository>
 }

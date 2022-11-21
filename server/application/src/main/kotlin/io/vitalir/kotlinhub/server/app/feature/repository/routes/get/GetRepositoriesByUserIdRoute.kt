@@ -17,6 +17,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.routes.toApiModel
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toResponseData
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.requireParameter
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
@@ -60,7 +61,8 @@ private fun Route.getUserRepositoriesRoute(
     get {
         val userIdentifier = call.requireParameter("userId", String::toInt)
             .let(UserIdentifier::Id)
-        val responseData = when (val result = getRepositoriesForUserUseCase(userIdentifier)) {
+        val currentUserId = call.userIdOrNull
+        val responseData = when (val result = getRepositoriesForUserUseCase(currentUserId, userIdentifier)) {
             is Either.Left -> result.value.toResponseData()
             is Either.Right -> ResponseData(
                 code = HttpStatusCode.OK,

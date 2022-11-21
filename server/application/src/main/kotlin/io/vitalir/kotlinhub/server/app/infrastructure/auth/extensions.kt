@@ -7,6 +7,8 @@ import io.ktor.server.plugins.*
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 import io.vitalir.kotlinhub.server.app.infrastructure.routing.ServerException
 
+internal val ApplicationCall.userIdOrNull: UserId?
+    get() = principal<JWTPrincipal>()?.payload?.userId
 internal val ApplicationCall.userId: UserId
     get() = principal<JWTPrincipal>()?.payload?.userId
         ?: throw ServerException("Cannot get userId from unauthorized route")
