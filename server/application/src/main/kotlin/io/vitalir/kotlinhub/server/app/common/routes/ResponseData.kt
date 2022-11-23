@@ -8,6 +8,12 @@ data class ResponseData(
 ) {
 
     companion object {
+
+        fun ok(): ResponseData {
+            return ResponseData(
+                code = HttpStatusCode.OK,
+            )
+        }
         fun fromErrorData(code: HttpStatusCode, errorMessage: String): ResponseData {
             return ResponseData(
                 code = code,
