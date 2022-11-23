@@ -16,6 +16,14 @@ FROM repositories
 WHERE user_id = :user_id AND name = :name
 LIMIT 1;
 
+getRepositoryByIdJoined:
+SELECT *
+FROM repositories
+INNER JOIN users
+ON users.id = repositories.user_id
+WHERE repositories.id = :id
+LIMIT 1;
+
 getRepositoriesByUserId:
 SELECT *
 FROM repositories

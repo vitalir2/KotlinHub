@@ -55,7 +55,13 @@ internal class SqlDelightRepositoryPersistence(
         userIdentifier: UserIdentifier,
         repositoryIdentifier: RepositoryIdentifier,
     ): Repository? {
-        TODO("Not yet implemented")
+        return when (repositoryIdentifier) {
+            is RepositoryIdentifier.Id -> getRepository(repositoryIdentifier.value)
+            is RepositoryIdentifier.OwnerIdentifierAndName -> getRepository(
+                repositoryIdentifier.ownerIdentifier,
+                repositoryIdentifier.repositoryName,
+            )
+        }
     }
 
     override suspend fun removeRepositoryById(repositoryId: Int) {
@@ -102,6 +108,12 @@ internal class SqlDelightRepositoryPersistence(
         )
             .executeAsList()
             .map { it.toDomainModel(user) }
+    }
+
+    private fun getRepository(repositoryId: RepositoryId): Repository? {
+        return queries.getRepositoryByIdJoined(repositoryId)
+            .executeAsOneOrNull()
+            ?.toDomainModel()
     }
 
     companion object {
