@@ -10,7 +10,6 @@ internal fun Routing.gitRoutes(
     route("git/") {
         httpBaseAuth(
             hasUserAccessToRepositoryUseCase = appGraph.repository.hasUserAccessToRepositoryUseCase,
-            updateRepositoryUseCase = appGraph.repository.updateRepositoryUseCase,
             headerManager = appGraph.network.baseAuthHeaderManager,
         )
     }

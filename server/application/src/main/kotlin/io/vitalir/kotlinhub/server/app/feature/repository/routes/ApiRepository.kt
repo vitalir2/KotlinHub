@@ -13,8 +13,6 @@ data class ApiRepository(
     val accessMode: Repository.AccessMode,
     @Serializable(with = LocalDateTimeToStringSerializer::class)
     val createdAt: LocalDateTime,
-    @Serializable(with = LocalDateTimeToStringSerializer::class)
-    val updatedAt: LocalDateTime,
     val description: String?,
 )
 
@@ -24,7 +22,6 @@ internal fun Repository.toApiModel(): ApiRepository {
         name = name,
         accessMode = accessMode,
         createdAt = createdAt,
-        updatedAt = updatedAt,
         description = description,
     )
 }

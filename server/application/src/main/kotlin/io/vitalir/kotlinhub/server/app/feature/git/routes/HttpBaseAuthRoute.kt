@@ -11,8 +11,6 @@ import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.HasUserAccessToRepositoryUseCase
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
-import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
@@ -26,7 +24,6 @@ import io.vitalir.kotlinhub.shared.feature.git.GitAuthRequest
 internal fun Route.httpBaseAuth(
     hasUserAccessToRepositoryUseCase: HasUserAccessToRepositoryUseCase,
     headerManager: HeaderManager<BaseAuthValue>,
-    updateRepositoryUseCase: UpdateRepositoryUseCase,
 ) {
     route("http/auth/") {
         kompendiumDocs {
@@ -53,12 +50,6 @@ internal fun Route.httpBaseAuth(
             )
 
             val responseData = if (hasAccess) {
-                // TODO remove for now from project
-                updateRepositoryUseCase(
-                    userIdentifier = userIdentifier,
-                    repositoryName = request.repositoryName,
-                    updateRepositoryData = UpdateRepositoryData(updatedAt = UpdateRepositoryData.Time.Now),
-                )
                 ResponseData.ok()
             } else {
                 ResponseData.forbidden()
