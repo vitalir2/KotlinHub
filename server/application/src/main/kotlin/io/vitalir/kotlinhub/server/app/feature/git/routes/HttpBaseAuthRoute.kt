@@ -41,6 +41,7 @@ internal fun Route.httpBaseAuth(
             val result = getRepositoryUseCase(
                 userIdentifier = UserIdentifier.Id(request.userId),
                 repositoryName = request.repositoryName,
+                currentUserId = null, // TODO
             )
             handleGetRepositoryResult(
                 request = request,

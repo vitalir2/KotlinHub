@@ -1,12 +1,15 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl
 
+import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.rightIfNotNull
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryResult
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 
 internal class GetRepositoryUseCaseImpl(
     private val repositoryPersistence: RepositoryPersistence,
@@ -16,14 +19,23 @@ internal class GetRepositoryUseCaseImpl(
     override suspend fun invoke(
         userIdentifier: UserIdentifier,
         repositoryName: String,
+        currentUserId: UserId?,
     ): GetRepositoryResult {
         return either {
-            userPersistence.getUser(userIdentifier).rightIfNotNull {
-                GetRepositoryUseCase.Error.UserDoesNotExist(userIdentifier)
-            }.bind()
-            repositoryPersistence.getRepository(userIdentifier, repositoryName).rightIfNotNull {
+            val repositoryOwner = getUserOrError(userIdentifier).bind()
+            repositoryPersistence.getRepository(userIdentifier, repositoryName)
+                .takeUnless { it?.isPrivate == true && repositoryOwner.id != currentUserId }
+                .rightIfNotNull {
                 GetRepositoryUseCase.Error.RepositoryDoesNotExist(userIdentifier, repositoryName)
             }.bind()
+        }
+    }
+
+    private suspend fun getUserOrError(
+        userIdentifier: UserIdentifier,
+    ): Either<GetRepositoryUseCase.Error.UserDoesNotExist, User> {
+        return userPersistence.getUser(userIdentifier).rightIfNotNull {
+            GetRepositoryUseCase.Error.UserDoesNotExist(userIdentifier)
         }
     }
 }

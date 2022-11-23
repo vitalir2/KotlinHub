@@ -24,9 +24,10 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
 
     init {
         val username = "megabrain123"
+        val ownerId = 123
         val usernameIdentifier = UserIdentifier.Username(username)
         val owner = User(
-            id = 123,
+            id = ownerId,
             username = username,
             password = "hellopassword",
         )
@@ -41,6 +42,14 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
             createdAt = createdAt,
             updatedAt = createdAt,
         )
+        val privateRepository = Repository(
+            id = someRepositoryId,
+            owner = owner,
+            name = repositoryName,
+            accessMode = Repository.AccessMode.PRIVATE,
+            createdAt = createdAt,
+            updatedAt = createdAt,
+        )
 
         beforeTest {
             repositoryPersistence = mockk()
@@ -52,14 +61,14 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
         }
 
         should("return repository if it exists") {
-            coEvery {
-                userPersistence.getUser(usernameIdentifier)
-            } returns owner
-            coEvery {
-                repositoryPersistence.getRepository(usernameIdentifier, repositoryName)
-            } returns repository
+            userExists(usernameIdentifier, owner)
+            repositoryExistsForUser(usernameIdentifier, repository)
 
-            val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
+            val result = getRepositoryUseCase(
+                userIdentifier = usernameIdentifier,
+                repositoryName = repositoryName,
+                currentUserId = null,
+            )
 
             result shouldBeRight repository
         }
@@ -69,24 +78,79 @@ internal class GetRepositoryUseCaseSpec : ShouldSpec() {
                 userPersistence.getUser(usernameIdentifier)
             } returns null
 
-            val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
+            val result = getRepositoryUseCase(
+                userIdentifier = usernameIdentifier,
+                repositoryName = repositoryName,
+                currentUserId = null,
+            )
 
             result shouldBeLeft GetRepositoryUseCase.Error.UserDoesNotExist(UserIdentifier.Username(username))
         }
 
         should("return error if repository does not exist") {
-            coEvery {
-                userPersistence.getUser(usernameIdentifier)
-            } returns owner
+            userExists(usernameIdentifier, owner)
             coEvery {
                 repositoryPersistence.getRepository(usernameIdentifier, repositoryName)
             } returns null
 
-            val result = getRepositoryUseCase(usernameIdentifier, repositoryName)
+            val result = getRepositoryUseCase(
+                userIdentifier = usernameIdentifier,
+                repositoryName = repositoryName,
+                currentUserId = null,
+            )
 
             result shouldBeLeft GetRepositoryUseCase.Error.RepositoryDoesNotExist(
                 UserIdentifier.Username(username), repositoryName
             )
         }
+
+        should("return error if user has private repository and another tries to get it without permission") {
+            userExists(usernameIdentifier, owner)
+            repositoryExistsForUser(usernameIdentifier, privateRepository)
+
+            val differentUsers = listOf(
+                null,
+                93,
+            )
+            for (currentUserId in differentUsers) {
+                val result = getRepositoryUseCase(
+                    userIdentifier = usernameIdentifier,
+                    repositoryName = repositoryName,
+                    currentUserId = currentUserId,
+                )
+
+                result shouldBeLeft GetRepositoryUseCase.Error.RepositoryDoesNotExist(
+                    usernameIdentifier, repositoryName,
+                )
+            }
+        }
+
+        should("return private repository if user has access to it") {
+            userExists(usernameIdentifier, owner)
+            repositoryExistsForUser(usernameIdentifier, privateRepository)
+
+            val result = getRepositoryUseCase(
+                userIdentifier = usernameIdentifier,
+                repositoryName = repositoryName,
+                currentUserId = ownerId,
+            )
+
+            result shouldBeRight privateRepository
+        }
+    }
+
+    private fun userExists(userIdentifier: UserIdentifier, user: User) {
+        coEvery {
+            userPersistence.getUser(userIdentifier)
+        } returns user
+    }
+
+    private fun repositoryExistsForUser(
+        userIdentifier: UserIdentifier,
+        repository: Repository,
+    ) {
+        coEvery {
+            repositoryPersistence.getRepository(userIdentifier, repository.name)
+        } returns repository
     }
 }
