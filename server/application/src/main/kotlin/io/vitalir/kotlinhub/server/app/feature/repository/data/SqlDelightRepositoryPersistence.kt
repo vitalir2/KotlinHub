@@ -3,6 +3,7 @@ package io.vitalir.kotlinhub.server.app.feature.repository.data
 import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryId
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.user.data.UserIdentifierConverter
@@ -48,6 +49,13 @@ internal class SqlDelightRepositoryPersistence(
             userId = userId,
             repositoryName = repositoryName,
         ).executeAsOneOrNull()?.toDomainModel()
+    }
+
+    override suspend fun getRepository(
+        userIdentifier: UserIdentifier,
+        repositoryIdentifier: RepositoryIdentifier,
+    ): Repository? {
+        TODO("Not yet implemented")
     }
 
     override suspend fun removeRepositoryById(repositoryId: Int) {
