@@ -2,10 +2,28 @@ package io.vitalir.kotlinhub.server.app.feature.repository.data
 
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
+import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.GetRepositoryByIdJoined
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.GetRepositoryByUserIdAndNameJoined
 import io.vitalir.kotlinvschub.server.infrastructure.database.sqldelight.Repositories
 
 internal fun GetRepositoryByUserIdAndNameJoined.toDomainModel(): Repository {
+    return Repository(
+        id = id,
+        owner = User(
+            id = user_id!!,
+            username = username,
+            password = password,
+            email = email,
+        ),
+        name = name,
+        accessMode = access_mode.asAccessMode(),
+        createdAt = created_at,
+        updatedAt = updated_at,
+        description = description,
+    )
+}
+
+internal fun GetRepositoryByIdJoined.toDomainModel(): Repository {
     return Repository(
         id = id,
         owner = User(

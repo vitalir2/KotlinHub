@@ -3,6 +3,7 @@ package io.vitalir.kotlinhub.server.app.feature.repository.data
 import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryId
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.user.data.UserIdentifierConverter
@@ -50,6 +51,19 @@ internal class SqlDelightRepositoryPersistence(
         ).executeAsOneOrNull()?.toDomainModel()
     }
 
+    override suspend fun getRepository(
+        userIdentifier: UserIdentifier,
+        repositoryIdentifier: RepositoryIdentifier,
+    ): Repository? {
+        return when (repositoryIdentifier) {
+            is RepositoryIdentifier.Id -> getRepository(repositoryIdentifier.value)
+            is RepositoryIdentifier.OwnerIdentifierAndName -> getRepository(
+                repositoryIdentifier.ownerIdentifier,
+                repositoryIdentifier.repositoryName,
+            )
+        }
+    }
+
     override suspend fun removeRepositoryById(repositoryId: Int) {
         queries.removeRepositoryById(repositoryId)
     }
@@ -94,6 +108,12 @@ internal class SqlDelightRepositoryPersistence(
         )
             .executeAsList()
             .map { it.toDomainModel(user) }
+    }
+
+    private fun getRepository(repositoryId: RepositoryId): Repository? {
+        return queries.getRepositoryByIdJoined(repositoryId)
+            .executeAsOneOrNull()
+            ?.toDomainModel()
     }
 
     companion object {

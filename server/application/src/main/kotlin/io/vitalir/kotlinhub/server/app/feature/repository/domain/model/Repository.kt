@@ -16,6 +16,12 @@ data class Repository(
     val description: String? = null,
 ) {
 
+    val isPrivate: Boolean
+        get() = accessMode == AccessMode.PRIVATE
+
+    val isPublic: Boolean
+        get() = accessMode == AccessMode.PUBLIC
+
     fun createResourceUrl(baseUrl: Url): Url {
         return baseUrl.copy(
             path = Path(
