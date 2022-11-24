@@ -13,7 +13,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.routes.remove.reposito
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 
-internal fun Routing.repositoryRoutes(
+internal fun Route.repositoryRoutes(
     repositoryGraph: AppGraph.RepositoryGraph,
 ) {
     route("repositories/") {

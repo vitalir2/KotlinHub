@@ -17,41 +17,13 @@ import io.vitalir.kotlinhub.server.app.infrastructure.docs.safeRedoc
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitPlugin
 
 fun Application.configureRouting(appGraph: AppGraph) {
-    val debugConfig = appGraph.appConfig.debug
-
     install(CallLogging)
     install(GitPlugin) {
         baseRepositoriesPath = appGraph.appConfig.repository.baseRepositoriesPath
     }
     install(IgnoreTrailingSlash)
     statusPages()
-
-    routing {
-        if (debugConfig?.isRoutesTracingEnabled == true) {
-            trace { application.log.trace(it.buildText()) }
-        }
-
-        userRoutes(
-            jwtConfig = appGraph.appConfig.auth.jwt,
-            userGraph = appGraph.user,
-        )
-        repositoryRoutes(
-            repositoryGraph = appGraph.repository,
-        )
-        gitRoutes(
-            appGraph = appGraph,
-        )
-
-        val docsPath = "/docs"
-        if (debugConfig?.isDocsEnabled == true) {
-            // Order is important here
-            redoc(path = docsPath)
-        } else {
-            jwtAuth {
-                safeRedoc(path = docsPath, appGraph)
-            }
-        }
-    }
+    routes(appGraph)
 }
 
 private fun Application.statusPages() {
@@ -64,5 +36,43 @@ private fun Application.statusPages() {
                 )
             )
         }
+    }
+}
+
+private fun Application.routes(appGraph: AppGraph) {
+    routing {
+        val debugConfig = appGraph.appConfig.debug
+        if (debugConfig?.isRoutesTracingEnabled == true) {
+            trace { application.log.trace(it.buildText()) }
+        }
+
+        baseRoute {
+            userRoutes(
+                jwtConfig = appGraph.appConfig.auth.jwt,
+                userGraph = appGraph.user,
+            )
+            repositoryRoutes(
+                repositoryGraph = appGraph.repository,
+            )
+            gitRoutes(
+                appGraph = appGraph,
+            )
+
+            val docsPath = "/docs"
+            if (debugConfig?.isDocsEnabled == true) {
+                // Order is important here
+                redoc(path = docsPath)
+            } else {
+                jwtAuth {
+                    safeRedoc(path = docsPath, appGraph)
+                }
+            }
+        }
+    }
+}
+
+private fun Route.baseRoute(block: Route.() -> Unit) {
+    route("/api/v1") {
+        block()
     }
 }

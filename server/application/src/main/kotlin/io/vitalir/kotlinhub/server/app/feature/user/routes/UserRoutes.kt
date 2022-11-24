@@ -20,7 +20,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 
-internal fun Routing.userRoutes(
+internal fun Route.userRoutes(
     jwtConfig: AppConfig.Auth.Jwt,
     userGraph: AppGraph.UserGraph,
 ) {
