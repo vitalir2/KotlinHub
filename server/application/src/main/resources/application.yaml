@@ -8,8 +8,8 @@ ktor:
 
 jwt:
   secret: $JWT_SECRET
-  issuer: "http://0.0.0.0:8080/"
-  audience: "http://0.0.0.0:8080/hello"
+  issuer: "http://localhost/"
+  audience: "http://localhost/"
   realm: $JWT_REALM
 
 database:

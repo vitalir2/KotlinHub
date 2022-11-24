@@ -17,7 +17,7 @@ internal class GitAuthManagerImpl(
         credentials: String?,
     ): Boolean {
         val url = ServicesInfo.App.mainUrl.copy(
-            path = Path("git", "http", "auth"),
+            path = Path("api", "v1", "git", "http", "auth"),
         )
         val response = httpClient.post(
             url = url,
