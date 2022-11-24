@@ -2,6 +2,7 @@ package io.vitalir.kotlinhub.server.app.feature.repository.routes
 
 import io.vitalir.kotlinhub.server.app.common.routes.LocalDateTimeToStringSerializer
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
+import io.vitalir.kotlinhub.shared.common.network.ServicesInfo
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 import java.time.LocalDateTime
 import kotlinx.serialization.Serializable
@@ -14,6 +15,7 @@ data class ApiRepository(
     @Serializable(with = LocalDateTimeToStringSerializer::class)
     val createdAt: LocalDateTime,
     val description: String?,
+    val httpUrl: String,
 )
 
 internal fun Repository.toApiModel(): ApiRepository {
@@ -23,5 +25,6 @@ internal fun Repository.toApiModel(): ApiRepository {
         accessMode = accessMode,
         createdAt = createdAt,
         description = description,
+        httpUrl = createHttpResourceUrl(ServicesInfo.ReverseProxy.mainUrl).toString(),
     )
 }

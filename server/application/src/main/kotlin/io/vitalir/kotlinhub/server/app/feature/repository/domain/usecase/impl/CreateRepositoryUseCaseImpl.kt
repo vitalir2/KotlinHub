@@ -56,7 +56,7 @@ internal class CreateRepositoryUseCaseImpl(
             }
 
             is Either.Right -> {
-                repositoryWithRealId.createResourceUrl(
+                repositoryWithRealId.createHttpResourceUrl(
                     baseUrl = ServicesInfo.ReverseProxy.mainUrl,
                 ).right()
             }
