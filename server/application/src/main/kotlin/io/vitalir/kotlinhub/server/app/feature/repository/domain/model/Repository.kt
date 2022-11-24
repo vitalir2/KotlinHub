@@ -22,7 +22,7 @@ data class Repository(
     val isPublic: Boolean
         get() = accessMode == AccessMode.PUBLIC
 
-    fun createResourceUrl(baseUrl: Url): Url {
+    fun createHttpResourceUrl(baseUrl: Url): Url {
         return baseUrl.copy(
             path = Path(
                 owner.id.toString(),
