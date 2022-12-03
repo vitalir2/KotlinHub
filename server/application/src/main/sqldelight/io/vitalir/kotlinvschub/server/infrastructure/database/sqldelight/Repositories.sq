@@ -7,7 +7,7 @@ CREATE TABLE repositories (
     updated_at TIMESTAMP NOT NULL,
     description TEXT,
     root_relative_path TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 getRepositoryByUserIdAndName:
