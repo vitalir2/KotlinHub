@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":shared"))
+    implementation(project(":server-shared"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 

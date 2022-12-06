@@ -1,2 +1,2 @@
-include(":shared")
-project(":shared").projectDir = file("../shared")
+include(":server-shared")
+project(":server-shared").projectDir = file("../server-shared")
