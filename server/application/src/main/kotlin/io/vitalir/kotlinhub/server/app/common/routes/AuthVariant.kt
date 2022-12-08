@@ -7,8 +7,11 @@ enum class AuthVariant(val authName: String) {
     JWT("jwt-auth"),
 }
 
-internal fun Route.jwtAuth(block: Route.() -> Unit) {
-    authenticate(AuthVariant.JWT.authName) {
+internal fun Route.jwtAuth(
+    optional: Boolean = false,
+    block: Route.() -> Unit,
+) {
+    authenticate(AuthVariant.JWT.authName, optional = optional) {
         block()
     }
 }
