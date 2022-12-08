@@ -17,8 +17,10 @@ internal fun Route.repositoryRoutes(
     repositoryGraph: AppGraph.RepositoryGraph,
 ) {
     route("repositories/") {
-        userRepositoryRoute(repositoryGraph.getRepositoryUseCase)
-        userRepositoriesRoute(repositoryGraph.getRepositoriesForUserUseCase)
+        jwtAuth(optional = true) {
+            userRepositoryRoute(repositoryGraph.getRepositoryUseCase)
+            userRepositoriesRoute(repositoryGraph.getRepositoriesForUserUseCase)
+        }
 
         jwtAuth {
             kompendiumDocs {
