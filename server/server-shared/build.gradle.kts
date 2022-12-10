@@ -8,17 +8,13 @@ plugins {
 
 repositories {
     mavenCentral()
-    val homeDir = System.getProperty("user.home")
-    maven {
-        url = uri("file://$homeDir/libs/kotlinhub/")
-    }
 }
 
 dependencies {
-    api("io.vitalir:platform-shared:1.0")
+    api("io.vitalir:platform-shared")
     // Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 }
 
 group = "io.vitalir"
-version = "0.0.1"
+version = "1.0"

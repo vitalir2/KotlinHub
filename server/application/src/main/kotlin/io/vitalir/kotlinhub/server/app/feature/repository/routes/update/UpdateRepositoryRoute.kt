@@ -14,6 +14,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryResult
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.UpdateRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.repository.routes.toDomainModel
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.requireParameter
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
@@ -33,7 +34,7 @@ internal fun Route.updateRepositoryForCurrentUserRoute(
             userIdentifier = UserIdentifier.Id(userId),
             repositoryName = repositoryName,
             updateRepositoryData = UpdateRepositoryData(
-                accessMode = requestBody.accessMode,
+                accessMode = requestBody.accessMode?.toDomainModel(),
                 updatedAt = UpdateRepositoryData.Time.Now,
             )
         )
