@@ -1,21 +1,20 @@
-import {RepositoryAccessMode} from "../models/Repository";
+import {Repository} from "../models/Repository";
 import {RepositoriesView} from "./RepositoriesView";
+import {RepositoriesPlaceholderView} from "./RepositoriesPlaceholderView";
 
-export function MainContent() {
-    const repositories = [
-        {
-            name: "KotlinHub",
-            accessMode: RepositoryAccessMode.PUBLIC,
-            updatedAt: new Date().toDateString(),
-            description: "Version control hosting written in Kotlin",
-        },
-        {
-            name: "React",
-            accessMode: RepositoryAccessMode.PUBLIC,
-            updatedAt: new Date().toDateString(),
-            description: "A declarative, efficient, and flexible JavaScript library for building user interfaces",
-        },
-    ]
+export type MainContentProps = {
+    repositories: Repository[],
+}
+
+export function MainContent(props: MainContentProps) {
+    const {repositories} = props
+    if (repositories.length === 0) {
+        return (
+            <main className="flex flex-col p-4">
+                <RepositoriesPlaceholderView/>
+            </main>
+        )
+    }
     return (
         <main className="flex flex-col p-4">
             <RepositoriesView repositories={repositories}/>
