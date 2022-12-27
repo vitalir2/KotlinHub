@@ -1,8 +1,10 @@
 import {Repository, RepositoryAccessMode} from "../models/Repository";
 
+const x = require("platform-shared").io.vitalir.kotlinhub.shared.common.kek()
+
 const stubRepositories: Repository[] = [
     {
-        name: "KotlinHub",
+        name: "KotlinHub" + x,
         accessMode: RepositoryAccessMode.PUBLIC,
         updatedAt: new Date().toDateString(),
         description: "Version control hosting written in Kotlin",
