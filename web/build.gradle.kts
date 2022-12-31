@@ -26,6 +26,11 @@ kotlin {
         binaries.executable()
     }
     sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation("io.vitalir:platform-shared")
+            }
+        }
         val jsMain by getting {
             dependencies {
                 implementation(compose.web.core)

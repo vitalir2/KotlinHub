@@ -1,4 +1,4 @@
-package io.vitalir.web.main.views
+package io.vitalir.web.pages.main.views
 
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.web.dom.A

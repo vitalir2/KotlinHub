@@ -1,7 +1,7 @@
-package io.vitalir.web.main.views
+package io.vitalir.web.pages.main.views
 
 import androidx.compose.runtime.Composable
-import io.vitalir.web.main.models.Repository
+import io.vitalir.web.pages.main.models.Repository
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.borderWidth

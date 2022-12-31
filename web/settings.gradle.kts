@@ -1,3 +1,5 @@
+includeBuild("../platform-shared")
+
 pluginManagement {
     repositories {
         google()

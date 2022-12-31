@@ -1,4 +1,4 @@
-package io.vitalir.web.main.models
+package io.vitalir.web.pages.main.models
 
 data class User(
     val name: String,

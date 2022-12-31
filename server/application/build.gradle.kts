@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     implementation("io.vitalir:server-shared")
+
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktorVersion")

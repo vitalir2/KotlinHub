@@ -1,10 +1,10 @@
-package io.vitalir.web.main
+package io.vitalir.web.pages.main
 
 import androidx.compose.runtime.Composable
-import io.vitalir.web.main.models.Repository
-import io.vitalir.web.main.models.User
-import io.vitalir.web.main.views.MainContentView
-import io.vitalir.web.main.views.ProfileView
+import io.vitalir.web.pages.main.models.Repository
+import io.vitalir.web.pages.main.models.User
+import io.vitalir.web.pages.main.views.MainContentView
+import io.vitalir.web.pages.main.views.ProfileView
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.JustifyContent
