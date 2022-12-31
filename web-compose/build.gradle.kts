@@ -1,14 +1,10 @@
-import org.jetbrains.compose.compose
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
 }
 
-group "io.vitalir"
-version "1.0-SNAPSHOT"
+group = "io.vitalir"
+version = "1.0-SNAPSHOT"
 
 repositories {
     google()

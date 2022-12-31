@@ -7,10 +7,9 @@ pluginManagement {
     }
 
     plugins {
-        kotlin("multiplatform").version(extra["kotlin.version"] as String)
-        id("org.jetbrains.compose").version(extra["compose.version"] as String)
+        kotlin("multiplatform").version("1.7.10")
+        id("org.jetbrains.compose").version("1.2.2")
     }
 }
 
 rootProject.name = "web-compose"
-
