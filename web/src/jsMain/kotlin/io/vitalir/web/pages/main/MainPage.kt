@@ -3,9 +3,8 @@ package io.vitalir.web.pages.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import io.vitalir.web.pages.main.controllers.RepositoryController
-import io.vitalir.web.pages.main.models.User
+import androidx.compose.runtime.getValue
+import io.vitalir.web.common.Loadable
 import io.vitalir.web.pages.main.views.RepositoriesContentView
 import io.vitalir.web.pages.main.views.ProfileView
 import org.jetbrains.compose.web.css.DisplayStyle
@@ -21,20 +20,11 @@ import org.jetbrains.compose.web.dom.H3
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
-fun MainPage(repositoryController: RepositoryController) {
-    val defaultUser = remember {
-        User(
-            userId = 1,
-            name = "Vitalir",
-            description = "Description about me",
-            imageUrl = "https://avatars.githubusercontent.com/u/35116812?v=4",
-        )
-    }
-
-    val repositoriesState = repositoryController.state.collectAsState()
+fun MainPage(controller: MainController) {
+    val state by controller.state.collectAsState()
 
     LaunchedEffect(Any()) {
-        repositoryController.refreshRepositories(defaultUser.userId)
+        controller.refreshRepositories()
     }
 
     Div(
@@ -47,18 +37,18 @@ fun MainPage(repositoryController: RepositoryController) {
             }
         }
     ) {
-        ProfileView(defaultUser)
+        ProfileView(state.user.valueOrNull!!) // TODO
         VerticalSeparator()
 
-        when (val state = repositoriesState.value) {
-            is RepositoryController.State.Error -> {
-                RepositoryErrorPlaceholderView(state)
+        when (val repositories = state.repositories) {
+            is Loadable.Error -> {
+                RepositoryErrorPlaceholderView(repositories.exception)
             }
-            is RepositoryController.State.Loaded -> {
-                RepositoriesContentView(state.repositories)
+            is Loadable.Loaded -> {
+                RepositoriesContentView(repositories.value)
 
             }
-            is RepositoryController.State.Loading -> {
+            is Loadable.Loading -> {
                 LoadingRepositoriesView()
             }
         }
@@ -71,7 +61,7 @@ fun LoadingRepositoriesView() {
 }
 
 @Composable
-fun RepositoryErrorPlaceholderView(state: RepositoryController.State.Error) {
+fun RepositoryErrorPlaceholderView(exception: Exception) {
     Div(
         attrs = {
             style {
@@ -81,7 +71,7 @@ fun RepositoryErrorPlaceholderView(state: RepositoryController.State.Error) {
         }
     ) {
         H3 {
-            Text(state.text)
+            Text(exception.message.orEmpty())
         }
     }
 }

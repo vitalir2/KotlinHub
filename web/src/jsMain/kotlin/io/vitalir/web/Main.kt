@@ -1,13 +1,15 @@
 package io.vitalir.web
 
+import io.vitalir.web.data.RepositoriesRepositoryImpl
 import io.vitalir.web.network.baseHttpClient
+import io.vitalir.web.pages.main.MainController
 import io.vitalir.web.pages.main.MainPage
-import io.vitalir.web.pages.main.controllers.RepositoryController
 import org.jetbrains.compose.web.renderComposable
 
 fun main() {
-    val controller = RepositoryController(baseHttpClient)
+    val repositoriesRepository = RepositoriesRepositoryImpl(baseHttpClient)
+    val mainController = MainController(repositoriesRepository)
     renderComposable(rootElementId = "root") {
-        MainPage(controller)
+        MainPage(mainController)
     }
 }
