@@ -11,7 +11,7 @@ import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.dom.Div
 
 @Composable
-internal fun MainContentView(
+internal fun RepositoriesContentView(
     repositories: List<Repository>,
 ) {
     Div(
