@@ -7,6 +7,7 @@ import io.ktor.http.*
 import io.vitalir.kotlinhub.shared.feature.repository.ApiRepository
 import io.vitalir.kotlinhub.shared.feature.repository.GetRepositoriesResponse
 import io.vitalir.kotlinhub.shared.feature.user.UserId
+import io.vitalir.web.common.NetworkConstants
 import io.vitalir.web.common.NetworkException
 import io.vitalir.web.pages.main.models.Repository
 import io.vitalir.web.pages.main.models.toWebModel
@@ -18,11 +19,16 @@ internal class RepositoriesRepositoryImpl(
 ) : RepositoriesRepository {
 
     override suspend fun get(userId: UserId): Result<List<Repository>> = withContext(Dispatchers.Default) {
-        val response = httpClient.get("/repository/$userId") {
-            contentType(ContentType.Application.Json)
+        val response = try {
+            val result = httpClient.get(NetworkConstants.BASE_PATH + "/repositories/$userId/")
+            // TODO remove logs for production
+            console.log("Get repositories response=$result")
+            result
+        } catch (exception: Throwable) {
+            console.log("Caught exception: $exception")
+            return@withContext Result.failure(NetworkException)
         }
 
-        console.log("Get repositories response=$response")
 
         if (response.status.isSuccess()) {
             val responseBody = response.body<GetRepositoriesResponse>()

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -15,6 +17,13 @@ repositories {
 kotlin {
     js(IR) {
         browser {
+            runTask {
+                devServer = KotlinWebpackConfig.DevServer(
+                    open = true,
+                    contentBase = mutableListOf(compilation.output.resourcesDir.canonicalPath) ,
+                    port = 8090,
+                )
+            }
             testTask {
                 testLogging.showStandardStreams = true
                 useKarma {
@@ -33,7 +42,7 @@ kotlin {
                 implementation("io.vitalir:platform-shared")
             }
         }
-        
+
         val jsMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-core:$ktorVersion")

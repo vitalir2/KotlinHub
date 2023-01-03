@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalJsExport::class)
-
 package io.vitalir.kotlinhub.shared.common
 
 import io.ktor.client.*
@@ -12,12 +10,7 @@ import kotlinx.serialization.json.Json
 import kotlin.js.ExperimentalJsExport
 
 @OptIn(ExperimentalSerializationApi::class)
-fun createHttpClient(
-    baseUrl: String,
-): HttpClient = HttpClient {
-    defaultRequest {
-        url(baseUrl)
-    }
+fun createHttpClient(): HttpClient = HttpClient {
     install(ContentNegotiation) {
         json(
             Json {
