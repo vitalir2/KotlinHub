@@ -12,6 +12,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.repository.routes.toDomainModel
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.reqType
@@ -27,7 +28,7 @@ internal fun Route.createRepositoryRoute(
         val createRepositoryData = CreateRepositoryData(
             ownerId = userId,
             name = request.name,
-            accessMode = request.accessMode,
+            accessMode = request.accessMode.toDomainModel(),
             description = request.description,
         )
 

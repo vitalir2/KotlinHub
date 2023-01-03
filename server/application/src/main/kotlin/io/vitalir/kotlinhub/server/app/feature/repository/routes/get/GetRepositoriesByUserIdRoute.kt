@@ -21,6 +21,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
+import io.vitalir.kotlinhub.shared.feature.repository.GetRepositoriesResponse
 
 internal fun Route.userRepositoriesRoute(
     getRepositoriesForUserUseCase: GetRepositoriesForUserUseCase,
