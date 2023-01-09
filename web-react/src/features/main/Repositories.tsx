@@ -16,7 +16,9 @@ export function Repositories() {
             {repositories.map(repository =>
                 <Box>
                     <Repository/>
-                    <Divider/>
+                    <Divider sx={{
+                        marginTop: 1,
+                    }}/>
                 </Box>
             )}
         </Stack>
