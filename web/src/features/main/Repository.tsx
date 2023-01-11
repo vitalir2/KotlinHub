@@ -1,12 +1,18 @@
 import {Box, Chip, Stack, Typography} from "@mui/material";
 import React from "react";
 
-export function Repository() {
+export interface RepositoryProps {
+    repository: string,
+}
+
+export function Repository(props: RepositoryProps) {
+    const {repository} = props
+
     return (
         <Stack spacing={0.5}>
             <Stack spacing={1} direction={"row"}>
                 <Typography variant={"h6"}>
-                    KotlinHub
+                    {repository}
                 </Typography>
                 <Chip label={"Public"} variant={"outlined"} color={"secondary"} size={"small"}/>
             </Stack>

@@ -1,13 +1,15 @@
 import {Stack} from "@mui/material";
 import {Profile} from "./Profile";
 import {Repositories} from "./Repositories";
-import React from "react";
+import React, {useState} from "react";
 
 export function Main() {
+    const [repositories] = useState(["KotlinHub"])
+
     return (
         <Stack direction={"row"} spacing={2}>
             <Profile/>
-            <Repositories/>
+            <Repositories repositories={repositories}/>
         </Stack>
     )
 }

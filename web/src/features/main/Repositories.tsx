@@ -1,9 +1,44 @@
-import {Box, Divider, Stack} from "@mui/material";
+import {Box, Divider, Stack, Typography} from "@mui/material";
 import {Repository} from "./Repository";
 import React from "react";
 
-export function Repositories() {
-    const repositories: string[] = ["Hello"]
+function RepositoriesPlaceholder() {
+    return (
+        <Box>
+            <Typography variant={"body1"}>
+                No repositories yet
+            </Typography>
+        </Box>
+    );
+}
+
+interface RepositoriesItemProps {
+    repository: string,
+}
+
+function RepositoriesItem(props: RepositoriesItemProps) {
+    const {repository} = props
+    return (
+        <Box>
+            <Repository repository={repository}/>
+            <Divider sx={{
+                marginTop: 1,
+            }}/>
+        </Box>
+    )
+}
+
+export interface RepositoriesProps {
+    repositories: string[],
+}
+
+export function Repositories(props: RepositoriesProps) {
+    const {repositories} = props
+
+    if (repositories.length === 0) {
+        return RepositoriesPlaceholder()
+    }
+
     return (
         <Stack
             spacing={1}
@@ -13,14 +48,7 @@ export function Repositories() {
                 padding: 3,
             }}
         >
-            {repositories.map(repository =>
-                <Box>
-                    <Repository/>
-                    <Divider sx={{
-                        marginTop: 1,
-                    }}/>
-                </Box>
-            )}
+            {repositories.map(repository => <RepositoriesItem repository={repository}/>)}
         </Stack>
     )
 }
