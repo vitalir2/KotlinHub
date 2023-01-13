@@ -23,6 +23,10 @@ kotlin {
     sourceSets {
         val ktorVersion = "2.2.1"
 
+        all {
+            languageSettings.optIn("kotlin.js.ExperimentalJsExport")
+        }
+
         val commonMain by getting {
             dependencies {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")

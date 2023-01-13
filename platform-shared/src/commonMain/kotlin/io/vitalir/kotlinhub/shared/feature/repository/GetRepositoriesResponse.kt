@@ -1,8 +1,10 @@
 package io.vitalir.kotlinhub.shared.feature.repository
 
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 @Serializable
-data class GetRepositoriesResponse(
-    val repositories: List<ApiRepository>,
+@JsExport
+class GetRepositoriesResponse(
+    val repositories: Array<ApiRepository>,
 )
