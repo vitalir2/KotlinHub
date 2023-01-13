@@ -1,16 +1,7 @@
-import {Box, Divider, Stack, Typography} from "@mui/material";
+import {Box, Divider, Stack} from "@mui/material";
 import {Repository} from "./Repository";
 import React from "react";
-
-function RepositoriesPlaceholder() {
-    return (
-        <Box>
-            <Typography variant={"body1"}>
-                No repositories yet
-            </Typography>
-        </Box>
-    );
-}
+import {RepositoriesPlaceholder} from "./RepositoriesPlaceholder";
 
 interface RepositoriesItemProps {
     repository: string,
