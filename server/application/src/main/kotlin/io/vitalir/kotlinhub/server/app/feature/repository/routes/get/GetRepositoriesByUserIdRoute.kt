@@ -68,7 +68,7 @@ private fun Route.getUserRepositoriesRoute(
             is Either.Right -> ResponseData(
                 code = HttpStatusCode.OK,
                 body = GetRepositoriesResponse(
-                    repositories = result.value.map(Repository::toApiModel),
+                    repositories = result.value.map(Repository::toApiModel).toTypedArray(),
                 ),
             )
         }

@@ -1,17 +1,18 @@
 import {Box, Divider, Stack} from "@mui/material";
-import {Repository} from "./Repository";
+import {RepositoryView} from "./RepositoryView";
 import React from "react";
 import {RepositoriesPlaceholder} from "./RepositoriesPlaceholder";
+import {Repository} from "../repositories/Repository";
 
 interface RepositoriesItemProps {
-    repository: string,
+    repository: Repository,
 }
 
 function RepositoriesItem(props: RepositoriesItemProps) {
     const {repository} = props
     return (
         <Box>
-            <Repository repository={repository}/>
+            <RepositoryView repository={repository}/>
             <Divider sx={{
                 marginTop: 1,
             }}/>
@@ -20,7 +21,7 @@ function RepositoriesItem(props: RepositoriesItemProps) {
 }
 
 export interface RepositoriesProps {
-    repositories: string[],
+    repositories: Repository[],
 }
 
 export function Repositories(props: RepositoriesProps) {

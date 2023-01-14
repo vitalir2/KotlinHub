@@ -3,6 +3,7 @@ package io.vitalir.kotlinhub.shared.common
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
+import kotlin.js.JsName
 
 @Serializable
 @JsExport
@@ -22,6 +23,16 @@ data class KMPLocalDateTime(
         hour = hour,
         minute = minute,
         second = second,
+    )
+
+    @JsName("fromKotlinLocalDateTime")
+    constructor(localDateTime: LocalDateTime) : this(
+        year = localDateTime.year,
+        monthNumber = localDateTime.monthNumber,
+        dayOfMonth = localDateTime.dayOfMonth,
+        hour = localDateTime.hour,
+        minute = localDateTime.minute,
+        second = localDateTime.second,
     )
 
     override fun toString(): String {

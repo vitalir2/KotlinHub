@@ -16,7 +16,7 @@ export function Main() {
     return (
         <Stack direction={"row"} spacing={2}>
             <Profile/>
-            <Repositories repositories={state.repositories.map(repository => repository.name)}/>
+            <Repositories repositories={state.repositories}/>
         </Stack>
     )
 }

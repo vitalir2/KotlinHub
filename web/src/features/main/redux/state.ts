@@ -7,7 +7,6 @@ export interface MainState {
     error?: string,
 
 }
-
 export const initialState: MainState = {
     userId: 1, // TODO
     repositories: [],
