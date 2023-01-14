@@ -1,6 +1,6 @@
-import {configureStore, ThunkAction, Action, applyMiddleware} from '@reduxjs/toolkit';
+import {configureStore} from '@reduxjs/toolkit';
 import {createAppGraph} from "./dependency_injection";
-import {repositoriesSlice} from "../features/main/redux/repositoriesSlice";
+import {repositoriesSlice} from "../features/main/redux/slice";
 
 export const store = configureStore({
   reducer: {
@@ -9,7 +9,9 @@ export const store = configureStore({
   middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
         thunk: {
-          extraArgument: createAppGraph()
+          extraArgument: {
+              appGraph: createAppGraph(),
+          }
         }
       })
 });
