@@ -1,4 +1,4 @@
-import {Box, Divider, Stack} from "@mui/material";
+import {Box, CircularProgress, Divider, Stack, Typography} from "@mui/material";
 import {RepositoryView} from "./RepositoryView";
 import React from "react";
 import {RepositoriesPlaceholder} from "./RepositoriesPlaceholder";
@@ -22,10 +22,31 @@ function RepositoriesItem(props: RepositoriesItemProps) {
 
 export interface RepositoriesProps {
     repositories: Repository[],
+    isLoading: boolean,
+    errorText?: string,
 }
 
 export function Repositories(props: RepositoriesProps) {
-    const {repositories} = props
+    const {repositories, isLoading, errorText} = props
+
+    if (isLoading) {
+        return (
+            <Stack spacing={0.5}>
+                <Typography variant={"h6"}>Loading repositories..</Typography>
+                <CircularProgress/>
+            </Stack>
+        )
+    }
+
+    if (errorText !== undefined) {
+        return (
+            <Box>
+                <Typography variant={"h6"}>
+                    Error occured, please try later
+                </Typography>
+            </Box>
+        )
+    }
 
     if (repositories.length === 0) {
         return RepositoriesPlaceholder()
