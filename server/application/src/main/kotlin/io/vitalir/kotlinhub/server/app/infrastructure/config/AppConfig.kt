@@ -7,6 +7,9 @@ data class AppConfig(
     val repository: Repository,
 ) {
 
+    val isDevelopmentMode: Boolean
+        get() = debug != null
+
     data class Debug(
         val isRoutesTracingEnabled: Boolean,
         val isDocsEnabled: Boolean,

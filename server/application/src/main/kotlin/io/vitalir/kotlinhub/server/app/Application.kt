@@ -25,7 +25,7 @@ fun Application.mainModule() {
     configureSerialization()
     configureDocs(appGraph)
     configureRouting(appGraph)
-    configureSecurity()
+    configureSecurity(appConfig)
 }
 
 private fun ApplicationConfig.toAppConfig(): AppConfig {

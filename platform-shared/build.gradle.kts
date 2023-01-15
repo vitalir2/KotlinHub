@@ -21,25 +21,20 @@ kotlin {
     }
 
     sourceSets {
-        val ktorVersion = "2.2.1"
+        all {
+            languageSettings.optIn("kotlin.js.ExperimentalJsExport")
+        }
 
         val commonMain by getting {
             dependencies {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
             }
         }
-        val jvmMain by getting {
-            dependencies {
-                implementation("io.ktor:ktor-client-cio:$ktorVersion")
-            }
-        }
+        val jvmMain by getting
         val jsMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-js:$ktorVersion")
+                implementation(npm("@js-joda/core", "5.5.2"))
             }
         }
     }

@@ -26,6 +26,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
+import io.vitalir.kotlinhub.shared.common.KMPLocalDateTime
 import java.time.LocalDateTime
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
@@ -54,7 +55,7 @@ internal fun Application.configureDocs(appGraph: AppGraph) {
             ),
         )
         customTypes = mapOf(
-            typeOf<LocalDateTime>() to TypeDefinition(type = "string", format = "date-time"),
+            typeOf<KMPLocalDateTime>() to TypeDefinition(type = "string", format = "date-time"),
         )
         openApiJson = createOpenAPIJsonRouting(appGraph)
         schemaConfigurator = KotlinXSchemaConfigurator()
