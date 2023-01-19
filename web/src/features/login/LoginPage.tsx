@@ -15,9 +15,12 @@ import React from "react";
 export function LoginPage() {
     return (
         <Container maxWidth={"xs"} sx={{
+            display: "flex",
+            flexDirection: "column",
             height: "100vh",
+            justifyContent: "center",
         }}>
-            <Stack spacing={1} justifyContent={"center"}>
+            <Stack spacing={1}>
                 <Typography variant={"h3"} textAlign={"center"}>
                     Login
                 </Typography>
