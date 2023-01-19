@@ -1,5 +1,4 @@
 import {
-    Box,
     Button,
     Checkbox,
     Container,
@@ -63,14 +62,15 @@ interface RegisterNowProps {
 }
 
 function RegisterNow(props: RegisterNowProps) {
+    const { sx } = props
     return (
-        <Stack sx={props.sx}>
+        <Stack sx={sx}>
             <Typography variant={"body1"} sx={{
                 textAlign: "center",
             }}>
                 Don't have an account yet?
             </Typography>
-            <Link variant={"body1"} underline={"none"} sx={{
+            <Link href={"#"} variant={"body1"} underline={"none"} sx={{
                 textAlign: "center",
             }}>
                 Register now
