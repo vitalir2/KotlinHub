@@ -1,7 +1,7 @@
 import {baseApi} from "../../app/fetch";
 
 export interface LoginUserRequest {
-    login: string,
+    username: string,
     password: string,
 }
  interface LoginUserResponse {
