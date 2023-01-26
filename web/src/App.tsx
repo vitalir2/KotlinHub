@@ -1,6 +1,8 @@
 import React from 'react';
-import {Box, createTheme, CssBaseline, ThemeProvider} from "@mui/material";
-import {LoginPage} from "./features/login/LoginPage";
+import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
+import {Outlet} from "react-router-dom";
+import {Provider} from "react-redux";
+import {store} from "./app/store";
 
 const theme = createTheme({
     palette: {
@@ -15,10 +17,12 @@ const theme = createTheme({
 
 function App() {
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline/>
-            <LoginPage/>
-        </ThemeProvider>
+        <Provider store={store}>
+            <ThemeProvider theme={theme}>
+                <CssBaseline/>
+                <Outlet/>
+            </ThemeProvider>
+        </Provider>
     );
 }
 

@@ -9,10 +9,11 @@ import {
     TextField, Theme,
     Typography
 } from "@mui/material";
-import React from "react";
+import React, {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {loginUser, setLogin, setPassword, setRememberMe} from "./LoginSlice";
 import {AppDispatch} from "../../app/store";
+import {useNavigate} from "react-router-dom";
 
 export function LoginPage() {
     const containerStyle: SxProps<Theme> = {
@@ -35,6 +36,14 @@ export function LoginPage() {
 function LoginForm() {
     const state = useAppSelector(state => state.login)
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (state.isLoggedInSuccessfully) {
+            // TODO save auth token
+            navigate("/main")
+        }
+    }, [navigate, state.isLoggedInSuccessfully])
 
     const isButtonEnabled = state.login.errorMessage === undefined && state.password.errorMessage === undefined &&
         state.login.value !== "" && state.password.value !== ""
@@ -68,7 +77,7 @@ function LoginForm() {
                         dispatch(
                             loginUser(
                                 {
-                                    login: state.login.value,
+                                    username: state.login.value,
                                     password: state.password.value,
                                 }
                             )

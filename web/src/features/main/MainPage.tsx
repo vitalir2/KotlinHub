@@ -5,7 +5,7 @@ import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {fetchRepositories} from "./redux/slice";
 
-export function Main() {
+export function MainPage() {
     const state = useAppSelector((state) => state.repositories)
     const dispatch = useAppDispatch()
 
