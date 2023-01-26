@@ -1,19 +1,17 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
+import {createAppRouter} from "./app/navigation";
+import {RouterProvider} from "react-router-dom";
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
+const router = createAppRouter()
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+      <RouterProvider router={router}/>
   </React.StrictMode>
 );
 
