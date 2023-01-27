@@ -5,10 +5,10 @@ import {createAppAsyncThunk} from "../../../app/hooks";
 
 export const fetchRepositories = createAppAsyncThunk<
     Repository[],
-    number
-    >("repositories/fetch", async (userId: number, thunkAPI) => {
+    void
+    >("repositories/fetch", async (arg, thunkAPI) => {
     const repositoriesRepository = thunkAPI.extra.appGraph.repositoriesGraph.repositoriesRepository
-    return await repositoriesRepository.getRepositories(userId)
+    return await repositoriesRepository.getRepositories(1) // TODO!!
 })
 
 export const repositoriesSlice = createSlice({

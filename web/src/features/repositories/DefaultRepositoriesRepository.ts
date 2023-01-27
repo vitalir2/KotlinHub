@@ -1,5 +1,5 @@
 import * as platformShared from "platform-shared/platform-shared"
-import {baseApi, convertNullableToTypescriptModel} from "../../app/fetch";
+import {baseApi, convertNullableToTypescriptModel, getDefaultHeaders} from "../../app/fetch";
 import {RepositoriesRepository} from "./RepositoriesRepository";
 import {Repository, RepositoryAccessMode} from "./Repository";
 
@@ -9,7 +9,9 @@ type ApiRepositoryAccessMode = platformShared.io.vitalir.kotlinhub.shared.featur
 
 export class DefaultRepositoriesRepository implements RepositoriesRepository {
     getRepositories(userId: number): Promise<Repository[]> {
-        return baseApi.get<GetRepositoriesResponse>("/repositories/" + userId)
+        return baseApi.get<GetRepositoriesResponse>(`/repositories/${userId}`, {
+            headers: getDefaultHeaders(),
+        })
             .then(response => response.data.repositories)
             .then(repositories => repositories.map(repository => this.convertToLocalModel(repository)))
     }

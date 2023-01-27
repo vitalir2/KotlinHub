@@ -43,6 +43,7 @@ function LoginForm() {
 
     useEffect(() => {
         if (userToken !== undefined) {
+            // TODO implement remember me functionality
             document.cookie = `${SETTING_AUTH_TOKEN}:${userToken}; Secure`
             navigate("/main")
         }
