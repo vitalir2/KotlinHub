@@ -7,7 +7,7 @@ export interface LoginState {
     password: TextInputData,
     rememberUser: boolean,
     isValidating: boolean,
-    isLoggedInSuccessfully: boolean,
+    userToken?: string,
 }
 
 export interface TextInputData {
@@ -24,7 +24,6 @@ const initialState: LoginState = {
     },
     rememberUser: false,
     isValidating: false,
-    isLoggedInSuccessfully: false,
 }
 
 export const loginUser = createAppAsyncThunk<
@@ -59,9 +58,9 @@ export const loginSlice = createSlice({
             state.isValidating = false
             state.password.errorMessage = "Error " + action.error.message // TODO add error messages to backend
         })
-        builder.addCase(loginUser.fulfilled, (state) => {
+        builder.addCase(loginUser.fulfilled, (state, action) => {
             state.isValidating = false
-            state.isLoggedInSuccessfully = true
+            state.userToken = action.payload.token
         })
     }
 })
