@@ -8,7 +8,7 @@ type ApiRepository = platformShared.io.vitalir.kotlinhub.shared.feature.reposito
 type ApiRepositoryAccessMode = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository.AccessMode
 
 export class DefaultRepositoriesRepository implements RepositoriesRepository {
-    getRepositories(userId: number): Promise<Repository[]> {
+    getRepositories(userId: string): Promise<Repository[]> {
         return baseApi.get<GetRepositoriesResponse>(`/repositories/${userId}`, {
             headers: getDefaultHeaders(),
         })

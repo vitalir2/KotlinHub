@@ -7,6 +7,7 @@ import io.bkbn.kompendium.json.schema.definition.TypeDefinition
 import io.bkbn.kompendium.oas.payload.Parameter
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
@@ -16,7 +17,6 @@ import io.vitalir.kotlinhub.server.app.feature.repository.routes.common.reposito
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toApiModel
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toResponseData
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.requireParameter
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
@@ -45,6 +45,10 @@ private fun NotarizedRoute.Config.getUserRepositoriesDocs() {
                 `in` = Parameter.Location.path,
                 required = true,
                 schema = TypeDefinition.STRING,
+                description = """
+                    Use "current" if you want to get current user repositories
+                    Otherwise, pass userId from the User object
+                """.trimIndent(),
             ),
         )
         response {
@@ -60,9 +64,14 @@ private fun Route.getUserRepositoriesRoute(
     getRepositoriesForUserUseCase: GetRepositoriesForUserUseCase,
 ) {
     get {
-        val userIdentifier = call.requireParameter("userId", String::toInt)
-            .let(UserIdentifier::Id)
         val currentUserId = call.userIdOrNull
+        val pathUserId = call.parameters["userId"]
+        val userId = when (pathUserId) {
+            "current" -> currentUserId
+            else -> pathUserId?.toIntOrNull()
+        } ?: throw BadRequestException("Invalid userId=$pathUserId")
+        val userIdentifier = UserIdentifier.Id(userId)
+
         val responseData = when (val result = getRepositoriesForUserUseCase(currentUserId, userIdentifier)) {
             is Either.Left -> result.value.toResponseData()
             is Either.Right -> ResponseData(

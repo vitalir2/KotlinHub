@@ -3,19 +3,14 @@ import {Profile} from "./Profile";
 import {Repositories} from "./Repositories";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {fetchRepositories} from "./redux/slice";
-import {readCookie} from "../../core/settings/Cookies";
-import {SETTING_AUTH_TOKEN} from "../../core/settings/SettingsNames";
+import {fetchCurrentRepositories} from "./redux/slice";
 
 export function MainPage() {
     const state = useAppSelector((state) => state.repositories)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        const userToken = readCookie(SETTING_AUTH_TOKEN)
-        if (userToken != null) {
-            dispatch(fetchRepositories())
-        }
+        dispatch(fetchCurrentRepositories())
     }, [dispatch, state.userId])
 
     return (
