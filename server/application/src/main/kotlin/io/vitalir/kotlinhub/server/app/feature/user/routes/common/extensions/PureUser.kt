@@ -1,7 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions
 
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
-import io.vitalir.kotlinhub.server.app.feature.user.routes.common.ApiUser
+import io.vitalir.kotlinhub.shared.feature.user.ApiUser
 
 internal val User.asApiUser: ApiUser
     get() = ApiUser(

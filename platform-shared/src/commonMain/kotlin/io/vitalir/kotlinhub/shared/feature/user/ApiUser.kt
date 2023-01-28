@@ -1,10 +1,11 @@
-package io.vitalir.kotlinhub.server.app.feature.user.routes.common
+package io.vitalir.kotlinhub.shared.feature.user
 
-import io.vitalir.kotlinhub.shared.feature.user.UserId
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 @Serializable
-internal data class ApiUser(
+@JsExport
+class ApiUser(
     val id: UserId,
     val username: String,
     val firstName: String?,
