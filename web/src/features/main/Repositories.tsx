@@ -61,7 +61,7 @@ export function Repositories(props: RepositoriesProps) {
                 padding: 3,
             }}
         >
-            {repositories.map(repository => <RepositoriesItem repository={repository}/>)}
+            {repositories.map(repository => <RepositoriesItem key={repository.name} repository={repository}/>)}
         </Stack>
     )
 }

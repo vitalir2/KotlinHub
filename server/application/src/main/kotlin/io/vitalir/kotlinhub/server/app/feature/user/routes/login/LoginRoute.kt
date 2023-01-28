@@ -25,6 +25,8 @@ import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.reqType
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
+import io.vitalir.kotlinhub.shared.feature.user.LoginRequest
+import io.vitalir.kotlinhub.shared.feature.user.LoginResponse
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 import java.util.*
 import java.util.concurrent.TimeUnit

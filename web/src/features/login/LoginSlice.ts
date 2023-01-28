@@ -1,13 +1,13 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {createAppAsyncThunk} from "../../app/hooks";
-import {LoginUserRequest, LoginUserResult} from "./AuthRepository";
+import {LoginUserParams, LoginUserResult} from "./AuthRepository";
 
 export interface LoginState {
     login: TextInputData,
     password: TextInputData,
     rememberUser: boolean,
     isValidating: boolean,
-    isLoggedInSuccessfully: boolean,
+    userToken?: string,
 }
 
 export interface TextInputData {
@@ -24,13 +24,12 @@ const initialState: LoginState = {
     },
     rememberUser: false,
     isValidating: false,
-    isLoggedInSuccessfully: false,
 }
 
 export const loginUser = createAppAsyncThunk<
     LoginUserResult,
-    LoginUserRequest
->("login/loginUser", async (request: LoginUserRequest, thunkAPI) => {
+    LoginUserParams
+>("login/loginUser", async (request: LoginUserParams, thunkAPI) => {
     const authRepository = thunkAPI.extra.appGraph.authGraph.authRepository
     return await authRepository.loginUser(request)
 })
@@ -59,9 +58,9 @@ export const loginSlice = createSlice({
             state.isValidating = false
             state.password.errorMessage = "Error " + action.error.message // TODO add error messages to backend
         })
-        builder.addCase(loginUser.fulfilled, (state) => {
+        builder.addCase(loginUser.fulfilled, (state, action) => {
             state.isValidating = false
-            state.isLoggedInSuccessfully = true
+            state.userToken = action.payload.token
         })
     }
 })

@@ -1,9 +1,11 @@
-package io.vitalir.kotlinhub.server.app.feature.user.routes.login
+package io.vitalir.kotlinhub.shared.feature.user
 
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 @Serializable
-internal data class LoginRequest(
+@JsExport
+class LoginRequest(
     val username: String,
     val password: String,
 )

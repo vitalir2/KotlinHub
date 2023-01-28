@@ -3,14 +3,14 @@ import {Profile} from "./Profile";
 import {Repositories} from "./Repositories";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {fetchRepositories} from "./redux/slice";
+import {fetchCurrentRepositories} from "./redux/slice";
 
 export function MainPage() {
     const state = useAppSelector((state) => state.repositories)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(fetchRepositories(state.userId))
+        dispatch(fetchCurrentRepositories())
     }, [dispatch, state.userId])
 
     return (
