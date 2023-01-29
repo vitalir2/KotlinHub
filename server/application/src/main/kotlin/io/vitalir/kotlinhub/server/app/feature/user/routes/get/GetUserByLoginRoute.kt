@@ -3,6 +3,7 @@ package io.vitalir.kotlinhub.server.app.feature.user.routes.get
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import arrow.core.rightIfNotNull
 import io.bkbn.kompendium.core.metadata.GetInfo
 import io.bkbn.kompendium.core.plugin.NotarizedRoute
 import io.bkbn.kompendium.json.schema.definition.TypeDefinition
@@ -18,9 +19,11 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.GetUserByIden
 import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.asApiUser
 import io.vitalir.kotlinhub.server.app.feature.user.routes.common.usersTag
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.requireParameter
+import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
+import io.vitalir.kotlinhub.shared.feature.user.UserId
 
 internal fun Route.userByIdentifierRoute(
     getUserByIdentifierUseCase: GetUserByIdentifierUseCase,
@@ -33,7 +36,11 @@ internal fun Route.userByIdentifierRoute(
         get {
             val identifierFromPath = call.requireParameter("identifier")
             val identifierType = call.request.queryParameters["type"]
-            val parseResult = parseIdentifier(identifierFromPath = identifierFromPath, type = identifierType)
+            val parseResult = parseIdentifier(
+                identifierFromPath = identifierFromPath,
+                type = identifierType,
+                currentUserId = call.userIdOrNull,
+            )
             if (parseResult is Either.Left) {
                 call.respondWith(parseResult.value)
                 return@get
@@ -59,13 +66,21 @@ private fun NotarizedRoute.Config.getUserByIdentifierDocs() {
                 `in` = Parameter.Location.path,
                 schema = TypeDefinition.STRING,
                 required = true,
+                description = """
+                    Identifier of user.
+                    Can be either a value of the identifier of the specified type 
+                    or "current" that means to take the current user credentials
+                """.trimIndent(),
             ),
             Parameter(
                 name = "type",
                 `in` = Parameter.Location.query,
                 schema = TypeDefinition.STRING,
                 required = false,
-                description = "type of identifier. If not specified - username assumed",
+                description = """
+                    Type of identifier. Can be "id", "username" and "email".
+                    If not specified - username is assumed
+                """.trimIndent(),
             ),
         )
         response {
@@ -80,14 +95,31 @@ private fun NotarizedRoute.Config.getUserByIdentifierDocs() {
 private fun parseIdentifier(
     identifierFromPath: String,
     type: String?,
+    currentUserId: UserId?,
 ): Either<ResponseData, UserIdentifier> {
     return when (type) {
         // Default - username
         null -> UserIdentifier.Username(identifierFromPath).right()
-        "id" -> UserIdentifier.Id(identifierFromPath.toInt()).right()
+        "id" -> parseIdIdentifier(identifierFromPath, currentUserId)
         "username" -> UserIdentifier.Username(identifierFromPath).right()
         "email" -> UserIdentifier.Email(identifierFromPath).right()
         else -> ResponseData.badRequest("invalid identifier type=$type").left()
+    }
+}
+
+private fun parseIdIdentifier(
+    identifierFromPath: String,
+    currentUserId: UserId?,
+): Either<ResponseData, UserIdentifier> {
+    return if (identifierFromPath == AUTHENTICATED_USER_ID_VALUE) {
+        currentUserId?.let(UserIdentifier::Id).rightIfNotNull {
+            ResponseData.badRequest("Try to get current userId without providing authentication data")
+        }
+    }
+    else {
+        identifierFromPath.toIntOrNull()?.let(UserIdentifier::Id).rightIfNotNull {
+            ResponseData.badRequest("Invalid id=$identifierFromPath")
+        }
     }
 }
 
@@ -104,3 +136,5 @@ private fun User?.toResponseData(): ResponseData {
         )
     }
 }
+
+private const val AUTHENTICATED_USER_ID_VALUE = "current"

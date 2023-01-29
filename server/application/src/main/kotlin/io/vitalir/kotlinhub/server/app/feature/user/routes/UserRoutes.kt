@@ -30,11 +30,15 @@ internal fun Route.userRoutes(
             registerDocs()
             getUsersDocs()
         }
+
+        jwtAuth(optional = true) {
+            userByIdentifierRoute(userGraph.getUserByIdentifierUseCase)
+        }
+
         registerUserRoute(userGraph.registerUserUseCase)
         getUsersRoute(userGraph.getUsersUseCase)
 
         authRoute(jwtConfig, userGraph.loginUseCase)
-        userByIdentifierRoute(userGraph.getUserByIdentifierUseCase)
 
         authenticatedRoutes(userGraph)
     }
