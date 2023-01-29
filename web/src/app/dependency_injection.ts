@@ -1,7 +1,7 @@
 import {RepositoriesGraph} from "../features/repositories/RepositoriesGraph";
 import {DefaultRepositoriesRepository} from "../features/repositories/DefaultRepositoriesRepository";
 import {AuthGraph} from "../features/login/AuthGraph";
-import {DefaultAuthRepository} from "../features/login/AuthRepository";
+import {DefaultAuthRepository} from "../features/login/DefaultAuthRepository";
 
 export class AppGraph {
     readonly repositoriesGraph: RepositoriesGraph
