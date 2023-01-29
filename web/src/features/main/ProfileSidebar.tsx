@@ -2,11 +2,11 @@ import {Avatar, Box, Stack, Typography} from "@mui/material";
 import React from "react";
 import {User} from "../user/User";
 
-export interface ProfileViewProps {
+export interface ProfileSidebarProps {
     user?: User,
 }
 
-export function Profile(props: ProfileViewProps) {
+export function ProfileSidebar(props: ProfileSidebarProps) {
     const { user } = props
 
     if (user == null) {

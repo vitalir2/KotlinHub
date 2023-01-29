@@ -1,11 +1,11 @@
 import {Box, Chip, Stack, Typography} from "@mui/material";
-import {Repository} from "../repositories/Repository";
+import {Repository as RepositoryModel} from "../repositories/Repository";
 
 export interface RepositoryProps {
-    repository: Repository,
+    repository: RepositoryModel,
 }
 
-export function RepositoryView(props: RepositoryProps) {
+export function Repository(props: RepositoryProps) {
     const {repository} = props
 
     return (

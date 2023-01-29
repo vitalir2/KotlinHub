@@ -1,5 +1,5 @@
 import {Stack} from "@mui/material";
-import {Profile} from "./Profile";
+import {ProfileSidebar} from "./ProfileSidebar";
 import {Repositories} from "./Repositories";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
@@ -18,7 +18,7 @@ export function MainPage() {
         <Stack direction={"row"} spacing={2} sx={{
             padding: 2,
         }}>
-            <Profile user={state.user}/>
+            <ProfileSidebar user={state.user}/>
             <Repositories
                 repositories={state.repositories}
                 isLoading={state.isLoading}
