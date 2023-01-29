@@ -1,15 +1,14 @@
 import {Repository} from "../../repositories/Repository";
+import {User} from "../../login/AuthRepository";
 
 export interface MainState {
-    userId: number,
+    user?: User,
     repositories: Repository[],
     isLoading: boolean,
     error?: string,
 
 }
 export const initialState: MainState = {
-    userId: 1, // TODO
     repositories: [],
     isLoading: true,
-    error: undefined,
 }

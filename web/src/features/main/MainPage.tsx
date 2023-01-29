@@ -3,21 +3,22 @@ import {Profile} from "./Profile";
 import {Repositories} from "./Repositories";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {fetchCurrentRepositories} from "./redux/slice";
+import {fetchCurrentRepositories, fetchCurrentUser} from "./redux/slice";
 
 export function MainPage() {
     const state = useAppSelector((state) => state.repositories)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
+        dispatch(fetchCurrentUser())
         dispatch(fetchCurrentRepositories())
-    }, [dispatch, state.userId])
+    }, [dispatch])
 
     return (
         <Stack direction={"row"} spacing={2} sx={{
             padding: 2,
         }}>
-            <Profile/>
+            <Profile user={state.user}/>
             <Repositories
                 repositories={state.repositories}
                 isLoading={state.isLoading}

@@ -23,6 +23,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
+import io.vitalir.kotlinhub.shared.feature.user.GetUserResponse
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 
 internal fun Route.userByIdentifierRoute(
@@ -84,7 +85,7 @@ private fun NotarizedRoute.Config.getUserByIdentifierDocs() {
             ),
         )
         response {
-            resType<GetUserByLoginResponse>()
+            resType<GetUserResponse>()
             responseCode(HttpStatusCode.OK)
             description("OK")
         }
@@ -127,7 +128,7 @@ private fun User?.toResponseData(): ResponseData {
     return if (this != null) {
         ResponseData(
             code = HttpStatusCode.OK,
-            body = GetUserByLoginResponse(user = asApiUser),
+            body = GetUserResponse(user = asApiUser),
         )
     } else {
         ResponseData.fromErrorData(

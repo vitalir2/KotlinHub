@@ -1,7 +1,25 @@
-import {Avatar, Stack, Typography} from "@mui/material";
+import {Avatar, Box, Stack, Typography} from "@mui/material";
 import React from "react";
+import {User} from "../login/AuthRepository";
 
-export function Profile() {
+export interface ProfileViewProps {
+    user?: User,
+}
+
+export function Profile(props: ProfileViewProps) {
+    const { user } = props
+
+    if (user == null) {
+        // TODO make better placeholder
+        return (
+            <Box>
+                <Typography variant={"h3"}>
+                    User is loading
+                </Typography>
+            </Box>
+        )
+    }
+
     return (
         <Stack spacing={1} sx={{
             margin: 2,
@@ -12,7 +30,7 @@ export function Profile() {
                 padding: 1,
             }}/>
             <Typography variant={"h5"}>
-                Vitalir
+                {user.username}
             </Typography>
             <Typography variant={"body1"}>
                 Description
