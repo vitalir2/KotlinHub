@@ -3,7 +3,7 @@ import {Profile} from "./Profile";
 import {Repositories} from "./Repositories";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {fetchCurrentRepositories, fetchCurrentUser} from "./redux/slice";
+import {fetchCurrentRepositories, fetchCurrentUser} from "./MainSlice";
 
 export function MainPage() {
     const state = useAppSelector((state) => state.repositories)

@@ -1,6 +1,6 @@
 import {configureStore} from '@reduxjs/toolkit';
 import {createAppGraph} from "./dependency_injection";
-import {repositoriesSlice} from "../features/main/redux/slice";
+import {repositoriesSlice} from "../features/main/MainSlice";
 import {loginSlice} from "../features/login/LoginSlice";
 
 export const store = configureStore({

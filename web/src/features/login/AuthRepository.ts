@@ -1,6 +1,7 @@
 import * as platformShared from "platform-shared/platform-shared"
 
 import {baseApi, getDefaultHeaders} from "../../app/fetch";
+import {User} from "../user/User";
 
 export interface LoginUserParams {
     username: string,
@@ -11,23 +12,18 @@ export interface LoginUserResult {
     token: string,
 }
 
-// TODO add more data mapping from backend and on backend too
-export interface User {
-    username: string
-}
-
 export interface AuthRepository {
     loginUser(request: LoginUserParams): Promise<LoginUserResult>
     getUser(): Promise<User>
 }
 
-type LoginUserRequest = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginRequest
-type LoginUserResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginResponse
+type LoginRequest = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginRequest
+type LoginResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginResponse
 type GetUserResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.GetUserResponse
 
 export class DefaultAuthRepository implements AuthRepository {
     loginUser(request: LoginUserParams): Promise<LoginUserResult> {
-        return baseApi.post<LoginUserResponse>(
+        return baseApi.post<LoginResponse>(
             "/users/auth", this.mapParamsToRequest(request),
             {
                 headers: getDefaultHeaders(),
@@ -49,14 +45,14 @@ export class DefaultAuthRepository implements AuthRepository {
             .then(body => this.mapResponseToUser(body))
     }
 
-    private mapParamsToRequest(params: LoginUserParams): LoginUserRequest {
+    private mapParamsToRequest(params: LoginUserParams): LoginRequest {
         return {
             username: params.username,
             password: params.password,
         }
     }
 
-    private mapResponseToResult(response: LoginUserResponse): LoginUserResult {
+    private mapResponseToResult(response: LoginResponse): LoginUserResult {
         return {
             token: response.token,
         }

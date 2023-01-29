@@ -1,6 +1,6 @@
 import {Avatar, Box, Stack, Typography} from "@mui/material";
 import React from "react";
-import {User} from "../login/AuthRepository";
+import {User} from "../user/User";
 
 export interface ProfileViewProps {
     user?: User,

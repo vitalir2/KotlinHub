@@ -1,8 +1,20 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {initialState} from "./state";
-import {Repository} from "../../repositories/Repository";
-import {createAppAsyncThunk} from "../../../app/hooks";
-import {User} from "../../login/AuthRepository";
+import {Repository} from "../repositories/Repository";
+import {createAppAsyncThunk} from "../../app/hooks";
+import {User} from "../user/User";
+
+export interface MainState {
+    user?: User,
+    repositories: Repository[],
+    isLoading: boolean,
+    error?: string,
+
+}
+
+const initialState: MainState = {
+    repositories: [],
+    isLoading: true,
+}
 
 export const fetchCurrentUser = createAppAsyncThunk<
     User,
