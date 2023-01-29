@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {createAppAsyncThunk} from "../../app/hooks";
-import {LoginUserParams, LoginUserResult} from "./AuthRepository";
+import {LoginParams, LoginResult} from "../user/UserRepository";
 
 export interface LoginState {
     login: TextInputData,
@@ -27,10 +27,10 @@ const initialState: LoginState = {
 }
 
 export const loginUser = createAppAsyncThunk<
-    LoginUserResult,
-    LoginUserParams
->("login/loginUser", async (request: LoginUserParams, thunkAPI) => {
-    const authRepository = thunkAPI.extra.appGraph.authGraph.authRepository
+    LoginResult,
+    LoginParams
+>("login/loginUser", async (request: LoginParams, thunkAPI) => {
+    const authRepository = thunkAPI.extra.appGraph.userGraph.userRepository
     return await authRepository.loginUser(request)
 })
 

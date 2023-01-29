@@ -1,14 +1,14 @@
-import * as platformShared from "platform-shared/platform-shared"
+import * as platformShared from "platform-shared"
 import {baseApi, getDefaultHeaders} from "../../app/fetch";
-import {User} from "../user/User";
-import {AuthRepository, LoginUserParams, LoginUserResult} from "./AuthRepository";
+import {User} from "./User";
+import {UserRepository, LoginParams, LoginResult} from "./UserRepository";
 
 type LoginRequest = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginRequest
 type LoginResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginResponse
 type GetUserResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.GetUserResponse
 
-export class DefaultAuthRepository implements AuthRepository {
-    loginUser(request: LoginUserParams): Promise<LoginUserResult> {
+export class DefaultUserRepository implements UserRepository {
+    loginUser(request: LoginParams): Promise<LoginResult> {
         return baseApi.post<LoginResponse>(
             "/users/auth", this.mapParamsToRequest(request),
             {
@@ -31,14 +31,14 @@ export class DefaultAuthRepository implements AuthRepository {
             .then(body => this.mapResponseToUser(body))
     }
 
-    private mapParamsToRequest(params: LoginUserParams): LoginRequest {
+    private mapParamsToRequest(params: LoginParams): LoginRequest {
         return {
             username: params.username,
             password: params.password,
         }
     }
 
-    private mapResponseToResult(response: LoginResponse): LoginUserResult {
+    private mapResponseToResult(response: LoginResponse): LoginResult {
         return {
             token: response.token,
         }

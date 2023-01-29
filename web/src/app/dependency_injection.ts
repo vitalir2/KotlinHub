@@ -1,26 +1,26 @@
 import {RepositoriesGraph} from "../features/repositories/RepositoriesGraph";
 import {DefaultRepositoriesRepository} from "../features/repositories/DefaultRepositoriesRepository";
-import {AuthGraph} from "../features/login/AuthGraph";
-import {DefaultAuthRepository} from "../features/login/DefaultAuthRepository";
+import {UserGraph} from "../features/user/UserGraph";
+import {DefaultUserRepository} from "../features/user/DefaultUserRepository";
 
 export class AppGraph {
     readonly repositoriesGraph: RepositoriesGraph
-    readonly authGraph: AuthGraph
+    readonly userGraph: UserGraph
 
     constructor(
         repositoriesGraph: RepositoriesGraph,
-        authGraph: AuthGraph,
+        authGraph: UserGraph,
     ) {
         this.repositoriesGraph = repositoriesGraph;
-        this.authGraph = authGraph;
+        this.userGraph = authGraph;
     }
 }
 export function createAppGraph() {
     const repositoriesRepository = new DefaultRepositoriesRepository()
     const repositoriesGraph = new RepositoriesGraph(repositoriesRepository)
 
-    const authRepository = new DefaultAuthRepository()
-    const authGraph = new AuthGraph(authRepository)
+    const userRepository = new DefaultUserRepository()
+    const userGraph = new UserGraph(userRepository)
 
-    return new AppGraph(repositoriesGraph, authGraph)
+    return new AppGraph(repositoriesGraph, userGraph)
 }

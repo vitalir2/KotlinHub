@@ -20,7 +20,7 @@ export const fetchCurrentUser = createAppAsyncThunk<
     User,
     void
 >("users/fetch", async (arg, thunkApi) => {
-    const authRepository = thunkApi.extra.appGraph.authGraph.authRepository
+    const authRepository = thunkApi.extra.appGraph.userGraph.userRepository
     return await authRepository.getUser()
 })
 
