@@ -1,24 +1,13 @@
-import {Avatar, Box, Stack, Typography} from "@mui/material";
+import {Avatar, Stack, Typography} from "@mui/material";
 import React from "react";
 import {User} from "../user/User";
 
 export interface ProfileSidebarProps {
-    user?: User,
+    user: User
 }
 
 export function ProfileSidebar(props: ProfileSidebarProps) {
-    const { user } = props
-
-    if (user == null) {
-        // TODO make better placeholder
-        return (
-            <Box>
-                <Typography variant={"h3"}>
-                    User is loading
-                </Typography>
-            </Box>
-        )
-    }
+    const {user} = props
 
     return (
         <Stack spacing={1} sx={{

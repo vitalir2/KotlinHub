@@ -2,18 +2,21 @@ import {createSlice} from "@reduxjs/toolkit";
 import {Repository} from "../repositories/Repository";
 import {createAppAsyncThunk} from "../../app/hooks";
 import {User} from "../user/User";
+import {Loadable} from "../../core/models/Loadable";
 
 export interface MainState {
-    user?: User,
-    repositories: Repository[],
-    isLoading: boolean,
-    error?: string,
+    user: Loadable<User>,
+    repositories: Loadable<Repository[]>,
 
 }
 
 const initialState: MainState = {
-    repositories: [],
-    isLoading: true,
+    user: {
+        kind: "loading",
+    },
+    repositories: {
+        kind: "loading",
+    },
 }
 
 export const fetchCurrentUser = createAppAsyncThunk<
@@ -37,21 +40,40 @@ export const repositoriesSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
+        // TODO show errors from backend or at least log them
         builder.addCase(fetchCurrentRepositories.fulfilled, (state, action) => {
-            state.isLoading = false
-            state.repositories = action.payload
+            state.repositories = {
+                kind: "loaded",
+                data: action.payload,
+            }
         })
         builder.addCase(fetchCurrentRepositories.rejected, (state, action) => {
-            state.isLoading = false
-            state.error = action.error.message
+            state.repositories = {
+                kind: "error",
+                error: action.error.message!,
+            }
         })
         builder.addCase(fetchCurrentRepositories.pending, (state) => {
-            state.isLoading = true
-            state.error = undefined
+            state.repositories = {
+                kind: "loading",
+            }
+        })
+        builder.addCase(fetchCurrentUser.pending, (state) => {
+            state.user = {
+                kind: "loading",
+            }
         })
         builder.addCase(fetchCurrentUser.fulfilled, (state, action) => {
-            state.user = action.payload
+            state.user = {
+                kind: "loaded",
+                data: action.payload,
+            }
         })
-        // TODO add error handling / loading
+        builder.addCase(fetchCurrentUser.rejected, (state, action) => {
+            state.user = {
+                kind: "error",
+                error: action.error.message!,
+            }
+        })
     }
 })

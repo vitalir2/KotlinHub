@@ -1,6 +1,6 @@
 import {Stack} from "@mui/material";
-import {ProfileSidebar} from "./ProfileSidebar";
-import {Repositories} from "./Repositories";
+import {LoadableProfileSidebar} from "./LoadableProfileSidebar";
+import {LoadableRepositories} from "./LoadableRepositories";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {fetchCurrentRepositories, fetchCurrentUser} from "./MainSlice";
@@ -18,12 +18,8 @@ export function MainPage() {
         <Stack direction={"row"} spacing={2} sx={{
             padding: 2,
         }}>
-            <ProfileSidebar user={state.user}/>
-            <Repositories
-                repositories={state.repositories}
-                isLoading={state.isLoading}
-                errorText={state.error}
-            />
+            <LoadableProfileSidebar loadableUser={state.user}/>
+            <LoadableRepositories loadableRepositories={state.repositories}/>
         </Stack>
     )
 }
