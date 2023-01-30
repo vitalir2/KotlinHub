@@ -1,56 +1,15 @@
-import {Box, CircularProgress, Divider, Stack, Typography} from "@mui/material";
-import {RepositoryView} from "./RepositoryView";
+import {Box, Divider, Stack} from "@mui/material";
 import React from "react";
-import {RepositoriesPlaceholder} from "./RepositoriesPlaceholder";
-import {Repository} from "../repositories/Repository";
-
-interface RepositoriesItemProps {
-    repository: Repository,
-}
-
-function RepositoriesItem(props: RepositoriesItemProps) {
-    const {repository} = props
-    return (
-        <Box>
-            <RepositoryView repository={repository}/>
-            <Divider sx={{
-                marginTop: 1,
-            }}/>
-        </Box>
-    )
-}
+import {Repository as RepositoryModel} from "../repositories/Repository";
+import {Repository} from "./Repository";
 
 export interface RepositoriesProps {
-    repositories: Repository[],
-    isLoading: boolean,
-    errorText?: string,
+    repositories: RepositoryModel[],
 }
 
+
 export function Repositories(props: RepositoriesProps) {
-    const {repositories, isLoading, errorText} = props
-
-    if (isLoading) {
-        return (
-            <Stack spacing={0.5}>
-                <Typography variant={"h6"}>Loading repositories..</Typography>
-                <CircularProgress/>
-            </Stack>
-        )
-    }
-
-    if (errorText !== undefined) {
-        return (
-            <Box>
-                <Typography variant={"h6"}>
-                    Error occured, please try later
-                </Typography>
-            </Box>
-        )
-    }
-
-    if (repositories.length === 0) {
-        return RepositoriesPlaceholder()
-    }
+    const {repositories} = props
 
     return (
         <Stack
@@ -61,7 +20,25 @@ export function Repositories(props: RepositoriesProps) {
                 padding: 3,
             }}
         >
-            {repositories.map(repository => <RepositoriesItem key={repository.name} repository={repository}/>)}
+            {repositories.map(repository =>
+                <RepositoriesItem key={repository.name} repository={repository}/>
+            )}
         </Stack>
+    )
+}
+
+interface RepositoriesItemProps {
+    repository: RepositoryModel,
+}
+
+function RepositoriesItem(props: RepositoriesItemProps) {
+    const {repository} = props
+    return (
+        <Box>
+            <Repository repository={repository}/>
+            <Divider sx={{
+                marginTop: 1,
+            }}/>
+        </Box>
     )
 }

@@ -1,7 +1,14 @@
 import {Avatar, Stack, Typography} from "@mui/material";
 import React from "react";
+import {User} from "../user/User";
 
-export function Profile() {
+export interface ProfileSidebarProps {
+    user: User
+}
+
+export function ProfileSidebar(props: ProfileSidebarProps) {
+    const {user} = props
+
     return (
         <Stack spacing={1} sx={{
             margin: 2,
@@ -12,7 +19,7 @@ export function Profile() {
                 padding: 1,
             }}/>
             <Typography variant={"h5"}>
-                Vitalir
+                {user.username}
             </Typography>
             <Typography variant={"body1"}>
                 Description
