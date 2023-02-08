@@ -80,7 +80,7 @@ private fun NotarizedRoute.Config.getUserByIdentifierDocs() {
                 required = false,
                 description = """
                     Type of identifier. Can be "id", "username" and "email".
-                    If not specified - username is assumed
+                    If not specified - ID is assumed
                 """.trimIndent(),
             ),
         )
@@ -99,8 +99,8 @@ private fun parseIdentifier(
     currentUserId: UserId?,
 ): Either<ResponseData, UserIdentifier> {
     return when (type) {
-        // Default - username
-        null -> UserIdentifier.Username(identifierFromPath).right()
+        // Default - ID
+        null -> parseIdIdentifier(identifierFromPath, currentUserId)
         "id" -> parseIdIdentifier(identifierFromPath, currentUserId)
         "username" -> UserIdentifier.Username(identifierFromPath).right()
         "email" -> UserIdentifier.Email(identifierFromPath).right()
