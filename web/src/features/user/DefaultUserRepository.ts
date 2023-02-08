@@ -21,8 +21,7 @@ export class DefaultUserRepository implements UserRepository {
 
     getUser(): Promise<User> {
         return baseApi.get<GetUserResponse>(
-            // TODO fix on backend the default type
-            "/users/current?type=id",
+            "/users/current",
             {
                 headers: getDefaultHeaders(),
             },
