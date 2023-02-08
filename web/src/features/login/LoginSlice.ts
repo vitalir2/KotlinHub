@@ -29,9 +29,13 @@ const initialState: LoginState = {
 export const loginUser = createAppAsyncThunk<
     LoginResult,
     LoginParams
->("login/loginUser", async (request: LoginParams, thunkAPI) => {
-    const authRepository = thunkAPI.extra.appGraph.userGraph.userRepository
-    return await authRepository.loginUser(request)
+>("login/loginUser", async (request: LoginParams, { extra, rejectWithValue }) => {
+    const authRepository = extra.appGraph.userGraph.userRepository
+    try {
+        return await authRepository.loginUser(request)
+    } catch (error: Error | any) {
+        return rejectWithValue(error.message)
+    }
 })
 
 export const loginSlice = createSlice({
@@ -56,7 +60,7 @@ export const loginSlice = createSlice({
         })
         builder.addCase(loginUser.rejected, (state, action) => {
             state.isValidating = false
-            state.password.errorMessage = "Error " + action.error.message // TODO add error messages to backend
+            state.password.errorMessage = action.payload
         })
         builder.addCase(loginUser.fulfilled, (state, action) => {
             state.isValidating = false

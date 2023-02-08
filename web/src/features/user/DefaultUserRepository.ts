@@ -1,7 +1,8 @@
 import * as platformShared from "platform-shared"
 import {baseApi, getDefaultHeaders} from "../../app/fetch";
 import {User} from "./User";
-import {UserRepository, LoginParams, LoginResult} from "./UserRepository";
+import {LoginParams, LoginResult, UserRepository} from "./UserRepository";
+import axios from "axios";
 
 type LoginRequest = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginRequest
 type LoginResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginResponse
@@ -15,7 +16,17 @@ export class DefaultUserRepository implements UserRepository {
                 headers: getDefaultHeaders(),
             }
         )
-            .then(response => response.data)
+            .then(
+                response => response.data,
+                error => {
+                    let errorMessage: string
+                    if (axios.isAxiosError(error) && error.response !== undefined) {
+                        errorMessage = error.response.data()
+                    } else {
+                        errorMessage = "Undefined error"
+                    }
+                    throw Error(errorMessage)
+                })
             .then(body => this.mapResponseToResult(body))
     }
 
