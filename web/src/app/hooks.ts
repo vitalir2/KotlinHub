@@ -11,5 +11,5 @@ export const createAppAsyncThunk = createAsyncThunk.withTypes<{
     state: RootState,
     dispatch: AppDispatch,
     extra: { appGraph: AppGraph },
-    rejectValue: string,
+    rejectValue: any,
 }>()

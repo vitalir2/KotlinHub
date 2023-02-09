@@ -7,7 +7,6 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
-import io.vitalir.kotlinhub.server.app.common.routes.ErrorResponse
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
@@ -17,6 +16,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.reqType
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
+import io.vitalir.kotlinhub.shared.common.ErrorResponse
 import io.vitalir.kotlinhub.shared.common.network.Url
 
 internal fun Route.createRepositoryRoute(

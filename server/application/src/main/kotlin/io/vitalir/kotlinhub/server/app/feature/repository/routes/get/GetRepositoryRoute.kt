@@ -8,7 +8,6 @@ import io.bkbn.kompendium.oas.payload.Parameter
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
-import io.vitalir.kotlinhub.server.app.common.routes.ErrorResponse
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
@@ -20,6 +19,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.auth.requireParameter
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
+import io.vitalir.kotlinhub.shared.common.ErrorResponse
 
 internal fun Route.userRepositoryRoute(
     getRepositoryUseCase: GetRepositoryUseCase,

@@ -1,8 +1,10 @@
-package io.vitalir.kotlinhub.server.app.common.routes
+package io.vitalir.kotlinhub.shared.common
 
 import kotlinx.serialization.Serializable
+import kotlin.js.JsExport
 
 @Serializable
+@JsExport
 data class ErrorResponse(
     val code: Int,
     val message: String,

@@ -19,15 +19,14 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
 import io.vitalir.kotlinhub.server.app.common.routes.AuthVariant
-import io.vitalir.kotlinhub.server.app.common.routes.ErrorResponse
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
+import io.vitalir.kotlinhub.shared.common.ErrorResponse
 import io.vitalir.kotlinhub.shared.common.KMPLocalDateTime
-import java.time.LocalDateTime
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
