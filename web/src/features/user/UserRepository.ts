@@ -5,9 +5,22 @@ export interface LoginParams {
     password: string,
 }
 
-export interface LoginResult {
+export interface SuccessfulLoginResult {
+    type: "success",
     token: string,
 }
+
+export interface ErrorLoginResult {
+    type: "error",
+    error: LoginResultError,
+}
+
+export enum LoginResultError {
+    InvalidCredentials,
+    Unknown,
+}
+
+export type LoginResult = SuccessfulLoginResult | ErrorLoginResult
 
 export interface UserRepository {
     loginUser(request: LoginParams): Promise<LoginResult>

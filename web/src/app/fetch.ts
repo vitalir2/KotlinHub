@@ -6,6 +6,9 @@ const BASE_API_PATH = "http://localhost/api/v1/"
 
 export const baseApi = axios.create({
     baseURL: BASE_API_PATH,
+    validateStatus: status => {
+        return status < 400
+    },
 })
 
 export function getDefaultHeaders() {

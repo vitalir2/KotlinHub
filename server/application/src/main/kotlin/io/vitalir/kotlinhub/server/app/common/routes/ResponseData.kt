@@ -1,6 +1,7 @@
 package io.vitalir.kotlinhub.server.app.common.routes
 
 import io.ktor.http.*
+import io.vitalir.kotlinhub.shared.common.ErrorResponse
 
 data class ResponseData(
     val code: HttpStatusCode,

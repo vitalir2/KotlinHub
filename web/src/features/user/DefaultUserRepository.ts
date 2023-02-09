@@ -1,11 +1,13 @@
 import * as platformShared from "platform-shared"
 import {baseApi, getDefaultHeaders} from "../../app/fetch";
 import {User} from "./User";
-import {UserRepository, LoginParams, LoginResult} from "./UserRepository";
+import {LoginParams, LoginResult, LoginResultError, SuccessfulLoginResult, UserRepository} from "./UserRepository";
+import axios from "axios";
 
 type LoginRequest = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginRequest
 type LoginResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginResponse
 type GetUserResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.GetUserResponse
+type ErrorResponse = platformShared.io.vitalir.kotlinhub.shared.common.ErrorResponse
 
 export class DefaultUserRepository implements UserRepository {
     loginUser(request: LoginParams): Promise<LoginResult> {
@@ -15,8 +17,28 @@ export class DefaultUserRepository implements UserRepository {
                 headers: getDefaultHeaders(),
             }
         )
-            .then(response => response.data)
-            .then(body => this.mapResponseToResult(body))
+            .then(
+                response => this.mapResponseToResult(response.data),
+                error => {
+                    let loginError: LoginResultError
+                    if (axios.isAxiosError(error) && error.response !== undefined) {
+                        const errorResponse: ErrorResponse = error.response.data
+                        console.warn(errorResponse.message) // TODO is this safe?
+                        switch (errorResponse.code) {
+                            case 400:
+                                loginError = LoginResultError.InvalidCredentials
+                                break;
+                            default:
+                                loginError = LoginResultError.Unknown
+                        }
+                    } else {
+                        loginError = LoginResultError.Unknown
+                    }
+                    return {
+                        type: "error",
+                        error: loginError,
+                    }
+                })
     }
 
     getUser(): Promise<User> {
@@ -37,9 +59,10 @@ export class DefaultUserRepository implements UserRepository {
         }
     }
 
-    private mapResponseToResult(response: LoginResponse): LoginResult {
+    private mapResponseToResult(response: LoginResponse): SuccessfulLoginResult {
         return {
-            token: response.token,
+            type: "success",
+            token: response.token
         }
     }
 

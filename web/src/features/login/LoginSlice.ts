@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {createAppAsyncThunk} from "../../app/hooks";
-import {LoginParams, LoginResult} from "../user/UserRepository";
+import {LoginParams, LoginResult, LoginResultError, SuccessfulLoginResult} from "../user/UserRepository";
 
 export interface LoginState {
     login: TextInputData,
@@ -27,11 +27,17 @@ const initialState: LoginState = {
 }
 
 export const loginUser = createAppAsyncThunk<
-    LoginResult,
+    SuccessfulLoginResult,
     LoginParams
->("login/loginUser", async (request: LoginParams, thunkAPI) => {
-    const authRepository = thunkAPI.extra.appGraph.userGraph.userRepository
-    return await authRepository.loginUser(request)
+>("login/loginUser", async (request: LoginParams, { extra, rejectWithValue }) => {
+    const authRepository = extra.appGraph.userGraph.userRepository
+    const result = await authRepository.loginUser(request)
+    switch (result.type) {
+        case "success":
+            return result
+        case "error":
+            return rejectWithValue(result.error)
+    }
 })
 
 export const loginSlice = createSlice({
@@ -54,9 +60,19 @@ export const loginSlice = createSlice({
         builder.addCase(loginUser.pending, (state) => {
             state.isValidating = true
         })
-        builder.addCase(loginUser.rejected, (state, action) => {
+        builder.addCase(loginUser.rejected, (state, action: PayloadAction<LoginResultError>) => {
             state.isValidating = false
-            state.password.errorMessage = "Error " + action.error.message // TODO add error messages to backend
+
+            let errorMessage: string
+            switch (action.payload) {
+                case LoginResultError.InvalidCredentials:
+                    errorMessage = "Invalid credentials"
+                    break
+                case LoginResultError.Unknown:
+                    errorMessage = "Unknown error"
+                    break
+            }
+            state.password.errorMessage = errorMessage
         })
         builder.addCase(loginUser.fulfilled, (state, action) => {
             state.isValidating = false
