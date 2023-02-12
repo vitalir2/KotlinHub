@@ -17,21 +17,11 @@ export function Repository(props: RepositoryProps) {
                 <Chip label={repository.accessMode} variant={"outlined"} color={"secondary"} size={"small"}/>
             </Stack>
             <Box>
-                {(() => {
-                    if (repository.description?.length === undefined) {
-                        return null
-                    }
-                    return (
-                        <Typography variant={"body2"}>
-                            {repository.description}
-                        </Typography>
-                    )
-                })()}
-            </Box>
-            <Box>
-                <Typography variant={"body2"}>
-                    updated today
-                </Typography>
+                {repository.description?.length &&
+                    <Typography variant={"body2"}>
+                        {repository.description}
+                    </Typography>
+                }
             </Box>
         </Stack>
     )
