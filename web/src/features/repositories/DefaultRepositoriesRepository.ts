@@ -4,6 +4,7 @@ import {RepositoriesRepository} from "./RepositoriesRepository";
 import {Repository, RepositoryAccessMode} from "./Repository";
 
 type GetRepositoriesResponse = platformShared.io.vitalir.kotlinhub.shared.feature.repository.GetRepositoriesResponse
+type GetRepositoryResponse = platformShared.io.vitalir.kotlinhub.shared.feature.repository.GetRepositoryResponse
 type ApiRepository = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository
 export class DefaultRepositoriesRepository implements RepositoriesRepository {
     getRepositories(userId: string): Promise<Repository[]> {
@@ -12,6 +13,16 @@ export class DefaultRepositoriesRepository implements RepositoriesRepository {
         })
             .then(response => response.data.repositories)
             .then(repositories => repositories.map(repository => this.convertToLocalModel(repository)))
+    }
+
+    getRepository(userId: string, repositoryId: string): Promise<Repository> {
+        return baseApi.get<GetRepositoryResponse>(`/repositories/${userId}/${repositoryId}`, {
+            headers: getDefaultHeaders(),
+        })
+            .then(response => {
+                const repository = response.data.repository
+                return this.convertToLocalModel(repository)
+            })
     }
 
     convertToLocalModel(apiRepository: ApiRepository): Repository {
