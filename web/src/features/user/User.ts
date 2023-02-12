@@ -3,7 +3,6 @@ export interface User {
     firstName?: string,
     lastName?: string,
     email?: string,
-    description?: string,
 }
 
 export function getFullName(user: User): string | undefined {

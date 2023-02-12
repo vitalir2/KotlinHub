@@ -32,11 +32,6 @@ export function ProfileSidebar(props: ProfileSidebarProps) {
                     {user.email}
                 </Typography>
             }
-            {user.description &&
-                <Typography variant={"body1"}>
-                    {user.description}
-                </Typography>
-            }
         </Stack>
     )
 }

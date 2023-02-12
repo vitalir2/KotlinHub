@@ -73,7 +73,6 @@ export class DefaultUserRepository implements UserRepository {
             firstName: convertNullableToTypescriptModel(user.firstName),
             lastName: convertNullableToTypescriptModel(user.lastName),
             email: convertNullableToTypescriptModel(user.email),
-            description: undefined, // TODO
         }
     }
 }
