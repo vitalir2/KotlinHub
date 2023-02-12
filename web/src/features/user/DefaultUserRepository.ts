@@ -1,5 +1,5 @@
 import * as platformShared from "platform-shared"
-import {baseApi, getDefaultHeaders} from "../../app/fetch";
+import {baseApi, convertNullableToTypescriptModel, getDefaultHeaders} from "../../app/fetch";
 import {User} from "./User";
 import {LoginParams, LoginResult, LoginResultError, SuccessfulLoginResult, UserRepository} from "./UserRepository";
 import axios from "axios";
@@ -67,8 +67,13 @@ export class DefaultUserRepository implements UserRepository {
     }
 
     private mapResponseToUser(response: GetUserResponse): User {
+        const user = response.user
         return {
-            username: response.user.username,
+            username: user.username,
+            firstName: convertNullableToTypescriptModel(user.firstName),
+            lastName: convertNullableToTypescriptModel(user.lastName),
+            email: convertNullableToTypescriptModel(user.email),
+            description: undefined, // TODO
         }
     }
 }
