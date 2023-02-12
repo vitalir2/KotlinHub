@@ -1,6 +1,6 @@
 import {Avatar, Stack, Typography} from "@mui/material";
 import React from "react";
-import {User} from "../user/User";
+import {getFullName, User} from "../user/User";
 
 export interface ProfileSidebarProps {
     user: User
@@ -8,6 +8,7 @@ export interface ProfileSidebarProps {
 
 export function ProfileSidebar(props: ProfileSidebarProps) {
     const {user} = props
+    const fullName = getFullName(user)
 
     return (
         <Stack spacing={1} sx={{
@@ -21,9 +22,16 @@ export function ProfileSidebar(props: ProfileSidebarProps) {
             <Typography variant={"h5"}>
                 {user.username}
             </Typography>
-            <Typography variant={"body1"}>
-                Description
-            </Typography>
+            {fullName &&
+                <Typography variant={"subtitle1"}>
+                    {fullName}
+                </Typography>
+            }
+            {user.email &&
+                <Typography variant={"subtitle1"}>
+                    {user.email}
+                </Typography>
+            }
         </Stack>
     )
 }
