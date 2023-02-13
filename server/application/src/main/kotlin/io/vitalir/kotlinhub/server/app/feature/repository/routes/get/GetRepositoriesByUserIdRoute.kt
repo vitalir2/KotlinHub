@@ -3,11 +3,8 @@ package io.vitalir.kotlinhub.server.app.feature.repository.routes.get
 import arrow.core.Either
 import io.bkbn.kompendium.core.metadata.GetInfo
 import io.bkbn.kompendium.core.plugin.NotarizedRoute
-import io.bkbn.kompendium.json.schema.definition.TypeDefinition
-import io.bkbn.kompendium.oas.payload.Parameter
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.*
 import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
@@ -16,7 +13,8 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepo
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.common.repositoriesTag
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toApiModel
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toResponseData
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.userIdOrNull
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.userIdParam
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
@@ -40,16 +38,7 @@ private fun NotarizedRoute.Config.getUserRepositoriesDocs() {
         summary("Get repositories for user")
         description("")
         parameters = listOf(
-            Parameter(
-                name = "userId",
-                `in` = Parameter.Location.path,
-                required = true,
-                schema = TypeDefinition.STRING,
-                description = """
-                    Use "current" if you want to get current user repositories
-                    Otherwise, pass userId from the User object
-                """.trimIndent(),
-            ),
+            userIdParam,
         )
         response {
             resType<GetRepositoriesResponse>()
@@ -65,14 +54,8 @@ private fun Route.getUserRepositoriesRoute(
 ) {
     get {
         val currentUserId = call.userIdOrNull
-        val pathUserId = call.parameters["userId"]
-        val userId = when (pathUserId) {
-            "current" -> currentUserId
-            else -> pathUserId?.toIntOrNull()
-        } ?: throw BadRequestException("Invalid userId=$pathUserId")
-        val userIdentifier = UserIdentifier.Id(userId)
-
-        val responseData = when (val result = getRepositoriesForUserUseCase(currentUserId, userIdentifier)) {
+        val userId = call.parameters.userIdOrNull(currentUserId)
+        val responseData = when (val result = getRepositoriesForUserUseCase(currentUserId, userId)) {
             is Either.Left -> result.value.toResponseData()
             is Either.Right -> ResponseData(
                 code = HttpStatusCode.OK,
