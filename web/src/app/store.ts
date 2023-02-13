@@ -2,11 +2,13 @@ import {configureStore} from '@reduxjs/toolkit';
 import {createAppGraph} from "./dependency_injection";
 import {repositoriesSlice} from "../features/main/MainSlice";
 import {loginSlice} from "../features/login/LoginSlice";
+import {repositorySlice} from "../features/repositories/repository/RepositorySlice";
 
 export const store = configureStore({
   reducer: {
       repositories: repositoriesSlice.reducer,
       login: loginSlice.reducer,
+      repository: repositorySlice.reducer,
   },
   middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
