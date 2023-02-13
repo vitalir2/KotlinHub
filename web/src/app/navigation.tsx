@@ -3,6 +3,7 @@ import {createBrowserRouter} from "react-router-dom";
 import {Router as RemixRouter} from "@remix-run/router/dist/router";
 import App from "../App";
 import {MainPage} from "../features/main/MainPage";
+import {RepositoryPage} from "../features/repositories/repository/RepositoryPage";
 
 export function createAppRouter(): RemixRouter {
     return createBrowserRouter([
@@ -18,6 +19,10 @@ export function createAppRouter(): RemixRouter {
                     path: "main/", // TODO
                     element: <MainPage/>,
                 },
+                {
+                    path: "repositories/:repositoryId/",
+                    element: <RepositoryPage/>,
+                }
             ],
         }
     ])

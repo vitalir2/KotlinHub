@@ -14,12 +14,14 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repositor
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.common.repositoriesTag
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toApiModel
-import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.userIdOrNull
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.userIdParam
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.requireParameter
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
 import io.vitalir.kotlinhub.shared.common.ErrorResponse
+import io.vitalir.kotlinhub.shared.feature.repository.GetRepositoryResponse
 
 internal fun Route.userRepositoryRoute(
     getRepositoryUseCase: GetRepositoryUseCase,
@@ -38,12 +40,7 @@ private fun NotarizedRoute.Config.getRepositoryDocs() {
         summary("Get repository by userId and repository name")
         description("")
         parameters = listOf(
-            Parameter(
-                name = "userId",
-                `in` = Parameter.Location.path,
-                required = true,
-                schema = TypeDefinition.INT,
-            ),
+            userIdParam,
             Parameter(
                 name = "repositoryName",
                 `in` = Parameter.Location.path,
@@ -68,12 +65,12 @@ private fun Route.getRepositoryRoute(
     getRepositoryUseCase: GetRepositoryUseCase,
 ) {
     get {
-        val userId = call.requireParameter("userId", String::toInt)
-        val repositoryName = call.requireParameter("repositoryName")
         val currentUserId = call.userIdOrNull
+        val userId = call.parameters.userIdOrNull(currentUserId)
+        val repositoryName = call.requireParameter("repositoryName")
 
         val result = getRepositoryUseCase(
-            userIdentifier = UserIdentifier.Id(userId),
+            userIdentifier = userId,
             repositoryName = repositoryName,
             currentUserId = currentUserId,
         )
