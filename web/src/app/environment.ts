@@ -1,4 +1,4 @@
-import process from "node:process";
+import * as process from "process";
 
 function isProductionEnv(): boolean {
     return process.env.NODE_ENV === 'production'
