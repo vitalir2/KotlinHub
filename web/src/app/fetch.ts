@@ -1,11 +1,22 @@
 import axios from "axios";
 import {readCookie} from "../core/settings/Cookies";
 import {SETTING_AUTH_TOKEN} from "../core/settings/SettingsNames";
+import {BACKEND_URL_DEVELOPMENT, BACKEND_URL_PRODUCTION, isProductionBackend} from "./environment";
 
-const BASE_API_PATH = "http://localhost/api/v1/"
+const API_PATH = "api/v1"
+
+function createBaseUrl(): string {
+    let hostPath: string
+    if (isProductionBackend() && BACKEND_URL_PRODUCTION !== undefined) {
+        hostPath = BACKEND_URL_PRODUCTION
+    } else {
+        hostPath = BACKEND_URL_DEVELOPMENT
+    }
+    return `${hostPath}${API_PATH}`
+}
 
 export const baseApi = axios.create({
-    baseURL: BASE_API_PATH,
+    baseURL: createBaseUrl(),
     validateStatus: status => {
         return status < 400
     },
