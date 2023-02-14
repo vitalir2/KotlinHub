@@ -3,7 +3,7 @@ import {readCookie} from "../core/settings/Cookies";
 import {SETTING_AUTH_TOKEN} from "../core/settings/SettingsNames";
 import {BACKEND_URL_DEVELOPMENT, BACKEND_URL_PRODUCTION, isProductionBackend} from "./environment";
 
-const API_PATH = "api/v1"
+const API_PATH = "/api/v1"
 
 function createBaseUrl(): string {
     let hostPath: string
