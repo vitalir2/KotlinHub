@@ -1,5 +1,5 @@
-import {Box, Typography} from "@mui/material";
-import React from "react";
+import {Avatar, Box, CircularProgress, Stack, Typography} from "@mui/material";
+import React, {Component, ReactElement} from "react";
 import {User} from "../user/User";
 import {Loadable} from "../../core/models/Loadable";
 import {ProfileSidebar} from "./ProfileSidebar";
@@ -11,28 +11,43 @@ export interface LoadableProfileSidebarProps {
 export function LoadableProfileSidebar(props: LoadableProfileSidebarProps) {
     const { loadableUser } = props
 
+    let body: ReactElement
     switch (loadableUser.kind) {
         case "loading":
-            // TODO make better placeholder
-            return (
-                <Box>
-                    <Typography variant={"h3"}>
-                        User is loading
-                    </Typography>
-                </Box>
-            )
+            body = <LoadingProfileSidebar/>
+            break
         case "loaded":
-            return (
-                <ProfileSidebar user={loadableUser.data}/>
-            )
+            body = <ProfileSidebar user={loadableUser.data}/>
+            break
         case "error":
-            return (
+            body =
                 <Box>
                     <Typography variant={"h3"}>
                         Error: {loadableUser.error}
                     </Typography>
                 </Box>
-            )
 
     }
+
+    return (
+        <Stack spacing={1} sx={{
+            margin: 2,
+            width: "10vw",
+            height: "100vh",
+        }}>
+            {body}
+        </Stack>
+    )
+}
+
+function LoadingProfileSidebar() {
+    return (
+        <Box sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+        }}>
+            <CircularProgress/>
+        </Box>
+    )
 }

@@ -16,7 +16,6 @@ export function LoadableRepositories(props: LoadableRepositoriesProps) {
         case "loading":
             return (
                 <Stack spacing={0.5}>
-                    <Typography variant={"h6"}>Loading repositories..</Typography>
                     <CircularProgress/>
                 </Stack>
             )
