@@ -1,6 +1,5 @@
-import {Box, CircularProgress, Stack, Typography} from "@mui/material";
+import {Box, CircularProgress, Stack, SxProps, Typography} from "@mui/material";
 import React, {ReactElement} from "react";
-import {RepositoriesPlaceholder} from "./RepositoriesPlaceholder";
 import {Repository as RepositoryModel} from "../repositories/Repository";
 import {Loadable} from "../../core/models/Loadable";
 import {Repositories} from "./Repositories";
@@ -15,33 +14,18 @@ export function LoadableRepositories(props: LoadableRepositoriesProps) {
     let body: ReactElement
     switch (loadableRepositories.kind) {
         case "loading":
-                body = <Box sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "100%",
-                    height: "100vh",
-                }}>
-                    <CircularProgress/>
-                </Box>
+            body = RepositoriesLoadingPlaceholder()
             break
         case "loaded":
             const repositories = loadableRepositories.data
-
             if (repositories.length === 0) {
-                body = RepositoriesPlaceholder()
+                body = RepositoriesEmptyPlaceholder()
             } else {
                 body = <Repositories repositories={repositories}/>
             }
             break
         case "error":
-            body = (
-                <Box>
-                    <Typography variant={"h6"}>
-                        Error occured, please try later
-                    </Typography>
-                </Box>
-            )
+            body = RepositoriesErrorPlaceholder()
             break
     }
 
@@ -52,4 +36,40 @@ export function LoadableRepositories(props: LoadableRepositoriesProps) {
     }}>
         {body}
     </Box>
+}
+
+const placeholderContainerStyle: SxProps = {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+}
+
+function RepositoriesLoadingPlaceholder() {
+    return (
+        <Box sx={placeholderContainerStyle}>
+            <CircularProgress/>
+        </Box>
+    )
+}
+
+function RepositoriesEmptyPlaceholder() {
+    return (
+        <Box sx={placeholderContainerStyle}>
+            <Typography variant={"body1"}>
+                No repositories yet
+            </Typography>
+        </Box>
+    );
+}
+
+function RepositoriesErrorPlaceholder() {
+    return (
+        <Box sx={placeholderContainerStyle}>
+            <Typography variant={"h6"} align={"center"}>
+                Error occured, please try later
+            </Typography>
+        </Box>
+    )
 }
