@@ -1,5 +1,5 @@
 import {Box, CircularProgress, Stack, Typography} from "@mui/material";
-import React from "react";
+import React, {ReactElement} from "react";
 import {RepositoriesPlaceholder} from "./RepositoriesPlaceholder";
 import {Repository as RepositoryModel} from "../repositories/Repository";
 import {Loadable} from "../../core/models/Loadable";
@@ -12,28 +12,44 @@ export interface LoadableRepositoriesProps {
 export function LoadableRepositories(props: LoadableRepositoriesProps) {
     const {loadableRepositories} = props
 
+    let body: ReactElement
     switch (loadableRepositories.kind) {
         case "loading":
-            return (
-                <Stack spacing={0.5}>
+                body = <Box sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%",
+                    height: "100vh",
+                }}>
                     <CircularProgress/>
-                </Stack>
-            )
+                </Box>
+            break
         case "loaded":
             const repositories = loadableRepositories.data
 
             if (repositories.length === 0) {
-                return RepositoriesPlaceholder()
+                body = RepositoriesPlaceholder()
             } else {
-                return <Repositories repositories={repositories}/>
+                body = <Repositories repositories={repositories}/>
             }
+            break
         case "error":
-            return (
+            body = (
                 <Box>
                     <Typography variant={"h6"}>
                         Error occured, please try later
                     </Typography>
                 </Box>
             )
+            break
     }
+
+    return <Box sx={{
+        width: "100%",
+        height: "100%",
+        padding: 3,
+    }}>
+        {body}
+    </Box>
 }
