@@ -1,6 +1,5 @@
-import {Box, CircularProgress, Stack, Typography} from "@mui/material";
-import React from "react";
-import {RepositoriesPlaceholder} from "./RepositoriesPlaceholder";
+import {Box, CircularProgress, Stack, SxProps, Typography} from "@mui/material";
+import React, {ReactElement} from "react";
 import {Repository as RepositoryModel} from "../repositories/Repository";
 import {Loadable} from "../../core/models/Loadable";
 import {Repositories} from "./Repositories";
@@ -12,29 +11,65 @@ export interface LoadableRepositoriesProps {
 export function LoadableRepositories(props: LoadableRepositoriesProps) {
     const {loadableRepositories} = props
 
+    let body: ReactElement
     switch (loadableRepositories.kind) {
         case "loading":
-            return (
-                <Stack spacing={0.5}>
-                    <Typography variant={"h6"}>Loading repositories..</Typography>
-                    <CircularProgress/>
-                </Stack>
-            )
+            body = RepositoriesLoadingPlaceholder()
+            break
         case "loaded":
             const repositories = loadableRepositories.data
-
             if (repositories.length === 0) {
-                return RepositoriesPlaceholder()
+                body = RepositoriesEmptyPlaceholder()
             } else {
-                return <Repositories repositories={repositories}/>
+                body = <Repositories repositories={repositories}/>
             }
+            break
         case "error":
-            return (
-                <Box>
-                    <Typography variant={"h6"}>
-                        Error occured, please try later
-                    </Typography>
-                </Box>
-            )
+            body = RepositoriesErrorPlaceholder()
+            break
     }
+
+    return <Box sx={{
+        width: "100%",
+        height: "100%",
+        padding: 3,
+    }}>
+        {body}
+    </Box>
+}
+
+const placeholderContainerStyle: SxProps = {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+}
+
+function RepositoriesLoadingPlaceholder() {
+    return (
+        <Box sx={placeholderContainerStyle}>
+            <CircularProgress/>
+        </Box>
+    )
+}
+
+function RepositoriesEmptyPlaceholder() {
+    return (
+        <Box sx={placeholderContainerStyle}>
+            <Typography variant={"body1"}>
+                No repositories yet
+            </Typography>
+        </Box>
+    );
+}
+
+function RepositoriesErrorPlaceholder() {
+    return (
+        <Box sx={placeholderContainerStyle}>
+            <Typography variant={"h6"} align={"center"}>
+                Error occured, please try later
+            </Typography>
+        </Box>
+    )
 }

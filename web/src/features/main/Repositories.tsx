@@ -12,14 +12,7 @@ export function Repositories(props: RepositoriesProps) {
     const {repositories} = props
 
     return (
-        <Stack
-            spacing={1}
-            sx={{
-                width: "100%",
-                height: "100%",
-                padding: 3,
-            }}
-        >
+        <Stack spacing={1}>
             {repositories.map(repository =>
                 <RepositoriesItem key={repository.name} repository={repository}/>
             )}

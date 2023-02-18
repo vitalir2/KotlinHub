@@ -12,12 +12,12 @@ export function ProfileSidebar(props: ProfileSidebarProps) {
 
     return (
         <Stack spacing={1} sx={{
-            margin: 2,
+            width: "100%",
+            height: "100%",
         }}>
             <Avatar alt={"Account picture"} src={"#"} sx={{
-                width: 75,
-                height: 75,
-                padding: 1,
+                width: "10vw",
+                height: "10vw",
             }}/>
             <Typography variant={"h5"}>
                 {user.username}
