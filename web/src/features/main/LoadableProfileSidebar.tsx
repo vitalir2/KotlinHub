@@ -1,5 +1,5 @@
-import {Avatar, Box, CircularProgress, Stack, Typography} from "@mui/material";
-import React, {Component, ReactElement} from "react";
+import {Box, CircularProgress, Stack, SxProps, Typography} from "@mui/material";
+import React, {ReactElement} from "react";
 import {User} from "../user/User";
 import {Loadable} from "../../core/models/Loadable";
 import {ProfileSidebar} from "./ProfileSidebar";
@@ -20,13 +20,8 @@ export function LoadableProfileSidebar(props: LoadableProfileSidebarProps) {
             body = <ProfileSidebar user={loadableUser.data}/>
             break
         case "error":
-            body =
-                <Box>
-                    <Typography variant={"h3"}>
-                        Error: {loadableUser.error}
-                    </Typography>
-                </Box>
-
+            body = <ProfileSidebarError error={loadableUser.error}/>
+            break
     }
 
     return (
@@ -40,14 +35,33 @@ export function LoadableProfileSidebar(props: LoadableProfileSidebarProps) {
     )
 }
 
+const sidebarPlaceholderStyle: SxProps = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+}
+
 function LoadingProfileSidebar() {
     return (
-        <Box sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-        }}>
+        <Box sx={sidebarPlaceholderStyle}>
             <CircularProgress/>
+        </Box>
+    )
+}
+
+interface ProfileSidebarErrorProps {
+    error: string,
+}
+
+function ProfileSidebarError(props: ProfileSidebarErrorProps) {
+    const {error} = props
+
+    return (
+        <Box sx={sidebarPlaceholderStyle}>
+            <Typography variant={"h3"}>
+                Error: {error}
+            </Typography>
         </Box>
     )
 }
