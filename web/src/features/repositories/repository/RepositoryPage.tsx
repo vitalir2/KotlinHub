@@ -1,11 +1,12 @@
 import {useParams} from "react-router-dom";
 import {Repository} from "../Repository";
-import {Box, CircularProgress, Stack, Typography} from "@mui/material";
-import {useEffect} from "react";
+import {Box, CircularProgress, Stack, SxProps, Tab, Tabs, Typography} from "@mui/material";
+import {ReactElement, useEffect, useMemo, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {fetchRepository} from "./RepositorySlice";
 import {User} from "../../user/User";
 import {fetchCurrentUser} from "../../user/UserSlice";
+import {log} from "util";
 
 export function RepositoryPage() {
     const dispatch = useAppDispatch()
@@ -70,14 +71,61 @@ interface RepositoryContainerProps {
     repository: Repository,
 }
 
+const repositoryPageTabStyle: SxProps = {
+    marginRight: "20vw",
+}
+
 function RepositoryContainer(props: RepositoryContainerProps) {
+    const [currentTab, setCurrentTab] = useState(0)
     const { user, repository } = props
+    let tabPanel: ReactElement = useMemo(() => {
+        switch (currentTab) {
+            case 0:
+                return <RepositoryInfo/>
+            case 1:
+                return <RepositorySettingsInfo />
+            default:
+                console.log(`Unknown repository page tab=${currentTab}`)
+                return <RepositoryInfo/>
+        }
+    }, [currentTab])
 
     return (
         <Stack spacing={2} sx={{
             padding: "1rem",
         }}>
-            {`${user.username} / ${repository.name}`}
+            <Typography variant={"h5"}>
+                {`${user.username} / ${repository.name}`}
+            </Typography>
+            <Tabs
+                value={currentTab}
+                onChange={(e, value: number) => setCurrentTab(value)}
+                sx={{
+                    width: "90vw",
+                }}
+            >
+                <Tab label={"Code"} sx={repositoryPageTabStyle}/>
+                <Tab label={"Settings"} sx={repositoryPageTabStyle}/>
+            </Tabs>
+            {tabPanel}
+        </Stack>
+    )
+}
+
+// TODO
+function RepositoryInfo() {
+    return (
+        <Stack>
+            Repo Info
+        </Stack>
+    )
+}
+
+// TODO
+function RepositorySettingsInfo() {
+    return (
+        <Stack>
+            Settings Info
         </Stack>
     )
 }
