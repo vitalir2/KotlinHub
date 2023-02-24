@@ -3,10 +3,12 @@ import {LoadableProfileSidebar} from "./LoadableProfileSidebar";
 import {LoadableRepositories} from "./LoadableRepositories";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {fetchCurrentRepositories, fetchCurrentUser} from "./MainSlice";
+import {fetchCurrentRepositories} from "./MainSlice";
+import {fetchCurrentUser} from "../user/UserSlice";
 
 export function MainPage() {
-    const state = useAppSelector((state) => state.repositories)
+    const userState = useAppSelector(state => state.user)
+    const repositoriesState = useAppSelector((state) => state.repositories)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -18,8 +20,8 @@ export function MainPage() {
         <Stack direction={"row"} spacing={2} sx={{
             padding: 2,
         }}>
-            <LoadableProfileSidebar loadableUser={state.user}/>
-            <LoadableRepositories loadableRepositories={state.repositories}/>
+            <LoadableProfileSidebar loadableUser={userState.user}/>
+            <LoadableRepositories loadableRepositories={repositoriesState.repositories}/>
         </Stack>
     )
 }

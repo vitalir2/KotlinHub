@@ -3,9 +3,11 @@ import {createAppGraph} from "./dependency_injection";
 import {repositoriesSlice} from "../features/main/MainSlice";
 import {loginSlice} from "../features/login/LoginSlice";
 import {repositorySlice} from "../features/repositories/repository/RepositorySlice";
+import {userSlice} from "../features/user/UserSlice";
 
 export const store = configureStore({
   reducer: {
+      user: userSlice.reducer,
       repositories: repositoriesSlice.reducer,
       login: loginSlice.reducer,
       repository: repositorySlice.reducer,
