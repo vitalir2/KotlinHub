@@ -1,6 +1,6 @@
 import {useParams} from "react-router-dom";
 import {Repository} from "../Repository";
-import {Box} from "@mui/material";
+import {Box, CircularProgress} from "@mui/material";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {fetchRepository} from "./RepositorySlice";
@@ -21,10 +21,24 @@ export function RepositoryPage() {
     }
 
     if (repositoryState.repository === undefined) {
-        return <Box>Loading Placeholder</Box> // TODO return loading placeholder
+        return LoadingPlaceholder()
     }
 
     return <RepositoryContainer repository={repositoryState.repository}/>
+}
+
+function LoadingPlaceholder() {
+    return (
+        <Box sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+        }}>
+            <CircularProgress/>
+        </Box>
+    )
 }
 
 interface RepositoryContainerProps {
