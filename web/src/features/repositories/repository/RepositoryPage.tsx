@@ -1,42 +1,41 @@
 import {useParams} from "react-router-dom";
 import {Repository} from "../Repository";
-import {Box, CircularProgress, Typography} from "@mui/material";
+import {Box, CircularProgress, Stack, Typography} from "@mui/material";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {fetchRepository} from "./RepositorySlice";
+import {User} from "../../user/User";
+import {fetchCurrentUser} from "../../user/UserSlice";
 
 export function RepositoryPage() {
     const dispatch = useAppDispatch()
 
     const { repositoryId } = useParams()
-    const repositoryState = useAppSelector(state => state.repository)
+    const user = useAppSelector(state => state.user.user)
+    const repository = useAppSelector(state => state.repository.repository)
 
     useEffect(() => {
         if (repositoryId === undefined) return
         dispatch(fetchRepository(repositoryId))
+        dispatch(fetchCurrentUser())
     }, [repositoryId, dispatch])
 
-    if (repositoryId === undefined) {
-        // TODO place error text to the reducer
-        return <ErrorPlaceholder error={"Something went wrong"}/>
+    if (repository.kind === "loading" || user.kind === "loading") {
+        return <LoadingPlaceholder/>
     }
 
-    const repository = repositoryState.repository
-    switch (repository.kind) {
-        case "loading":
-            return LoadingPlaceholder()
-        case "loaded":
-            return <RepositoryContainer repository={repository.data}/>
-        case "error":
-            return <ErrorPlaceholder error={repository.error}/>
+    if (repositoryId === undefined || repository.kind === "error" || user.kind === "error") {
+        return <ErrorPlaceholder error={"Something went wrong"} />
     }
+
+    return <RepositoryContainer user={user.data} repository={repository.data}/>
 }
 
 function LoadingPlaceholder() {
     return (
         <Box sx={{
             width: "100%",
-            height: "100%",
+            height: "100vh", // TODO fix to be 100% of free space
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -54,7 +53,7 @@ function ErrorPlaceholder(props: ErrorPlaceholderProps) {
     return (
         <Box sx={{
             width: "100%",
-            height: "100%",
+            height: "100vh",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -67,15 +66,18 @@ function ErrorPlaceholder(props: ErrorPlaceholderProps) {
 }
 
 interface RepositoryContainerProps {
+    user: User,
     repository: Repository,
 }
 
 function RepositoryContainer(props: RepositoryContainerProps) {
-    const {repository} = props
+    const { user, repository } = props
 
     return (
-        <Box>
-            Repository {repository.name}
-        </Box>
+        <Stack spacing={2} sx={{
+            padding: "1rem",
+        }}>
+            {`${user.username} / ${repository.name}`}
+        </Stack>
     )
 }
