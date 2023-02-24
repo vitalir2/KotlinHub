@@ -80,12 +80,12 @@ function RepositoryContainer(props: RepositoryContainerProps) {
     let tabPanel: ReactElement = useMemo(() => {
         switch (currentTab) {
             case 0:
-                return <RepositoryInfo/>
+                return <RepositoryInfo repository={repository}/>
             case 1:
                 return <RepositorySettingsInfo />
             default:
                 console.log(`Unknown repository page tab=${currentTab}`)
-                return <RepositoryInfo/>
+                return <RepositoryInfo repository={repository}/>
         }
     }, [currentTab])
 
@@ -111,14 +111,19 @@ function RepositoryContainer(props: RepositoryContainerProps) {
     )
 }
 
-function RepositoryInfo() {
+interface RepositoryInfoProps {
+    repository: Repository,
+}
+
+function RepositoryInfo(props: RepositoryInfoProps) {
+    const { repository } = props
     return (
         <Grid container spacing={2} sx={{
             height: "100%",
         }}>
             <Grid item xs={3}></Grid>
             <Grid item xs={6}>
-                <RepositoryMainInfo />
+                <RepositoryMainInfo repository={repository} />
             </Grid>
             <Grid item xs={3}>
                 About repo
@@ -127,7 +132,12 @@ function RepositoryInfo() {
     )
 }
 
-function RepositoryMainInfo() {
+interface RepositoryMainInfoProps {
+    repository: Repository,
+}
+
+function RepositoryMainInfo(props: RepositoryMainInfoProps) {
+    const { repository } = props
     const [ codeDialogAnchor, setCodeDialogAnchor ] = useState<Element | null>(null)
     const codeButtonRef = useRef<HTMLButtonElement>(null)
     const isOpen = Boolean(codeDialogAnchor)
@@ -164,7 +174,21 @@ function RepositoryMainInfo() {
                         setCodeDialogAnchor(null)
                     }}
                     >
-                    Content
+                    <Stack spacing={1} sx={{
+                        padding: "1rem",
+                    }}>
+                        <Typography variant={"body1"}>
+                            Clone your repository by HTTP
+                        </Typography>
+                        <Typography variant={"body2"} sx={{
+                            borderRadius: 1,
+                            borderColor: "light-grey",
+                            backgroundColor: "#EEEEEE",
+                            padding: "0.2rem",
+                        }}>
+                            {repository.cloneUrl}
+                        </Typography>
+                    </Stack>
                 </Popover>
             </Stack>
         </Stack>
