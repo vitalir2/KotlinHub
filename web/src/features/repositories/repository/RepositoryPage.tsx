@@ -1,6 +1,6 @@
 import {useParams} from "react-router-dom";
 import {Repository} from "../Repository";
-import {Box, CircularProgress} from "@mui/material";
+import {Box, CircularProgress, Typography} from "@mui/material";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {fetchRepository} from "./RepositorySlice";
@@ -17,7 +17,7 @@ export function RepositoryPage() {
     }, [repositoryId, dispatch])
 
     if (repositoryId === undefined) {
-        return <Box>Error Placeholder</Box> // TODO return error placeholder
+        return <ErrorPlaceholder error={"Unexpected error"}/>
     }
 
     if (repositoryState.repository === undefined) {
@@ -37,6 +37,26 @@ function LoadingPlaceholder() {
             justifyContent: "center",
         }}>
             <CircularProgress/>
+        </Box>
+    )
+}
+
+interface ErrorPlaceholderProps {
+    error: string,
+}
+
+function ErrorPlaceholder(props: ErrorPlaceholderProps) {
+    return (
+        <Box sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+        }}>
+            <Typography variant={"h6"}>
+                {props.error}
+            </Typography>
         </Box>
     )
 }
