@@ -1,12 +1,11 @@
 import {useParams} from "react-router-dom";
 import {Repository} from "../Repository";
-import {Box, CircularProgress, Stack, SxProps, Tab, Tabs, Typography} from "@mui/material";
-import {ReactElement, useEffect, useMemo, useState} from "react";
+import {Box, Button, CircularProgress, Grid, Popover, Stack, SxProps, Tab, Tabs, Typography} from "@mui/material";
+import {ReactElement, useEffect, useMemo, useRef, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {fetchRepository} from "./RepositorySlice";
 import {User} from "../../user/User";
 import {fetchCurrentUser} from "../../user/UserSlice";
-import {log} from "util";
 
 export function RepositoryPage() {
     const dispatch = useAppDispatch()
@@ -112,11 +111,62 @@ function RepositoryContainer(props: RepositoryContainerProps) {
     )
 }
 
-// TODO
 function RepositoryInfo() {
     return (
-        <Stack>
-            Repo Info
+        <Grid container spacing={2} sx={{
+            height: "100%",
+        }}>
+            <Grid item xs={3}></Grid>
+            <Grid item xs={6}>
+                <RepositoryMainInfo />
+            </Grid>
+            <Grid item xs={3}>
+                About repo
+            </Grid>
+        </Grid>
+    )
+}
+
+function RepositoryMainInfo() {
+    const [ codeDialogAnchor, setCodeDialogAnchor ] = useState<Element | null>(null)
+    const codeButtonRef = useRef<HTMLButtonElement>(null)
+    const isOpen = Boolean(codeDialogAnchor)
+
+    return (
+        <Stack spacing={1}>
+            <Stack direction={"row"} spacing={3}>
+                <Typography variant={"subtitle2"}>
+                    Branch: master
+                </Typography>
+                <Button component={"span"}
+                        variant={"outlined"}
+                        ref={codeButtonRef}
+                        onClick={() => {
+                            setCodeDialogAnchor((prevState) => {
+                                if (prevState === null) {
+                                    return codeButtonRef.current
+                                } else {
+                                    return null
+                                }
+                            })
+                        }}
+                >
+                    Code
+                </Button>
+                <Popover
+                    open={isOpen}
+                    anchorEl={codeDialogAnchor}
+                    anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                    }}
+                    onClose={() => {
+                        setCodeDialogAnchor(null)
+                    }}
+                    >
+                    Content
+                </Popover>
+            </Stack>
         </Stack>
     )
 }
