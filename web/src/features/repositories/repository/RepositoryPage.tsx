@@ -17,14 +17,19 @@ export function RepositoryPage() {
     }, [repositoryId, dispatch])
 
     if (repositoryId === undefined) {
-        return <ErrorPlaceholder error={"Unexpected error"}/>
+        // TODO place error text to the reducer
+        return <ErrorPlaceholder error={"Something went wrong"}/>
     }
 
-    if (repositoryState.repository === undefined) {
-        return LoadingPlaceholder()
+    const repository = repositoryState.repository
+    switch (repository.kind) {
+        case "loading":
+            return LoadingPlaceholder()
+        case "loaded":
+            return <RepositoryContainer repository={repository.data}/>
+        case "error":
+            return <ErrorPlaceholder error={repository.error}/>
     }
-
-    return <RepositoryContainer repository={repositoryState.repository}/>
 }
 
 function LoadingPlaceholder() {
