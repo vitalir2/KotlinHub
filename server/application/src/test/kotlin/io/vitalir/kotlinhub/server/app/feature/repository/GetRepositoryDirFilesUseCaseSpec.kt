@@ -1,9 +1,11 @@
 package io.vitalir.kotlinhub.server.app.feature.repository
 
 import io.kotest.assertions.arrow.core.shouldBeLeft
+import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
 import io.mockk.coEvery
 import io.mockk.mockk
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryFile
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryDirFilesUseCase
@@ -25,6 +27,7 @@ class GetRepositoryDirFilesUseCaseSpec : ShouldSpec() {
 
         should("return error if repository does not exist") {
             val repositoryIdentifier = RepositoryIdentifier.Id(123)
+
             repositoryDoesNotExist(repositoryIdentifier)
 
             val result = useCase(
@@ -38,6 +41,7 @@ class GetRepositoryDirFilesUseCaseSpec : ShouldSpec() {
         should("return error if path does not exist") {
             val repositoryIdentifier = RepositoryIdentifier.Id(123)
             val notExistingPath = "/kek"
+
             repositoryExists(repositoryIdentifier)
 
             val result = useCase(
@@ -46,6 +50,24 @@ class GetRepositoryDirFilesUseCaseSpec : ShouldSpec() {
             )
 
             result shouldBeLeft GetRepositoryDirFilesUseCase.Error.RepositoryDirDoesNotExist(notExistingPath)
+        }
+
+        should("return files for directory") {
+            val repositoryIdentifier = RepositoryIdentifier.Id(123)
+            val path = "/"
+            val files = listOf(
+                RepositoryFile("first", RepositoryFile.Type.SIMPLE),
+                RepositoryFile("folder", RepositoryFile.Type.FOLDER),
+            )
+
+            repositoryExists(repositoryIdentifier)
+
+            val result = useCase(
+                repositoryIdentifier = repositoryIdentifier,
+                absolutePath = path,
+            )
+
+            result shouldBeRight files
         }
     }
 
