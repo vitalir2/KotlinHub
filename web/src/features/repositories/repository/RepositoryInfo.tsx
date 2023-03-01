@@ -1,6 +1,7 @@
-import {Grid, Stack, Typography} from "@mui/material";
+import {Grid, SxProps} from "@mui/material";
 import {Repository} from "../Repository";
 import {RepositoryMainInfo} from "./RepositoryMainInfo";
+import {RepositoryMetaInfo} from "./RepositoryMetaInfo";
 
 export interface RepositoryInfoProps {
     repository: Repository,
@@ -14,24 +15,20 @@ export function RepositoryInfo(props: RepositoryInfoProps) {
     } else {
         description = repository.description
     }
+
     return (
-        <Grid container spacing={2} sx={{
-            height: "100%",
-        }}>
-            <Grid item xs={3}></Grid>
+        <Grid container spacing={2} sx={repositoryInfoStyle}>
+            <Grid item xs={3}>{/* Empty space */} </Grid>
             <Grid item xs={6}>
                 <RepositoryMainInfo repository={repository}/>
             </Grid>
             <Grid item xs={3}>
-                <Stack spacing={1}>
-                    <Typography variant={"subtitle1"}>
-                        About
-                    </Typography>
-                    <Typography variant={"body1"}>
-                        {description}
-                    </Typography>
-                </Stack>
+                {RepositoryMetaInfo(description)}
             </Grid>
         </Grid>
     )
+}
+
+const repositoryInfoStyle: SxProps = {
+    height: "100%",
 }
