@@ -6,8 +6,9 @@ import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {fetchRepository} from "./RepositorySlice";
 import {User} from "../../user/User";
 import {fetchCurrentUser} from "../../user/UserSlice";
+import {ErrorPlaceholder} from "../../../core/view/placeholder/ErrorPlaceholder";
+import {LoadingPlaceholder} from "../../../core/view/placeholder/LoadingPlaceholder";
 
-// TODO NEED BIG REFACTORING IN THIS PR
 export function RepositoryPage() {
     const dispatch = useAppDispatch()
 
@@ -30,40 +31,6 @@ export function RepositoryPage() {
     }
 
     return <RepositoryContainer user={user.data} repository={repository.data}/>
-}
-
-function LoadingPlaceholder() {
-    return (
-        <Box sx={{
-            width: "100%",
-            height: "100vh", // TODO fix to be 100% of free space
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-        }}>
-            <CircularProgress/>
-        </Box>
-    )
-}
-
-interface ErrorPlaceholderProps {
-    error: string,
-}
-
-function ErrorPlaceholder(props: ErrorPlaceholderProps) {
-    return (
-        <Box sx={{
-            width: "100%",
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-        }}>
-            <Typography variant={"h6"}>
-                {props.error}
-            </Typography>
-        </Box>
-    )
 }
 
 interface RepositoryContainerProps {
