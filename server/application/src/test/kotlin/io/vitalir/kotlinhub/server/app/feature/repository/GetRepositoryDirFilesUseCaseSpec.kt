@@ -1,5 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.repository
 
+import arrow.core.left
+import arrow.core.right
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
@@ -7,7 +9,9 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryFile
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryFilePathDoesNotExist
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryTreePersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryDirFilesUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryDirFilesUseCaseImpl
 
@@ -15,13 +19,17 @@ class GetRepositoryDirFilesUseCaseSpec : ShouldSpec() {
 
     private lateinit var repositoryPersistence: RepositoryPersistence
 
+    private lateinit var repositoryTreePersistence: RepositoryTreePersistence
+
     private lateinit var useCase: GetRepositoryDirFilesUseCase
 
     init {
         beforeEach {
             repositoryPersistence = mockk()
+            repositoryTreePersistence = mockk()
             useCase = GetRepositoryDirFilesUseCaseImpl(
                 repositoryPersistence = repositoryPersistence,
+                repositoryTreePersistence = repositoryTreePersistence,
             )
         }
 
@@ -43,6 +51,7 @@ class GetRepositoryDirFilesUseCaseSpec : ShouldSpec() {
             val notExistingPath = "/kek"
 
             repositoryExists(repositoryIdentifier)
+            repositoryPathDoesNotExist(repositoryIdentifier, notExistingPath)
 
             val result = useCase(
                 repositoryIdentifier = repositoryIdentifier,
@@ -61,6 +70,11 @@ class GetRepositoryDirFilesUseCaseSpec : ShouldSpec() {
             )
 
             repositoryExists(repositoryIdentifier)
+            repositoryPathExists(
+                repositoryIdentifier,
+                path,
+                files,
+            )
 
             val result = useCase(
                 repositoryIdentifier = repositoryIdentifier,
@@ -81,5 +95,24 @@ class GetRepositoryDirFilesUseCaseSpec : ShouldSpec() {
         coEvery {
             repositoryPersistence.isRepositoryExists(repositoryIdentifier)
         } returns false
+    }
+
+    private fun repositoryPathExists(
+        repositoryIdentifier: RepositoryIdentifier,
+        path: String,
+        filesOnPath: List<RepositoryFile>,
+    ) {
+        coEvery {
+            repositoryTreePersistence.getDirFiles(repositoryIdentifier, path)
+        } returns filesOnPath.right()
+    }
+
+    private fun repositoryPathDoesNotExist(
+        repositoryIdentifier: RepositoryIdentifier,
+        path: String,
+    ) {
+        coEvery {
+            repositoryTreePersistence.getDirFiles(repositoryIdentifier, path)
+        } returns RepositoryFilePathDoesNotExist(path).left()
     }
 }
