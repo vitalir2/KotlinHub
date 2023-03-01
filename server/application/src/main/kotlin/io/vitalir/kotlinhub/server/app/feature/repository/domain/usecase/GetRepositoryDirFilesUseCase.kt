@@ -15,7 +15,7 @@ interface GetRepositoryDirFilesUseCase {
 
         object Unknown : Error
 
-        class RepositoryDoesNotExist(repositoryIdentifier: RepositoryIdentifier) : Error
-        class RepositoryDirDoesNotExist(absolutePath: String) : Error
+        data class RepositoryDoesNotExist(val repositoryIdentifier: RepositoryIdentifier) : Error
+        data class RepositoryDirDoesNotExist(val absolutePath: String) : Error
     }
 }

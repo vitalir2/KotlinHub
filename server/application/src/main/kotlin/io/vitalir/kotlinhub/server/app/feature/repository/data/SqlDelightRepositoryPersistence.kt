@@ -29,6 +29,10 @@ internal class SqlDelightRepositoryPersistence(
             .executeAsOneOrNull() != null
     }
 
+    override suspend fun isRepositoryExists(repositoryIdentifier: RepositoryIdentifier): Boolean {
+        return false
+    }
+
     override suspend fun addRepository(repository: Repository): RepositoryId {
         return queries.insertRepository(
             user_id = repository.owner.id,

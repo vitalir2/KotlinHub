@@ -13,6 +13,10 @@ interface RepositoryPersistence {
         name: String,
     ): Boolean
 
+    suspend fun isRepositoryExists(
+        repositoryIdentifier: RepositoryIdentifier,
+    ): Boolean
+
     suspend fun addRepository(repository: Repository): Int
 
     suspend fun getRepository(
