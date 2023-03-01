@@ -42,6 +42,7 @@ export class DefaultRepositoriesRepository implements RepositoriesRepository {
             // type is broken, accessMode is deserialized to a string
             accessMode: convertAccessMode(apiRepository.accessMode as unknown as string),
             description: convertNullableToTypescriptModel(apiRepository.description),
+            cloneUrl: apiRepository.httpUrl,
         }
     }
 }

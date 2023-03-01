@@ -1,13 +1,16 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {Repository} from "../Repository";
 import {createAppAsyncThunk} from "../../../app/hooks";
+import {Loadable} from "../../../core/models/Loadable";
 
 export interface RepositoryState {
-    repository?: Repository,
+    repository: Loadable<Repository>,
 }
 
 const initState: RepositoryState = {
-
+    repository: {
+        kind: "loading",
+    }
 }
 
 export const fetchRepository = createAppAsyncThunk<
@@ -25,8 +28,22 @@ export const repositorySlice = createSlice({
     initialState: initState,
     reducers: {},
     extraReducers: builder => {
+        builder.addCase(fetchRepository.pending, (state) => {
+            state.repository = {
+                kind: "loading",
+            }
+        })
         builder.addCase(fetchRepository.fulfilled, (state, action) => {
-            state.repository = action.payload
+            state.repository = {
+                kind: "loaded",
+                data: action.payload,
+            }
+        })
+        builder.addCase(fetchRepository.rejected, (state) => {
+            state.repository = {
+                kind: "error",
+                error: "Something went wrong"
+            }
         })
     },
 })
