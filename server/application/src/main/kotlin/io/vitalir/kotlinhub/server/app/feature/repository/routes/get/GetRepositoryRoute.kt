@@ -12,6 +12,7 @@ import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
+import io.vitalir.kotlinhub.server.app.feature.repository.routes.common.RepositoryDocs
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.common.repositoriesTag
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toApiModel
 import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.userId
@@ -41,12 +42,7 @@ private fun NotarizedRoute.Config.getRepositoryDocs() {
         description("")
         parameters = listOf(
             userIdParam,
-            Parameter(
-                name = "repositoryName",
-                `in` = Parameter.Location.path,
-                required = true,
-                schema = TypeDefinition.STRING,
-            ),
+            RepositoryDocs.repositoryName,
         )
         response {
             resType<GetRepositoryResponse>()
