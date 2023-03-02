@@ -39,6 +39,11 @@ internal class GitManagerImpl(
         }
     }
 
+    override fun getRepositoryFiles(userId: UserId, repositoryName: String): List<Path> {
+        val path = createRepositoryPath(userId, repositoryName)
+        return path.toList()
+    }
+
     override suspend fun removeRepositoryByName(userId: UserId, repositoryName: String): Boolean {
         val repositoryPath = createRepositoryPath(userId, repositoryName)
         return repositoryPath.deleteIfExists()

@@ -9,6 +9,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryFile
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryDoesNotExist
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryFilePathDoesNotExist
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryTreePersistence
@@ -43,7 +44,7 @@ class GetRepositoryDirFilesUseCaseSpec : ShouldSpec() {
                 absolutePath = "/",
             )
 
-            result shouldBeLeft GetRepositoryDirFilesUseCase.Error.RepositoryDoesNotExist(repositoryIdentifier)
+            result shouldBeLeft RepositoryDoesNotExist(repositoryIdentifier)
         }
 
         should("return error if path does not exist") {
@@ -58,7 +59,7 @@ class GetRepositoryDirFilesUseCaseSpec : ShouldSpec() {
                 absolutePath = notExistingPath,
             )
 
-            result shouldBeLeft GetRepositoryDirFilesUseCase.Error.RepositoryDirDoesNotExist(notExistingPath)
+            result shouldBeLeft RepositoryFilePathDoesNotExist(notExistingPath)
         }
 
         should("return files for directory") {

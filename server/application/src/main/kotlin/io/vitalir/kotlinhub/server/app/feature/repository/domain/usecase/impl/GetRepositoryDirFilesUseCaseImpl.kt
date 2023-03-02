@@ -5,6 +5,8 @@ import arrow.core.left
 import arrow.core.right
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryFile
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryDoesNotExist
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryTreePersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryDirFilesUseCase
@@ -17,17 +19,15 @@ internal class GetRepositoryDirFilesUseCaseImpl(
     override suspend fun invoke(
         repositoryIdentifier: RepositoryIdentifier,
         absolutePath: String,
-    ): Either<GetRepositoryDirFilesUseCase.Error, List<RepositoryFile>> {
+    ): Either<RepositoryError, List<RepositoryFile>> {
         return when {
             !repositoryPersistence.isRepositoryExists(repositoryIdentifier) -> {
-                GetRepositoryDirFilesUseCase.Error.RepositoryDoesNotExist(repositoryIdentifier).left()
+                RepositoryDoesNotExist(repositoryIdentifier).left()
             }
             else -> {
                 when (val result = repositoryTreePersistence.getDirFiles(repositoryIdentifier, absolutePath)) {
-                    is Either.Left ->
-                        GetRepositoryDirFilesUseCase.Error.RepositoryDirDoesNotExist(result.value.absolutePath).left()
-                    is Either.Right ->
-                        result.value.right()
+                    is Either.Left -> result
+                    is Either.Right -> result.value.right()
                 }
             }
         }
