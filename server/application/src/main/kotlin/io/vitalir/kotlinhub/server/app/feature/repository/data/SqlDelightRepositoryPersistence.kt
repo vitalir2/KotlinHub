@@ -56,7 +56,6 @@ internal class SqlDelightRepositoryPersistence(
     }
 
     override suspend fun getRepository(
-        userIdentifier: UserIdentifier,
         repositoryIdentifier: RepositoryIdentifier,
     ): Repository? {
         return when (repositoryIdentifier) {

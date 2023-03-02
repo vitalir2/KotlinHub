@@ -25,7 +25,6 @@ interface RepositoryPersistence {
     ): Repository?
 
     suspend fun getRepository(
-        userIdentifier: UserIdentifier,
         repositoryIdentifier: RepositoryIdentifier,
     ): Repository?
 

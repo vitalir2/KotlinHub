@@ -1,6 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl
 
 import arrow.core.continuations.nullable
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.HasUserAccessToRepositoryUseCase
@@ -26,7 +27,6 @@ internal class HasUserAccessToRepositoryUseCaseImpl(
             }
 
             val repository = repositoryPersistence.getRepository(
-                userCredentials.identifier,
                 repositoryIdentifier,
             ).bind()
             if (repository.isPublic) {
@@ -37,5 +37,25 @@ internal class HasUserAccessToRepositoryUseCaseImpl(
             val isCredentialsValid = passwordManager.comparePasswords(userCredentials.password, user.password)
             isCredentialsValid
         } ?: false
+    }
+
+    override suspend fun invoke(
+        userIdentifier: UserIdentifier?,
+        repositoryIdentifier: RepositoryIdentifier,
+    ): Boolean {
+        val repository = repositoryPersistence.getRepository(
+            repositoryIdentifier,
+        ) ?: return false // TODO return that it does not exist
+        return when (repository.accessMode) {
+            Repository.AccessMode.PUBLIC -> true
+            Repository.AccessMode.PRIVATE -> {
+                if (userIdentifier != null) {
+                    val user = userPersistence.getUser(userIdentifier)
+                    user?.id == repository.owner.id
+                } else {
+                    false
+                }
+            }
+        }
     }
 }
