@@ -6,12 +6,13 @@ import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.requireParameter
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.userIdOrNull
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
 
 internal class RepositoryAccessPluginConfig {
     var baseRepositoryUri: String? = null
-    var userHasAccessToRepository: (UserIdentifier?, RepositoryIdentifier) -> Boolean = { _, _ -> false }
+    var userHasAccessToRepository: suspend (UserIdentifier?, RepositoryIdentifier) -> Boolean
+            = { _, _ -> false }
 }
 
 internal val repositoryAccessPlugin = createApplicationPlugin("RepositoryAccess", ::RepositoryAccessPluginConfig) {
@@ -20,13 +21,13 @@ internal val repositoryAccessPlugin = createApplicationPlugin("RepositoryAccess"
     onCall { call ->
         if (call.request.uri.startsWith(baseRepositoryUri)) {
             // TODO change logic
-            val ownerId = call.requireParameter("userId", String::toInt)
-            val repositoryName = call.requireParameter("repositoryName")
             val currentUserId = call.userIdOrNull
+            val ownerIdentifier = call.parameters.userIdOrNull(currentUserId) ?: return@onCall
+            val repositoryName = call.parameters["repositoryName"] ?: return@onCall
 
             val userIdentifier = currentUserId?.let(UserIdentifier::Id)
             val repositoryIdentifier = RepositoryIdentifier.OwnerIdentifierAndName(
-                UserIdentifier.Id(ownerId), repositoryName
+                ownerIdentifier, repositoryName
             )
             if (pluginConfig.userHasAccessToRepository(userIdentifier, repositoryIdentifier).not()) {
                 call.respondWith(ResponseData.forbidden())

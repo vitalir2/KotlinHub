@@ -14,7 +14,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repositor
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.common.repositoriesTag
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toApiModel
-import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.userIdOrNull
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.userId
 import io.vitalir.kotlinhub.server.app.feature.user.routes.common.userIdParam
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.requireParameter
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
@@ -66,7 +66,7 @@ private fun Route.getRepositoryRoute(
 ) {
     get {
         val currentUserId = call.userIdOrNull
-        val userId = call.parameters.userIdOrNull(currentUserId)
+        val userId = call.parameters.userId(currentUserId)
         val repositoryName = call.requireParameter("repositoryName")
 
         val result = getRepositoryUseCase(

@@ -10,11 +10,13 @@ import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.common.routes.jwtAuth
 import io.vitalir.kotlinhub.server.app.feature.git.routes.gitRoutes
+import io.vitalir.kotlinhub.server.app.feature.repository.routes.repositoryAccessPlugin
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.repositoryRoutes
 import io.vitalir.kotlinhub.server.app.feature.user.routes.userRoutes
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraph
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.safeRedoc
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitPlugin
+import io.vitalir.kotlinhub.shared.common.network.ServicesInfo
 
 fun Application.configureRouting(appGraph: AppGraph) {
     install(CallLogging)
@@ -40,6 +42,15 @@ private fun Application.statusPages() {
 }
 
 private fun Application.routes(appGraph: AppGraph) {
+    install(repositoryAccessPlugin) {
+        val main = ServicesInfo.App.mainUrl
+        val apiPath = "/api/v1/repositories/"
+        baseRepositoryUri = main.toString() + apiPath
+        userHasAccessToRepository = { userIdentifier, repositoryIdentifier ->
+            appGraph.repository.hasUserAccessToRepositoryUseCase(userIdentifier, repositoryIdentifier)
+        }
+    }
+
     routing {
         val debugConfig = appGraph.appConfig.debug
         if (debugConfig?.isRoutesTracingEnabled == true) {

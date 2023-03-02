@@ -13,7 +13,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepo
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.common.repositoriesTag
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toApiModel
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toResponseData
-import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.userIdOrNull
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.extensions.userId
 import io.vitalir.kotlinhub.server.app.feature.user.routes.common.userIdParam
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userIdOrNull
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
@@ -54,7 +54,7 @@ private fun Route.getUserRepositoriesRoute(
 ) {
     get {
         val currentUserId = call.userIdOrNull
-        val userId = call.parameters.userIdOrNull(currentUserId)
+        val userId = call.parameters.userId(currentUserId)
         val responseData = when (val result = getRepositoriesForUserUseCase(currentUserId, userId)) {
             is Either.Left -> result.value.toResponseData()
             is Either.Right -> ResponseData(
