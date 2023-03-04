@@ -9,11 +9,6 @@ import io.vitalir.kotlinhub.shared.feature.user.UserId
 interface RepositoryPersistence {
 
     suspend fun isRepositoryExists(
-        userIdentifier: UserIdentifier,
-        name: String,
-    ): Boolean
-
-    suspend fun isRepositoryExists(
         repositoryIdentifier: RepositoryIdentifier,
     ): Boolean
 

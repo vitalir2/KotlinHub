@@ -23,15 +23,15 @@ internal class SqlDelightRepositoryPersistence(
     private val queries: RepositoriesQueries
         get() = mainDatabase.repositoriesQueries
 
-    override suspend fun isRepositoryExists(userIdentifier: UserIdentifier, name: String): Boolean {
-        val userId = userIdentifierConverter.convertToUserId(userIdentifier)
-        return queries.getRepositoryByUserIdAndName(userId, name)
-            .executeAsOneOrNull() != null
-    }
-
-    override suspend fun isRepositoryExists(repositoryIdentifier: RepositoryIdentifier): Boolean {
-        return false
-    }
+    override suspend fun isRepositoryExists(repositoryIdentifier: RepositoryIdentifier): Boolean =
+        when (repositoryIdentifier) {
+            is RepositoryIdentifier.Id -> queries.getRepositoryByIdJoined(repositoryIdentifier.value)
+                .executeAsOneOrNull() != null
+            is RepositoryIdentifier.OwnerIdentifierAndName -> queries.getRepositoryByUserIdAndName(
+                user_id = userIdentifierConverter.convertToUserId(repositoryIdentifier.ownerIdentifier),
+                name = repositoryIdentifier.repositoryName,
+            ).executeAsOneOrNull() != null
+        }
 
     override suspend fun addRepository(repository: Repository): RepositoryId {
         return queries.insertRepository(
