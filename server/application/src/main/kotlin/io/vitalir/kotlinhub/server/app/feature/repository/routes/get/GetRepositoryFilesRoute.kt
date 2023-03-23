@@ -71,13 +71,9 @@ private fun NotarizedRoute.Config.getRepositoryFilesDocs() {
         parameters = listOf(
             userIdParam,
             RepositoryDocs.repositoryName,
-            Parameter(
-                name = "absolutePath",
-                `in` = Parameter.Location.path,
-                required = true,
-                schema = TypeDefinition.STRING,
+            RepositoryDocs.absolutePath.copy(
                 description = "Absolute path to a folder of the repository",
-            )
+            ),
         )
         response {
             resType<GetRepositoryFilesResponse>()

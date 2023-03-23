@@ -4,8 +4,6 @@ package io.vitalir.kotlinhub.server.app.feature.repository.routes.get
 import arrow.core.Either
 import io.bkbn.kompendium.core.metadata.GetInfo
 import io.bkbn.kompendium.core.plugin.NotarizedRoute
-import io.bkbn.kompendium.json.schema.definition.TypeDefinition
-import io.bkbn.kompendium.oas.payload.Parameter
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -66,13 +64,9 @@ private fun NotarizedRoute.Config.getRepositoryFileContentDocs() {
         parameters = listOf(
             userIdParam,
             RepositoryDocs.repositoryName,
-            Parameter(
-                name = "absolutePath",
-                `in` = Parameter.Location.path,
-                required = true,
-                schema = TypeDefinition.STRING,
-                description = "Absolute path to a folder of the repository",
-            )
+            RepositoryDocs.absolutePath.copy(
+                description = "Absolute path to a file of the repository",
+            ),
         )
         response {
             resType<GetRepositoryFileContentResponse>()
