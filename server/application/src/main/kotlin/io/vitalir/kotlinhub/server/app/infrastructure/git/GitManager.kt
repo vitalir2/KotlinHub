@@ -15,6 +15,12 @@ interface GitManager {
         path: String,
     ): List<RepositoryFile>
 
+    fun getRepositoryFileContent(
+        userId: UserId,
+        repositoryName: String,
+        path: String,
+    ): ByteArray
+
     suspend fun removeRepositoryByName(
         userId: UserId,
         repositoryName: String,

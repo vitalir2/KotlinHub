@@ -59,6 +59,25 @@ internal class GitManagerImpl(
         )
     }
 
+    override fun getRepositoryFileContent(userId: UserId, repositoryName: String, path: String): ByteArray {
+        val repositoryPath = createRepositoryPath(userId, repositoryName)
+        val preparedPath = path.removePrefix("/")
+        val repository = openRepository(repositoryPath)
+        val head = repository.findRef("HEAD")
+        val headCommit = repository.parseCommit(head.objectId)
+        return repository.run {
+            val tree = headCommit.tree
+            TreeWalk(this).use { walk ->
+                walk.addTree(tree)
+                walk.filter = PathFilter.create(preparedPath)
+                walk.next()
+                val fileId = walk.getObjectId(0)
+                val loader = walk.objectReader.open(fileId)
+                loader.cachedBytes
+            }
+        }
+    }
+
     private fun JGitRepository.parseDirectoryTree(commit: RevCommit, path: String): List<RepositoryFile> {
         val tree = commit.tree
         return TreeWalk(this).use { walk ->
