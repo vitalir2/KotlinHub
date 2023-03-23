@@ -2,8 +2,8 @@ package io.vitalir.kotlinhub.server.app.infrastructure.git
 
 import arrow.core.Either
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryFile
 import io.vitalir.kotlinhub.shared.feature.user.UserId
-import java.nio.file.Path
 
 interface GitManager {
 
@@ -12,7 +12,8 @@ interface GitManager {
     fun getRepositoryFiles(
         userId: UserId,
         repositoryName: String,
-    ): List<Path>
+        path: String,
+    ): List<RepositoryFile>
 
     suspend fun removeRepositoryByName(
         userId: UserId,

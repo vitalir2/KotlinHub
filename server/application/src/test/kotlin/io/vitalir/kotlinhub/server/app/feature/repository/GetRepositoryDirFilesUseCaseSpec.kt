@@ -66,7 +66,7 @@ class GetRepositoryDirFilesUseCaseSpec : ShouldSpec() {
             val repositoryIdentifier = RepositoryIdentifier.Id(123)
             val path = "/"
             val files = listOf(
-                RepositoryFile("first", RepositoryFile.Type.SIMPLE),
+                RepositoryFile("first", RepositoryFile.Type.REGULAR),
                 RepositoryFile("folder", RepositoryFile.Type.FOLDER),
             )
 

@@ -7,12 +7,12 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repositor
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryDoesNotExist
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryError
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryFilePathDoesNotExist
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryTreePersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
+import java.nio.file.NotDirectoryException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.io.path.isDirectory
-import kotlin.io.path.name
 
 internal class FileSystemRepositoryTreePersistence(
     private val gitManager: GitManager,
@@ -28,20 +28,17 @@ internal class FileSystemRepositoryTreePersistence(
         } catch (exception: Exception) {
             return@withContext RepositoryDoesNotExist(repositoryIdentifier).left()
         }
-        
-        val files = gitManager.getRepositoryFiles(
-            ownerIdentifier.value,
-            repositoryName,
-        )
 
-        files.map { path ->
-            RepositoryFile(
-                name = path.name,
-                type = when {
-                    path.isDirectory() -> RepositoryFile.Type.FOLDER
-                    else -> RepositoryFile.Type.SIMPLE
-                },
+        val files = try {
+            gitManager.getRepositoryFiles(
+                userId = ownerIdentifier.value,
+                repositoryName = repositoryName,
+                path = absolutePath,
             )
-        }.right()
+        } catch (exception: NotDirectoryException) {
+            return@withContext RepositoryFilePathDoesNotExist(absolutePath).left()
+        }
+
+        files.right()
     }
 }

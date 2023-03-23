@@ -6,6 +6,7 @@ data class RepositoryFile(
 ) {
     enum class Type {
         FOLDER,
-        SIMPLE,
+        REGULAR,
+        UNKNOWN,
     }
 }

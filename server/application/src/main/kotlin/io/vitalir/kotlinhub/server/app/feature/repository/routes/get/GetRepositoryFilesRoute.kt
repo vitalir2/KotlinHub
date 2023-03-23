@@ -100,7 +100,8 @@ internal fun RepositoryFile.toApiModel(): ApiRepositoryFile {
         name = name,
         type = when (type) {
             RepositoryFile.Type.FOLDER -> ApiRepositoryFile.Type.FOLDER
-            RepositoryFile.Type.SIMPLE -> ApiRepositoryFile.Type.SIMPLE
+            RepositoryFile.Type.REGULAR -> ApiRepositoryFile.Type.REGULAR
+            RepositoryFile.Type.UNKNOWN -> ApiRepositoryFile.Type.UNKNOWN
         },
     )
 }

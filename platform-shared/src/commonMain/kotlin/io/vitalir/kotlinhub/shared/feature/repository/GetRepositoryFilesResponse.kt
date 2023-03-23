@@ -16,7 +16,8 @@ class ApiRepositoryFile(
     val type: Type,
 ) {
     enum class Type {
-        SIMPLE,
+        REGULAR,
         FOLDER,
+        UNKNOWN,
     }
 }
