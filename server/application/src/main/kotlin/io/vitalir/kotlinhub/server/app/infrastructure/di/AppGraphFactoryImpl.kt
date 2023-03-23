@@ -150,6 +150,7 @@ internal class AppGraphFactoryImpl(
                 repositoryPersistence = repositoryPersistence,
                 repositoryTreePersistence = repositoryTreePersistence,
             ),
+            repositoryTreePersistence = repositoryTreePersistence,
         )
     }
 

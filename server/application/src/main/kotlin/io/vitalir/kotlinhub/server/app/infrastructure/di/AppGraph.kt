@@ -1,5 +1,6 @@
 package io.vitalir.kotlinhub.server.app.infrastructure.di
 
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryTreePersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoriesForUserUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.GetRepositoryDirFilesUseCase
@@ -48,6 +49,7 @@ class AppGraph(
         val updateRepositoryUseCase: UpdateRepositoryUseCase,
         val hasUserAccessToRepositoryUseCase: HasUserAccessToRepositoryUseCase,
         val getRepositoryDirFilesUseCase: GetRepositoryDirFilesUseCase,
+        val repositoryTreePersistence: RepositoryTreePersistence,
     )
 
     class AuthGraph(
