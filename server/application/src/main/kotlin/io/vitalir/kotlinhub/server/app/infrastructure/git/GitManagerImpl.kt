@@ -24,13 +24,8 @@ internal class GitManagerImpl(
     override suspend fun initRepository(repository: Repository): Either<GitManager.Error, Unit> {
         fun Throwable.gitError(): GitManager.Error {
             return when (this) {
-                is IllegalStateException -> {
-                    GitManager.Error.RepositoryAlreadyExists(repository)
-                }
-
-                else -> {
-                    GitManager.Error.Unknown
-                }
+                is IllegalStateException -> GitManager.Error.RepositoryAlreadyExists(repository)
+                else -> GitManager.Error.Unknown
             }
         }
 
@@ -66,7 +61,6 @@ internal class GitManagerImpl(
 
     private fun JGitRepository.parseDirectoryTree(commit: RevCommit, path: String): List<RepositoryFile> {
         val tree = commit.tree
-        logger.log("Get directories from tree=$tree")
         return TreeWalk(this).use { walk ->
             val result = mutableListOf<RepositoryFile>()
             walk.addTree(tree)
@@ -79,7 +73,9 @@ internal class GitManagerImpl(
                     type = when (walk.fileMode) {
                         FileMode.REGULAR_FILE -> RepositoryFile.Type.REGULAR
                         FileMode.TREE -> RepositoryFile.Type.FOLDER
-                        else -> RepositoryFile.Type.UNKNOWN
+                        else -> RepositoryFile.Type.UNKNOWN.also {
+                            logger.log("Unknown type of repository file=${walk.fileMode}")
+                        }
                     },
                 )
                 result.add(file)

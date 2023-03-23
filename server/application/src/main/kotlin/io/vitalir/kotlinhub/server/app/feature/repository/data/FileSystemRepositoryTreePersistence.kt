@@ -29,16 +29,14 @@ internal class FileSystemRepositoryTreePersistence(
             return@withContext RepositoryDoesNotExist(repositoryIdentifier).left()
         }
 
-        val files = try {
+        try {
             gitManager.getRepositoryFiles(
                 userId = ownerIdentifier.value,
                 repositoryName = repositoryName,
                 path = absolutePath,
-            )
+            ).right()
         } catch (exception: NotDirectoryException) {
-            return@withContext RepositoryFilePathDoesNotExist(absolutePath).left()
+            RepositoryFilePathDoesNotExist(absolutePath).left()
         }
-
-        files.right()
     }
 }

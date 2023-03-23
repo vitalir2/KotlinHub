@@ -20,7 +20,6 @@ internal val repositoryAccessPlugin = createApplicationPlugin("RepositoryAccess"
         ?: throw IllegalStateException("No baseRepositoryUri was provided")
     onCall { call ->
         if (call.request.uri.startsWith(baseRepositoryUri)) {
-            // TODO change logic
             val currentUserId = call.userIdOrNull
             val ownerIdentifier = call.parameters.userIdOrNull(currentUserId) ?: return@onCall
             val repositoryName = call.parameters["repositoryName"] ?: return@onCall

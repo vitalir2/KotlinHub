@@ -97,7 +97,7 @@ internal class HasUserAccessToRepositorySpec : ShouldSpec() {
             userIdentifierIsValid(someUser.identifier)
             userExists(someUser)
             coEvery {
-                repositoryPersistence.getRepository(someUser.identifier, someRepositoryIdentifier)
+                repositoryPersistence.getRepository(someRepositoryIdentifier)
             } returns null
 
             val result = hasUserAccessToRepositoryUseCase(
@@ -170,7 +170,7 @@ internal class HasUserAccessToRepositorySpec : ShouldSpec() {
 
     private fun repositoryExists(repository: Repository) {
         coEvery {
-            repositoryPersistence.getRepository(repository.owner.identifier, RepositoryIdentifier.Id(repository.id))
+            repositoryPersistence.getRepository(RepositoryIdentifier.Id(repository.id))
         } returns repository
     }
 

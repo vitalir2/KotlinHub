@@ -2,7 +2,6 @@ package io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl
 
 import arrow.core.Either
 import arrow.core.left
-import arrow.core.right
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryFile
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryIdentifier
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryDoesNotExist
@@ -21,15 +20,10 @@ internal class GetRepositoryDirFilesUseCaseImpl(
         absolutePath: String,
     ): Either<RepositoryError, List<RepositoryFile>> {
         return when {
-            !repositoryPersistence.isRepositoryExists(repositoryIdentifier) -> {
+            !repositoryPersistence.isRepositoryExists(repositoryIdentifier) ->
                 RepositoryDoesNotExist(repositoryIdentifier).left()
-            }
-            else -> {
-                when (val result = repositoryTreePersistence.getDirFiles(repositoryIdentifier, absolutePath)) {
-                    is Either.Left -> result
-                    is Either.Right -> result.value.right()
-                }
-            }
+            else ->
+                repositoryTreePersistence.getDirFiles(repositoryIdentifier, absolutePath)
         }
     }
 }
