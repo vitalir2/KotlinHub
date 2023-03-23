@@ -9,8 +9,7 @@ import io.vitalir.kotlinhub.shared.feature.user.UserId
 interface RepositoryPersistence {
 
     suspend fun isRepositoryExists(
-        userIdentifier: UserIdentifier,
-        name: String,
+        repositoryIdentifier: RepositoryIdentifier,
     ): Boolean
 
     suspend fun addRepository(repository: Repository): Int
@@ -21,7 +20,6 @@ interface RepositoryPersistence {
     ): Repository?
 
     suspend fun getRepository(
-        userIdentifier: UserIdentifier,
         repositoryIdentifier: RepositoryIdentifier,
     ): Repository?
 

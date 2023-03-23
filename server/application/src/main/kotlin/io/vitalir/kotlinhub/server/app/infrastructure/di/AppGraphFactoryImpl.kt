@@ -2,9 +2,12 @@ package io.vitalir.kotlinhub.server.app.infrastructure.di
 
 import io.ktor.server.application.*
 import io.vitalir.kotlinhub.server.app.common.data.JavaLocalDateTimeProvider
+import io.vitalir.kotlinhub.server.app.feature.repository.data.FileSystemRepositoryTreePersistence
+import io.vitalir.kotlinhub.server.app.feature.repository.data.RepositoryIdentifierConverter
 import io.vitalir.kotlinhub.server.app.feature.repository.data.SqlDelightRepositoryPersistence
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.CreateRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoriesForUserUseCaseImpl
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryDirFilesUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.GetRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.HasUserAccessToRepositoryUseCaseImpl
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.impl.RemoveRepositoryUseCaseImpl
@@ -25,6 +28,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.database.createMainSqlDeli
 import io.vitalir.kotlinhub.server.app.infrastructure.database.sqldelight.MainSqlDelight
 import io.vitalir.kotlinhub.server.app.infrastructure.encoding.impl.KtorBase64Manager
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManagerImpl
+import io.vitalir.kotlinhub.server.app.infrastructure.logging.Logger
 import io.vitalir.kotlinhub.server.app.infrastructure.logging.impl.KtorLogger
 import io.vitalir.kotlinhub.server.app.infrastructure.routing.impl.BaseAuthHeaderManager
 
@@ -48,6 +52,7 @@ internal class AppGraphFactoryImpl(
                 database = database,
                 repositoryConfig = appConfig.repository,
                 authGraph = authGraph,
+                logger = utilsGraph.logger,
             ),
             auth = authGraph,
             network = networkGraph,
@@ -92,10 +97,12 @@ internal class AppGraphFactoryImpl(
         userGraph: AppGraph.UserGraph,
         database: MainSqlDelight,
         authGraph: AppGraph.AuthGraph,
+        logger: Logger,
     ): AppGraph.RepositoryGraph {
         val userPersistence = userGraph.userPersistence
         val localDateTimeProvider = JavaLocalDateTimeProvider()
         val userIdentifierConverter = UserIdentifierConverter(database)
+        val repositoryIdentifierConverter = RepositoryIdentifierConverter(database, userIdentifierConverter)
         val repositoryPersistence = SqlDelightRepositoryPersistence(
             mainDatabase = database,
             userIdentifierConverter = userIdentifierConverter,
@@ -103,6 +110,11 @@ internal class AppGraphFactoryImpl(
         )
         val gitManager = GitManagerImpl(
             repositoryConfig = repositoryConfig,
+            logger = logger,
+        )
+        val repositoryTreePersistence = FileSystemRepositoryTreePersistence(
+            gitManager = gitManager,
+            identifierConverter = repositoryIdentifierConverter,
         )
         return AppGraph.RepositoryGraph(
             createRepositoryUseCase = CreateRepositoryUseCaseImpl(
@@ -133,7 +145,11 @@ internal class AppGraphFactoryImpl(
                 repositoryPersistence = repositoryPersistence,
                 passwordManager = authGraph.passwordManager,
                 userIdentifierValidationRule = IdentifierValidationRule,
-            )
+            ),
+            getRepositoryDirFilesUseCase = GetRepositoryDirFilesUseCaseImpl(
+                repositoryPersistence = repositoryPersistence,
+                repositoryTreePersistence = repositoryTreePersistence,
+            ),
         )
     }
 
