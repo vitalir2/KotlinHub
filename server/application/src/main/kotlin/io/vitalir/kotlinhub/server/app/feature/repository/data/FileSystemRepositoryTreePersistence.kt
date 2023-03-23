@@ -1,6 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.data
 
 import arrow.core.Either
+import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryFile
@@ -9,6 +10,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.Rep
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryError
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryFilePathDoesNotExist
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryTreePersistence
+import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
 import java.nio.file.NotDirectoryException
 import kotlinx.coroutines.Dispatchers
@@ -23,20 +25,47 @@ internal class FileSystemRepositoryTreePersistence(
         repositoryIdentifier: RepositoryIdentifier,
         absolutePath: String,
     ): Either<RepositoryError, List<RepositoryFile>> = withContext(Dispatchers.IO) {
-        val (ownerIdentifier, repositoryName) = try {
-            identifierConverter.getUserAndRepositoryName(repositoryIdentifier)
-        } catch (exception: Exception) {
-            return@withContext RepositoryDoesNotExist(repositoryIdentifier).left()
+        either {
+            val (ownerIdentifier, repositoryName) = getUserAndRepositoryNames(repositoryIdentifier).bind()
+            Either.catch(
+                fe = { throwable ->
+                    when (throwable) {
+                        is NotDirectoryException -> RepositoryFilePathDoesNotExist(absolutePath)
+                        else -> throw throwable
+                    }
+                },
+                f = {
+                    gitManager.getRepositoryFiles(
+                        userId = ownerIdentifier.value,
+                        repositoryName = repositoryName,
+                        path = absolutePath,
+                    )
+                },
+            ).bind()
         }
+    }
 
-        try {
-            gitManager.getRepositoryFiles(
+    override suspend fun getFileContent(
+        repositoryIdentifier: RepositoryIdentifier,
+        absolutePath: String,
+    ): Either<RepositoryError, ByteArray> = withContext(Dispatchers.IO) {
+        either {
+            val (ownerIdentifier, repositoryName) = getUserAndRepositoryNames(repositoryIdentifier).bind()
+            gitManager.getRepositoryFileContent(
                 userId = ownerIdentifier.value,
                 repositoryName = repositoryName,
                 path = absolutePath,
-            ).right()
-        } catch (exception: NotDirectoryException) {
-            RepositoryFilePathDoesNotExist(absolutePath).left()
+            )
+        }
+    }
+
+    private fun getUserAndRepositoryNames(
+        repositoryIdentifier: RepositoryIdentifier
+    ): Either<RepositoryError, Pair<UserIdentifier.Id, String>> {
+        return try {
+            identifierConverter.getUserAndRepositoryName(repositoryIdentifier).right()
+        } catch (exception: Exception) {
+            RepositoryDoesNotExist(repositoryIdentifier).left()
         }
     }
 }
