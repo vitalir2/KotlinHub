@@ -47,28 +47,19 @@ internal class GitManagerImpl(
         userId: UserId,
         repositoryName: String,
         path: String,
-    ): List<RepositoryFile> {
-        val repositoryPath = createRepositoryPath(userId, repositoryName)
+    ): List<RepositoryFile> = withRepository(userId, repositoryName) {
         val preparedPath = path.removePrefix("/")
-        val repository = openRepository(repositoryPath)
-        val head = repository.findRef("HEAD")
-        val headCommit = repository.parseCommit(head.objectId)
-        return repository.parseDirectoryTree(
+        parseDirectoryTree(
             commit = headCommit,
             path = preparedPath,
         )
     }
 
-    override fun getRepositoryFileContent(userId: UserId, repositoryName: String, path: String): ByteArray {
-        val repositoryPath = createRepositoryPath(userId, repositoryName)
-        val preparedPath = path.removePrefix("/")
-        val repository = openRepository(repositoryPath)
-        val head = repository.findRef("HEAD")
-        val headCommit = repository.parseCommit(head.objectId)
-        return repository.run {
-            val tree = headCommit.tree
+    override fun getRepositoryFileContent(userId: UserId, repositoryName: String, path: String): ByteArray =
+        withRepository(userId, repositoryName) {
+            val preparedPath = path.removePrefix("/")
             TreeWalk(this).use { walk ->
-                walk.addTree(tree)
+                walk.addTree(headCommit.tree)
                 walk.filter = PathFilter.create(preparedPath)
                 walk.next()
                 val fileId = walk.getObjectId(0)
@@ -76,6 +67,17 @@ internal class GitManagerImpl(
                 loader.cachedBytes
             }
         }
+
+    private val JGitRepository.headCommit: RevCommit
+        get() = parseCommit(findRef("HEAD").objectId)
+
+    private fun <T> withRepository(
+        userId: UserId,
+        repositoryName: String,
+        action: JGitRepository.() -> T,
+    ): T {
+        val repositoryPath = createRepositoryPath(userId, repositoryName)
+        return openRepository(repositoryPath).use(action)
     }
 
     private fun JGitRepository.parseDirectoryTree(commit: RevCommit, path: String): List<RepositoryFile> {
@@ -87,21 +89,23 @@ internal class GitManagerImpl(
                 walk.filter = PathFilter.create(path)
             }
             while (walk.next()) {
-                val file = RepositoryFile(
-                    name = walk.nameString,
-                    type = when (walk.fileMode) {
-                        FileMode.REGULAR_FILE -> RepositoryFile.Type.REGULAR
-                        FileMode.TREE -> RepositoryFile.Type.FOLDER
-                        else -> RepositoryFile.Type.UNKNOWN.also {
-                            logger.log("Unknown type of repository file=${walk.fileMode}")
-                        }
-                    },
-                )
+                val file = getCurrentRepositoryFile(walk)
                 result.add(file)
             }
             result
         }
     }
+
+    private fun getCurrentRepositoryFile(walk: TreeWalk): RepositoryFile = RepositoryFile(
+        name = walk.nameString,
+        type = when (val fileMode = walk.fileMode) {
+            FileMode.REGULAR_FILE -> RepositoryFile.Type.REGULAR
+            FileMode.TREE -> RepositoryFile.Type.FOLDER
+            else -> RepositoryFile.Type.UNKNOWN.also {
+                logger.log("Unknown type of repository file=$fileMode")
+            }
+        },
+    )
 
     override suspend fun removeRepositoryByName(userId: UserId, repositoryName: String): Boolean {
         val repositoryPath = createRepositoryPath(userId, repositoryName)
