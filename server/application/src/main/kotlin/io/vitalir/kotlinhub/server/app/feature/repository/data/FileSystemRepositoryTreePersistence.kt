@@ -38,7 +38,7 @@ internal class FileSystemRepositoryTreePersistence(
                     gitManager.getRepositoryFiles(
                         userId = ownerIdentifier.value,
                         repositoryName = repositoryName,
-                        path = absolutePath,
+                        path = absolutePath.removePrefix("/"),
                     )
                 },
             ).bind()
@@ -54,7 +54,7 @@ internal class FileSystemRepositoryTreePersistence(
             gitManager.getRepositoryFileContent(
                 userId = ownerIdentifier.value,
                 repositoryName = repositoryName,
-                path = absolutePath,
+                path = absolutePath.removePrefix("/"),
             )
         }
     }

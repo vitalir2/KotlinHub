@@ -8,6 +8,7 @@ import io.vitalir.kotlinhub.server.app.infrastructure.logging.Logger
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 import java.nio.file.Path
 import org.eclipse.jgit.lib.FileMode
+import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.treewalk.TreeWalk
@@ -48,23 +49,40 @@ internal class GitManagerImpl(
         repositoryName: String,
         path: String,
     ): List<RepositoryFile> = withRepository(userId, repositoryName) {
-        val preparedPath = path.removePrefix("/")
         parseDirectoryTree(
             commit = headCommit,
-            path = preparedPath,
+            path = path,
         )
     }
 
     override fun getRepositoryFileContent(userId: UserId, repositoryName: String, path: String): ByteArray =
         withRepository(userId, repositoryName) {
-            val preparedPath = path.removePrefix("/")
             TreeWalk(this).use { walk ->
                 walk.addTree(headCommit.tree)
-                walk.filter = PathFilter.create(preparedPath)
-                walk.next()
-                val fileId = walk.getObjectId(0)
-                val loader = walk.objectReader.open(fileId)
-                loader.cachedBytes
+                val directoryPath = if ('/' in path) {
+                    path.substringBeforeLast('/')
+                } else {
+                    ""
+                }
+                logger.log("Dir path = $directoryPath")
+                val isOpenedContainingDirectory = openDirectoryByPath(
+                    directoryPath, walk
+                )
+                if (isOpenedContainingDirectory) {
+                    val filePathInCurrentDir = path.substringAfterLast('/')
+                    walk.filter = PathFilter.create(filePathInCurrentDir)
+                    walk.next()
+                    logger.log("Loaded file path = ${walk.pathString}")
+                    val fileId = walk.getObjectId(0)
+                    if (fileId == ObjectId.zeroId()) {
+                        error("File $path was not found")
+                    }
+                    logger.log("Loaded file id = $fileId")
+                    val loader = walk.objectReader.open(fileId)
+                    loader.cachedBytes
+                } else {
+                    error("File $path was not found")
+                }
             }
         }
 
@@ -83,17 +101,59 @@ internal class GitManagerImpl(
     private fun JGitRepository.parseDirectoryTree(commit: RevCommit, path: String): List<RepositoryFile> {
         val tree = commit.tree
         return TreeWalk(this).use { walk ->
-            val result = mutableListOf<RepositoryFile>()
             walk.addTree(tree)
-            if (path.isNotEmpty()) {
-                walk.filter = PathFilter.create(path)
+            val isOpenedSuccessfully = openDirectoryByPath(path, walk)
+            if (isOpenedSuccessfully) {
+                getCurrentRepositoryDirFiles(walk)
+            } else {
+                emptyList()
             }
+        }
+    }
+
+    private fun getCurrentRepositoryDirFiles(
+        walk: TreeWalk,
+    ): List<RepositoryFile> {
+        return buildList {
             while (walk.next()) {
                 val file = getCurrentRepositoryFile(walk)
-                result.add(file)
+                add(file)
             }
-            result
         }
+    }
+
+    private fun openDirectoryByPath(
+        path: String,
+        walk: TreeWalk,
+        initDirPath: String = "",
+    ): Boolean {
+        val initPathSegmentsCount = initDirPath.pathSegmentsCount
+        val requiredPathSegmentsCount = path.pathSegmentsCount
+        if (requiredPathSegmentsCount < initPathSegmentsCount) {
+            return false
+        }
+
+        var currentDirectoryPath = initDirPath
+        var isRequestedDirectoryExist = true
+        while (currentDirectoryPath != path) {
+            logger.log("Current tree path=$currentDirectoryPath")
+            walk.next()
+            var currentFilePath = walk.pathString
+            while (!path.startsWith(currentFilePath) && walk.next()) {
+                currentFilePath = walk.pathString
+            }
+            if (!path.startsWith(currentFilePath)) {
+                isRequestedDirectoryExist = false
+                break
+            } else {
+                currentDirectoryPath = currentFilePath
+                val treeId = walk.getObjectId(0)
+                walk.reset()
+                walk.addTree(treeId)
+            }
+        }
+        logger.log("Current tree path at the end=$currentDirectoryPath")
+        return isRequestedDirectoryExist
     }
 
     private fun getCurrentRepositoryFile(walk: TreeWalk): RepositoryFile = RepositoryFile(
@@ -141,4 +201,7 @@ internal class GitManagerImpl(
             repositoryName,
         )
     }
+
+    private val String.pathSegmentsCount: Int
+        get() = removeSurrounding("/").count { it == '/' } + 1
 }
