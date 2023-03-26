@@ -11,6 +11,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.Rep
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.error.RepositoryFilePathDoesNotExist
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.persistence.RepositoryTreePersistence
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
+import io.vitalir.kotlinhub.server.app.infrastructure.git.GitError
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
 import java.nio.file.NotDirectoryException
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +40,7 @@ internal class FileSystemRepositoryTreePersistence(
                         userId = ownerIdentifier.value,
                         repositoryName = repositoryName,
                         path = absolutePath.removePrefix("/"),
-                    )
+                    ).mapLeft(GitError::toDomainModel).bind()
                 },
             ).bind()
         }
@@ -54,8 +55,8 @@ internal class FileSystemRepositoryTreePersistence(
             gitManager.getRepositoryFileContent(
                 userId = ownerIdentifier.value,
                 repositoryName = repositoryName,
-                path = absolutePath.removePrefix("/"),
-            )
+                path = absolutePath.removeSurrounding("/"),
+            ).mapLeft(GitError::toDomainModel).bind()
         }
     }
 
@@ -68,4 +69,12 @@ internal class FileSystemRepositoryTreePersistence(
             RepositoryDoesNotExist(repositoryIdentifier).left()
         }
     }
+}
+
+private fun GitError.toDomainModel(): RepositoryFilePathDoesNotExist {
+    val path = when (this) {
+        is GitError.DirectoryNotFound -> dirPath
+        is GitError.FileNotFound -> filePath
+    }
+    return RepositoryFilePathDoesNotExist(path)
 }
