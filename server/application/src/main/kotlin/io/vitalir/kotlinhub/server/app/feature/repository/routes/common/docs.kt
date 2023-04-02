@@ -15,4 +15,11 @@ internal object RepositoryDocs {
         required = true,
         schema = TypeDefinition.STRING,
     )
+
+    val absolutePath = Parameter(
+        name = "absolutePath",
+        `in` = Parameter.Location.path,
+        required = true,
+        schema = TypeDefinition.STRING,
+    )
 }

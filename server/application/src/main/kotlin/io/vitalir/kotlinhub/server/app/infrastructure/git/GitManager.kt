@@ -13,7 +13,13 @@ interface GitManager {
         userId: UserId,
         repositoryName: String,
         path: String,
-    ): List<RepositoryFile>
+    ): Either<GitError, List<RepositoryFile>>
+
+    fun getRepositoryFileContent(
+        userId: UserId,
+        repositoryName: String,
+        path: String,
+    ): Either<GitError, ByteArray>
 
     suspend fun removeRepositoryByName(
         userId: UserId,

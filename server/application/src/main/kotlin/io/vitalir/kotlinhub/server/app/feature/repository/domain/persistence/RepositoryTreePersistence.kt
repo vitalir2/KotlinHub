@@ -11,4 +11,9 @@ interface RepositoryTreePersistence {
         repositoryIdentifier: RepositoryIdentifier,
         absolutePath: String,
     ): Either<RepositoryError, List<RepositoryFile>>
+
+    suspend fun getFileContent(
+        repositoryIdentifier: RepositoryIdentifier,
+        absolutePath: String,
+    ): Either<RepositoryError, ByteArray>
 }

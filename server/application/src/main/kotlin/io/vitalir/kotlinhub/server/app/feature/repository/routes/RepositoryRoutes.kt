@@ -7,6 +7,7 @@ import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repositor
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.common.repositoriesTag
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.create.createRepositoryDocs
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.create.createRepositoryRoute
+import io.vitalir.kotlinhub.server.app.feature.repository.routes.get.getRepositoryFileContent
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.get.getRepositoryFiles
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.get.userRepositoriesRoute
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.get.userRepositoryRoute
@@ -22,6 +23,7 @@ internal fun Route.repositoryRoutes(
             userRepositoryRoute(repositoryGraph.getRepositoryUseCase)
             userRepositoriesRoute(repositoryGraph.getRepositoriesForUserUseCase)
             getRepositoryFiles(repositoryGraph.getRepositoryDirFilesUseCase)
+            getRepositoryFileContent(repositoryGraph.repositoryTreePersistence)
         }
 
         jwtAuth {
