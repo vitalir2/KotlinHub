@@ -19,6 +19,8 @@ import kotlin.io.path.Path
 import kotlin.io.path.deleteIfExists
 import org.eclipse.jgit.lib.Repository as JGitRepository
 
+private const val ROOT_DIR_PATH = ""
+
 internal class GitManagerImpl(
     private val repositoryConfig: AppConfig.Repository,
     private val logger: Logger,
@@ -64,7 +66,7 @@ internal class GitManagerImpl(
     ): Either<GitError, ByteArray> = withRepository(userId, repositoryName) {
         TreeWalk(this).use { walk ->
             walk.addTree(headCommit.tree)
-            val directoryPath = if ('/' in path) path.substringBeforeLast('/') else ""
+            val directoryPath = if ('/' in path) path.substringBeforeLast('/') else ROOT_DIR_PATH
             if (walk.openDirByPath(directoryPath)) {
                 getFileContentInCurrentDir(path, walk)
             } else {
@@ -125,43 +127,60 @@ internal class GitManagerImpl(
     }
 
     private fun TreeWalk.openDirByPath(
-        path: String,
-        initDirPath: String = "",
+        rawTargetPath: String,
+        rawInitPath: String = ROOT_DIR_PATH,
     ): Boolean {
-        val initPathSegmentsCount = initDirPath.pathSegmentsCount
-        val requiredPathSegmentsCount = path.pathSegmentsCount
-        if (requiredPathSegmentsCount < initPathSegmentsCount) {
+        val targetPath = rawTargetPath.removeSurrounding("/")
+        val initPath = rawInitPath.removeSurrounding("/")
+        if (!canOpenDirFromTheCurrentOne(initPath, targetPath)) {
             return false
         }
 
-        var currentDirPath = initDirPath
-        var isRequestedDirExist = true
-        while (currentDirPath != path) {
-            next()
-            val nextDirPath = findAndOpenFile(path)
-            if (nextDirPath != null) {
-                currentDirPath = nextDirPath
-                val treeId = getObjectId(0)
-                reset()
-                addTree(treeId)
+        var currentPath = initPath
+        while (currentPath != targetPath) {
+            iterateToFirstFile()
+            val nextDirPath = findAndIterateToNextFile(targetPath)
+            if (nextDirPath != null && fileMode == FileMode.TREE) {
+                currentPath = nextDirPath
+                openCurrentTree()
             } else {
-                isRequestedDirExist = false
-                break
+                return false
             }
         }
-        return isRequestedDirExist
+
+        return true
     }
 
-    private fun TreeWalk.findAndOpenFile(
-        path: String,
+    private fun TreeWalk.openCurrentTree() {
+        val treeId = getObjectId(0)
+        reset()
+        addTree(treeId)
+    }
+
+    private fun TreeWalk.iterateToFirstFile() {
+        next()
+    }
+
+    private fun canOpenDirFromTheCurrentOne(
+        currentDir: String,
+        targetDir: String,
+    ): Boolean {
+        val requiredPathSegmentsCount = currentDir.pathSegmentsCount
+        val initPathSegmentsCount = targetDir.pathSegmentsCount
+        return requiredPathSegmentsCount > initPathSegmentsCount
+    }
+
+    private fun TreeWalk.findAndIterateToNextFile(
+        targetPath: String,
     ): String? {
-        var currentFilePath = pathString
-        var isCurrentFileOnPath = path.startsWith(currentFilePath)
-        while (!isCurrentFileOnPath && next()) {
-            currentFilePath = pathString
-            isCurrentFileOnPath = path.startsWith(currentFilePath)
-        }
-        return currentFilePath.takeIf { isCurrentFileOnPath }
+        var currentPath: String
+        var isCurrentFileOnTargetPath: Boolean
+        do {
+            currentPath = pathString
+            isCurrentFileOnTargetPath = targetPath.startsWith(currentPath)
+        } while (!isCurrentFileOnTargetPath && next())
+
+        return if (isCurrentFileOnTargetPath) currentPath else null
     }
 
     private fun TreeWalk.getCurrentRepositoryFile(): RepositoryFile = RepositoryFile(
