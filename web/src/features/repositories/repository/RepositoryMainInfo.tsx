@@ -1,6 +1,7 @@
 import {Stack, Typography} from "@mui/material";
 import {Repository} from "../Repository";
 import {GetCodeButton} from "./GetCodeButton";
+import {Outlet} from "react-router-dom";
 
 export interface RepositoryMainInfoProps {
     repository: Repository,
@@ -17,6 +18,7 @@ export function RepositoryMainInfo(props: RepositoryMainInfoProps) {
                 </Typography>
                 {GetCodeButton(repository)}
             </Stack>
+            <Outlet/>
         </Stack>
     )
 }
