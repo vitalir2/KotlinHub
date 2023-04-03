@@ -4,17 +4,7 @@ import QuizOutlinedIcon from '@mui/icons-material/QuizOutlined';
 import React from "react";
 import {Grid, SxProps, Typography} from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
-
-export interface RepositoryFile {
-    name: string,
-    type: RepositoryFileType,
-}
-
-export enum RepositoryFileType {
-    FOLDER,
-    REGULAR,
-    UNKNOWN,
-}
+import {RepositoryFile, RepositoryFileType} from "../RepositoryFile";
 
 export interface RepositoryContentProps {
     repositoryFiles: RepositoryFile[],
