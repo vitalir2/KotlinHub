@@ -2,7 +2,6 @@ package io.vitalir.kotlinhub.shared.feature.repository
 
 import io.vitalir.kotlinhub.shared.common.KMPLocalDateTime
 import io.vitalir.kotlinhub.shared.feature.user.UserId
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
