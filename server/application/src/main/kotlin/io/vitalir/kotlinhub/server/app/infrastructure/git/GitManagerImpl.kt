@@ -130,10 +130,11 @@ internal class GitManagerImpl(
         rawTargetPath: String,
         rawInitPath: String = ROOT_DIR_PATH,
     ): Boolean {
-        val targetPath = rawTargetPath.removeSurrounding("/")
-        val initPath = rawInitPath.removeSurrounding("/")
+        val targetPath = rawTargetPath.removePrefix("/").removeSuffix("/")
+        val initPath = rawInitPath.removePrefix("/").removeSuffix("/")
         if (!canOpenDirFromTheCurrentOne(initPath, targetPath)) {
-            return false
+            logger.log("Cannot open dir=$rawTargetPath from the dir=$rawInitPath")
+            return initPath == targetPath
         }
 
         var currentPath = initPath
@@ -167,7 +168,7 @@ internal class GitManagerImpl(
     ): Boolean {
         val requiredPathSegmentsCount = currentDir.pathSegmentsCount
         val initPathSegmentsCount = targetDir.pathSegmentsCount
-        return requiredPathSegmentsCount > initPathSegmentsCount
+        return requiredPathSegmentsCount >= initPathSegmentsCount
     }
 
     private fun TreeWalk.findAndIterateToNextFile(
@@ -230,5 +231,5 @@ internal class GitManagerImpl(
     }
 
     private val String.pathSegmentsCount: Int
-        get() = removeSurrounding("/").count { it == '/' } + 1
+        get() = removePrefix("/").removeSuffix("/").count { it == '/' } + 1
 }

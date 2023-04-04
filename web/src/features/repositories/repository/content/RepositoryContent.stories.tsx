@@ -2,7 +2,8 @@ import React from 'react';
 
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import {RepositoryContent, RepositoryFileType} from './RepositoryContent';
+import {RepositoryContent} from './RepositoryContent';
+import {RepositoryFileType} from "../../RepositoryFile";
 
 export default {
     title: 'Repository Content',

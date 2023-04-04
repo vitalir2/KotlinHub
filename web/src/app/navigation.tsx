@@ -29,7 +29,8 @@ export function createAppRouter(): RemixRouter {
                             element: <RepositoryContentDestination/>
                         },
                         {
-                            path: "tree/*",
+                            path: ":path",
+                            element: <RepositoryContentDestination/>
                         },
                         {
 
