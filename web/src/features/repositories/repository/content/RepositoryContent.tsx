@@ -2,28 +2,40 @@ import FolderIcon from '@mui/icons-material/Folder';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import QuizOutlinedIcon from '@mui/icons-material/QuizOutlined';
 import React from "react";
-import {Grid, SxProps, Typography} from "@mui/material";
+import {Grid, Typography} from "@mui/material";
 import {Link as RouterLink} from "react-router-dom";
 import {RepositoryFile, RepositoryFileType} from "../../RepositoryFile";
 
 export interface RepositoryContentProps {
     repositoryFiles: RepositoryFile[],
+    path: string,
 }
 
-export function RepositoryContent({ repositoryFiles }: RepositoryContentProps) {
+export function RepositoryContent({repositoryFiles, path}: RepositoryContentProps) {
+    let fileIndex = 0;
     return (
-        <>
-            {repositoryFiles.map(file => <  RepositoryFileView repositoryFile={file}/>)}
-        </>
+        <Grid container spacing={0.5} sx={{
+            border: '1px solid lightgrey',
+        }}>
+            {repositoryFiles.map(file =>
+                <RepositoryFileView
+                    key={fileIndex}
+                    repositoryFile={file}
+                    index={fileIndex++}
+                    path={path}
+                />)
+            }
+        </Grid>
     )
 }
 
 export interface RepositoryFileViewProps {
     repositoryFile: RepositoryFile,
-    sxProps?: SxProps,
+    index: number,
+    path: string,
 }
 
-export function RepositoryFileView({ repositoryFile, sxProps }: RepositoryFileViewProps) {
+export function RepositoryFileView({repositoryFile, index, path}: RepositoryFileViewProps) {
     let iconView: React.ReactElement
     switch (repositoryFile.type) {
         case RepositoryFileType.FOLDER:
@@ -36,8 +48,28 @@ export function RepositoryFileView({ repositoryFile, sxProps }: RepositoryFileVi
             iconView = <QuizOutlinedIcon/>
             break;
     }
+
+    let border: string
+    if (index === 0) {
+        border = ""
+    } else {
+        border = "1px solid lightgray"
+    }
+
+    let link: string;
+    if (path === "" && repositoryFile.type === RepositoryFileType.FOLDER) {
+        link = `tree/${repositoryFile.name}`
+    } else {
+        link = `${path}/${repositoryFile.name}`
+    }
     return (
-        <Grid container spacing={0.5} sx={sxProps}>
+        <Grid container xs={12} sx={{
+            borderTop: border,
+            padding: "4px",
+            ":hover": {
+                backgroundColor: "grey.100",
+            }
+        }}>
             <Grid item xs={1}>
                 {iconView}
             </Grid>
@@ -45,7 +77,7 @@ export function RepositoryFileView({ repositoryFile, sxProps }: RepositoryFileVi
                 <Typography
                     component={RouterLink}
                     variant={"body1"}
-                    to={repositoryFile.name}
+                    to={link}
                     sx={linkStyle}
                 >
                     {repositoryFile.name}
@@ -55,12 +87,15 @@ export function RepositoryFileView({ repositoryFile, sxProps }: RepositoryFileVi
     )
 }
 
-const linkStyle: SxProps = {
+const linkStyle = {
     textDecoration: "none",
     ":link": {
         color: "text.primary",
     },
-    ":hover": {
-        color: "primary.main",
+    ":visited": {
+        color: "text.primary",
     },
-};
+    ":hover": {
+        color: "info.dark",
+    },
+}

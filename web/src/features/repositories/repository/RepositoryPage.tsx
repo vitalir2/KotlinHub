@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {Link as NavLink, useParams} from "react-router-dom";
 import {Repository} from "../Repository";
 import {Stack, SxProps, Tab, Tabs, Typography} from "@mui/material";
 import {ReactElement, useEffect, useMemo, useState} from "react";
@@ -67,12 +67,9 @@ function RepositoryContainer(props: RepositoryContainerProps) {
                 return <RepositoryInfo repository={repository}/>
         }
     }, [currentTab, repository])
-
-    const formattedName = `${user.username} / ${repository.name}`
-
     return (
         <Stack spacing={2} sx={repositoryContainerStyle}>
-            <Typography variant={"h5"}>{formattedName}</Typography>
+            <RepositoryName username={user.username} repositoryName={repository.name}/>
             <Tabs
                 value={currentTab}
                 onChange={(e, value: number) => setCurrentTab(value)}
@@ -84,4 +81,48 @@ function RepositoryContainer(props: RepositoryContainerProps) {
             {tabPanel}
         </Stack>
     )
+}
+
+interface RepositoryNameProps {
+    username: string,
+    repositoryName: string,
+}
+
+const linkStyle: SxProps = {
+    textDecoration: "none",
+    ":link": {
+        color: "info.dark",
+    },
+    ":visited": {
+        color: "info.dark",
+    },
+    ":hover": {
+        color: "info.dark",
+        textDecoration: "underline",
+    }
+}
+
+function RepositoryName({username, repositoryName}: RepositoryNameProps) {
+    const variant = "subtitle1"
+    return (
+        <Stack direction={"row"} spacing={0.5} alignItems={"center"}>
+            <Typography
+                variant={variant}
+                sx={linkStyle}
+                component={NavLink}
+                to={`/main`}
+            >
+                {username}
+            </Typography>
+            <Typography variant={variant}>/</Typography>
+            <Typography
+                component={NavLink}
+                sx={linkStyle}
+                variant={variant}
+                to={`/repositories/${repositoryName}`}
+            >
+                {repositoryName}
+            </Typography>
+        </Stack>
+    );
 }
