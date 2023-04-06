@@ -4,6 +4,16 @@ import {RepositoryFile, RepositoryFileType} from "../../RepositoryFile";
 import {appGraph} from "../../../../app/dependency_injection";
 import {RepositoryContent} from "./RepositoryContent";
 
+function compareRepositoryFiles(lhs: RepositoryFile, rhs: RepositoryFile): number {
+    if (lhs.type === rhs.type) {
+        return lhs.name.localeCompare(rhs.name)
+    } else if (lhs.type === RepositoryFileType.FOLDER) {
+        return -1
+    } else {
+        return 1
+    }
+}
+
 export function RepositoryContentDestination() {
     const params = useParams();
     const repositoryId = params['repositoryId'];
@@ -11,7 +21,6 @@ export function RepositoryContentDestination() {
     const [repositoryFiles, setRepositoryFiles] = useState<RepositoryFile[]>([])
 
     const currentPath = path ?? ""
-    console.log("Current path = " + currentPath)
     useEffect(() => {
         if (repositoryId === undefined) {
             return
@@ -23,15 +32,7 @@ export function RepositoryContentDestination() {
         }
         fetchFiles()
             .then(files => setRepositoryFiles(
-                files.sort((lhs, rhs) => {
-                    if (lhs.type === rhs.type) {
-                        return lhs.name.localeCompare(rhs.name)
-                    } else if (lhs.type === RepositoryFileType.FOLDER) {
-                        return -1
-                    } else {
-                        return 1
-                    }
-                }))
+                files.sort((lhs, rhs) => compareRepositoryFiles(lhs, rhs)))
             )
 
     }, [repositoryId, currentPath])
