@@ -3,7 +3,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import QuizOutlinedIcon from '@mui/icons-material/QuizOutlined';
 import React from "react";
 import {Grid, Typography} from "@mui/material";
-import {Link as RouterLink} from "react-router-dom";
+import {Link as RouterLink, useLocation} from "react-router-dom";
 import {RepositoryFile, RepositoryFileType} from "../../RepositoryFile";
 
 export interface RepositoryContentProps {
@@ -36,6 +36,8 @@ export interface RepositoryFileViewProps {
 }
 
 export function RepositoryFileView({repositoryFile, index, path}: RepositoryFileViewProps) {
+    const location = useLocation();
+    const absolutePath = location.pathname;
     let iconView: React.ReactElement
     switch (repositoryFile.type) {
         case RepositoryFileType.FOLDER:
@@ -57,10 +59,25 @@ export function RepositoryFileView({repositoryFile, index, path}: RepositoryFile
     }
 
     let link: string;
-    if (path === "" && repositoryFile.type === RepositoryFileType.FOLDER) {
-        link = `tree/${repositoryFile.name}`
-    } else {
-        link = `${path}/${repositoryFile.name}`
+    switch (repositoryFile.type) {
+        case RepositoryFileType.FOLDER:
+            if (path === "") {
+                link = `tree/${repositoryFile.name}`;
+            } else {
+                link = `${path}/${repositoryFile.name}`;
+            }
+            break;
+        case RepositoryFileType.REGULAR:
+            if (path === "") {
+                link = `content/${repositoryFile.name}`;
+            } else {
+                const repositoryPath = absolutePath.substring(0, absolutePath.indexOf("tree") - 1);
+                link = `${repositoryPath}/content/${path}/${repositoryFile.name}`;
+            }
+            break;
+        case RepositoryFileType.UNKNOWN:
+            link = `${path}/${repositoryFile.name}`;
+
     }
     return (
         <Grid container xs={12} sx={{
