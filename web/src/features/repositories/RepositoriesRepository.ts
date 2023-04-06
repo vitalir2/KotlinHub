@@ -7,4 +7,10 @@ export interface RepositoriesRepository {
     getRepository(userId: string, repositoryId: string): Promise<Repository>
 
     getRepositoryFiles(userId: string, repositoryId: string, path: string): Promise<RepositoryFile[]>
+
+    getRepositoryFileContent(
+        userId: string,
+        repositoryId: string,
+        path: string,
+    ): Promise<string>
 }

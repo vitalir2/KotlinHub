@@ -11,6 +11,15 @@ type ApiRepository = platformShared.io.vitalir.kotlinhub.shared.feature.reposito
 type ApiRepositoryFile = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepositoryFile
 
 export class DefaultRepositoriesRepository implements RepositoriesRepository {
+    getRepositoryFileContent(userId: string, repositoryId: string, path: string): Promise<string> {
+        return baseApi.get<string>(
+            `/repositories/${userId}/${repositoryId}/content/${path}`,
+            {
+                headers: getDefaultHeaders(),
+            }
+        )
+            .then(response => response.data)
+    }
     getRepositoryFiles(userId: string, repositoryId: string, path: string): Promise<RepositoryFile[]> {
         return baseApi.get<GetRepositoryFilesResponse>(`/repositories/${userId}/${repositoryId}/tree/${path}`, {
             headers: getDefaultHeaders(),
