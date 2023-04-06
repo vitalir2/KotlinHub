@@ -12,7 +12,6 @@ export function RepositoryMainInfo(props: RepositoryMainInfoProps) {
     const params = useParams();
     const path = params['*'];
     const {repository} = props
-    console.log("Current path for segments = " + path);
 
     let currentPathSegments: string[] | undefined = undefined
     if (path !== undefined) {
