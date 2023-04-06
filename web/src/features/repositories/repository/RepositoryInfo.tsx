@@ -1,6 +1,6 @@
 import {Grid, SxProps} from "@mui/material";
 import {Repository} from "../Repository";
-import {RepositoryMainInfo} from "./RepositoryMainInfo";
+import {RepositoryMainInfo} from "./maininfo/RepositoryMainInfo";
 import {RepositoryMetaInfo} from "./RepositoryMetaInfo";
 
 export interface RepositoryInfoProps {
