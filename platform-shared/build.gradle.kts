@@ -28,14 +28,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
             }
         }
         val jvmMain by getting
-        val jsMain by getting {
-            dependencies {
-                implementation(npm("@js-joda/core", "5.5.2"))
-            }
-        }
+        val jsMain by getting
     }
 }

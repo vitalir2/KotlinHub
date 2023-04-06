@@ -130,20 +130,24 @@ internal class GitManagerImpl(
         rawTargetPath: String,
         rawInitPath: String = ROOT_DIR_PATH,
     ): Boolean {
-        val targetPath = rawTargetPath.removeSurrounding("/")
-        val initPath = rawInitPath.removeSurrounding("/")
+        val targetPath = rawTargetPath.removePrefix("/").removeSuffix("/")
+        val initPath = rawInitPath.removePrefix("/").removeSuffix("/")
         if (!canOpenDirFromTheCurrentOne(initPath, targetPath)) {
-            return false
+            logger.log("Cannot open dir=$rawTargetPath from the dir=$rawInitPath")
+            return initPath == targetPath
         }
 
         var currentPath = initPath
         while (currentPath != targetPath) {
+            logger.log("Iterating in $currentPath")
             iterateToFirstFile()
-            val nextDirPath = findAndIterateToNextFile(targetPath)
+            val nextDirPath = findAndIterateToNextFile(currentPath, targetPath)
             if (nextDirPath != null && fileMode == FileMode.TREE) {
+                logger.log("Found tree $nextDirPath")
                 currentPath = nextDirPath
                 openCurrentTree()
             } else {
+                logger.log("Found nothing =(")
                 return false
             }
         }
@@ -165,18 +169,24 @@ internal class GitManagerImpl(
         currentDir: String,
         targetDir: String,
     ): Boolean {
-        val requiredPathSegmentsCount = currentDir.pathSegmentsCount
-        val initPathSegmentsCount = targetDir.pathSegmentsCount
-        return requiredPathSegmentsCount > initPathSegmentsCount
+        val initPathSegmentsCount = currentDir.pathSegmentsCount
+        val requiredPathSegmentsCount = targetDir.pathSegmentsCount
+        return initPathSegmentsCount <= requiredPathSegmentsCount
     }
 
     private fun TreeWalk.findAndIterateToNextFile(
+        prevPath: String,
         targetPath: String,
     ): String? {
         var currentPath: String
         var isCurrentFileOnTargetPath: Boolean
         do {
-            currentPath = pathString
+            currentPath = if (prevPath.isEmpty()) {
+                pathString
+            } else {
+                "$prevPath/$pathString"
+            }
+            logger.log("Current path=$currentPath")
             isCurrentFileOnTargetPath = targetPath.startsWith(currentPath)
         } while (!isCurrentFileOnTargetPath && next())
 
@@ -230,5 +240,5 @@ internal class GitManagerImpl(
     }
 
     private val String.pathSegmentsCount: Int
-        get() = removeSurrounding("/").count { it == '/' } + 1
+        get() = removePrefix("/").removeSuffix("/").count { it == '/' } + 1
 }

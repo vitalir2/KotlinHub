@@ -2,11 +2,22 @@ import * as platformShared from "platform-shared/platform-shared"
 import {baseApi, convertNullableToTypescriptModel, getDefaultHeaders} from "../../app/fetch";
 import {RepositoriesRepository} from "./RepositoriesRepository";
 import {Repository, RepositoryAccessMode} from "./Repository";
+import {RepositoryFile, RepositoryFileType} from "./RepositoryFile";
 
 type GetRepositoriesResponse = platformShared.io.vitalir.kotlinhub.shared.feature.repository.GetRepositoriesResponse
 type GetRepositoryResponse = platformShared.io.vitalir.kotlinhub.shared.feature.repository.GetRepositoryResponse
+type GetRepositoryFilesResponse = platformShared.io.vitalir.kotlinhub.shared.feature.repository.GetRepositoryFilesResponse
 type ApiRepository = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository
+type ApiRepositoryFile = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepositoryFile
+
 export class DefaultRepositoriesRepository implements RepositoriesRepository {
+    getRepositoryFiles(userId: string, repositoryId: string, path: string): Promise<RepositoryFile[]> {
+        return baseApi.get<GetRepositoryFilesResponse>(`/repositories/${userId}/${repositoryId}/tree/${path}`, {
+            headers: getDefaultHeaders(),
+        })
+            .then(response => response.data.files)
+            .then(files => files.map(file => this.convertRepositoryFileTypeToLocalModel(file)))
+    }
     getRepositories(userId: string): Promise<Repository[]> {
         return baseApi.get<GetRepositoriesResponse>(`/repositories/${userId}`, {
             headers: getDefaultHeaders(),
@@ -44,5 +55,24 @@ export class DefaultRepositoriesRepository implements RepositoriesRepository {
             description: convertNullableToTypescriptModel(apiRepository.description),
             cloneUrl: apiRepository.httpUrl,
         }
+    }
+
+    convertRepositoryFileTypeToLocalModel(apiRepositoryFile: ApiRepositoryFile): RepositoryFile {
+        const convertFileType = (apiFileType: string) => {
+            switch (apiFileType) {
+                case platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepositoryFile.Type.FOLDER.name:
+                    return RepositoryFileType.FOLDER
+                case platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepositoryFile.Type.REGULAR.name:
+                    return RepositoryFileType.REGULAR
+                default:
+                    console.error(`Invalid accessMode=${apiFileType}`)
+                    return RepositoryFileType.UNKNOWN
+            }
+        }
+
+        return {
+            name: apiRepositoryFile.name,
+            type: convertFileType(apiRepositoryFile.type as unknown as string),
+        };
     }
 }

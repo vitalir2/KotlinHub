@@ -15,7 +15,7 @@ export class AppGraph {
         this.userGraph = authGraph;
     }
 }
-export function createAppGraph() {
+function createAppGraph() {
     const repositoriesRepository = new DefaultRepositoriesRepository()
     const repositoriesGraph = new RepositoriesGraph(repositoriesRepository)
 
@@ -24,3 +24,5 @@ export function createAppGraph() {
 
     return new AppGraph(repositoriesGraph, userGraph)
 }
+
+export const appGraph = createAppGraph()

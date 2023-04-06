@@ -1,5 +1,5 @@
 import {configureStore} from '@reduxjs/toolkit';
-import {createAppGraph} from "./dependency_injection";
+import {appGraph} from "./dependency_injection";
 import {repositoriesSlice} from "../features/main/MainSlice";
 import {loginSlice} from "../features/login/LoginSlice";
 import {repositorySlice} from "../features/repositories/repository/RepositorySlice";
@@ -16,7 +16,7 @@ export const store = configureStore({
       getDefaultMiddleware({
         thunk: {
           extraArgument: {
-              appGraph: createAppGraph(),
+              appGraph: appGraph,
           }
         }
       })

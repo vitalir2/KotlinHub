@@ -1,9 +1,13 @@
 import {Repository} from "../Repository";
 import {useCallback, useRef, useState} from "react";
-import {Button, Popover} from "@mui/material";
+import {Box, Button, Popover, SxProps} from "@mui/material";
 import {CloneRepositoryDialog} from "./CloneRepositoryDialog";
 
-export function GetCodeButton(repository: Repository) {
+export interface GetCodeButtonProps {
+    repository: Repository,
+    sx?: SxProps,
+}
+export function GetCodeButton({repository, sx}: GetCodeButtonProps) {
     const [codeDialogAnchor, setCodeDialogAnchor] = useState<Element | null>(null)
     const codeButtonRef = useRef<HTMLButtonElement>(null)
     const isOpen = Boolean(codeDialogAnchor)
@@ -21,7 +25,7 @@ export function GetCodeButton(repository: Repository) {
     )
 
     return (
-        <>
+        <Box sx={sx}>
             <Button component={"span"}
                     variant={"outlined"}
                     ref={codeButtonRef}
@@ -42,6 +46,6 @@ export function GetCodeButton(repository: Repository) {
             >
                 {CloneRepositoryDialog(repository)}
             </Popover>
-        </>
+        </Box>
     )
 }

@@ -1,6 +1,6 @@
 import {Grid, SxProps} from "@mui/material";
 import {Repository} from "../Repository";
-import {RepositoryMainInfo} from "./RepositoryMainInfo";
+import {RepositoryMainInfo} from "./maininfo/RepositoryMainInfo";
 import {RepositoryMetaInfo} from "./RepositoryMetaInfo";
 
 export interface RepositoryInfoProps {
@@ -17,12 +17,12 @@ export function RepositoryInfo(props: RepositoryInfoProps) {
     }
 
     return (
-        <Grid container spacing={2} sx={repositoryInfoStyle}>
-            <Grid item xs={3}>{/* Empty space */} </Grid>
+        <Grid container spacing={2} columnSpacing={4} sx={repositoryInfoStyle}>
+            <Grid item xs={2}>{/* Empty space */} </Grid>
             <Grid item xs={6}>
                 <RepositoryMainInfo repository={repository}/>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={4}>
                 {RepositoryMetaInfo(description)}
             </Grid>
         </Grid>

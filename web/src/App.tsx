@@ -4,7 +4,7 @@ import {Outlet} from "react-router-dom";
 import {Provider} from "react-redux";
 import {store} from "./app/store";
 
-const theme = createTheme({
+export const appTheme = createTheme({
     palette: {
         primary: {
             main: '#ffcf52',
@@ -18,7 +18,7 @@ const theme = createTheme({
 function App() {
     return (
         <Provider store={store}>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={appTheme}>
                 <CssBaseline/>
                 <Outlet/>
             </ThemeProvider>

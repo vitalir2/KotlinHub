@@ -9,4 +9,4 @@ export function isProductionBackend(): boolean {
 }
 
 export const BACKEND_URL_PRODUCTION = process.env.REACT_APP_BACKEND_URL_PRODUCTION
-export const BACKEND_URL_DEVELOPMENT = "localhost"
+export const BACKEND_URL_DEVELOPMENT = "http://127.0.0.1"

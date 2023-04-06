@@ -4,6 +4,7 @@ import {Router as RemixRouter} from "@remix-run/router/dist/router";
 import App from "../App";
 import {MainPage} from "../features/main/MainPage";
 import {RepositoryPage} from "../features/repositories/repository/RepositoryPage";
+import {RepositoryContentDestination} from "../features/repositories/repository/content/RepositoryContentDestination";
 
 export function createAppRouter(): RemixRouter {
     return createBrowserRouter([
@@ -22,6 +23,19 @@ export function createAppRouter(): RemixRouter {
                 {
                     path: "repositories/:repositoryId/",
                     element: <RepositoryPage/>,
+                    children: [
+                        {
+                            index: true,
+                            element: <RepositoryContentDestination/>
+                        },
+                        {
+                            path: "tree/*",
+                            element: <RepositoryContentDestination/>
+                        },
+                        {
+
+                        }
+                    ]
                 }
             ],
         }
