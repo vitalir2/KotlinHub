@@ -1,9 +1,8 @@
 import {useParams} from "react-router-dom";
-import {Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import {appGraph} from "../../../../app/dependency_injection";
-import SyntaxHighlighter from 'react-syntax-highlighter';
 import {ErrorPlaceholder} from "../../../../core/view/placeholder/ErrorPlaceholder";
+import {RepositoryFileContent} from "./RepositoryFileContent";
 
 export function RepositoryFileContentDestination() {
     const params = useParams();
@@ -33,40 +32,7 @@ export function RepositoryFileContentDestination() {
     }
 
     const fileName = path.substring(path.lastIndexOf("/") + 1);
-    const fileExtensionSeparatorIndex = fileName.lastIndexOf(".");
-    let fileExtension: string;
-    if (fileExtensionSeparatorIndex > 0) {
-        fileExtension = fileName.substring(fileExtensionSeparatorIndex + 1);
-    } else {
-        fileExtension = "";
-    }
-
-    let contentLanguage: string;
-    switch (fileExtension) {
-        case "js":
-        case "jsx":
-            contentLanguage = "javascript";
-            break;
-        case "ts":
-        case "tsx":
-            contentLanguage = "typescript";
-            break;
-        case "kt":
-            contentLanguage = "kotlin";
-            break;
-        default:
-            contentLanguage = "text";
-            break;
-    }
-
     return (
-        <>
-            <Typography variant={"subtitle1"}>
-                You opened file={path}
-            </Typography>
-            <SyntaxHighlighter language={contentLanguage}>
-                {fileContent}
-            </SyntaxHighlighter>
-        </>
+        <RepositoryFileContent fileName={fileName} fileContent={fileContent}/>
     );
 }
