@@ -11,9 +11,10 @@ import {
 } from "@mui/material";
 import KotlinHubLogoIcon from "../icon/KotlinHubLogoIcon";
 import React, {useState} from "react";
-import {Link as NavLink} from "react-router-dom";
-import {useAppDispatch, useAppSelector} from "../../../app/hooks";
-import {logoutThunk} from "../../../features/user/UserSlice";
+import {Link as NavLink, useNavigate} from "react-router-dom";
+import {useAppDispatch} from "../../../app/hooks";
+import {useAuthState} from "../../../features/auth/AuthHooks";
+import {logoutThunk} from "../../../features/auth/AuthSlice";
 
 export interface KotlinHubToolbarProps {
     isLoggedIn: boolean,
@@ -30,43 +31,43 @@ const primaryLinkStyle: SxProps = {
 };
 
 export function KotlinHubToolbarRedux() {
-    const isLoggedIn = useAppSelector(state => state.user.user?.kind !== undefined);
+    const authState = useAuthState();
     return (
         <KotlinHubToolbar
-            isLoggedIn={isLoggedIn}
+            isLoggedIn={authState.kind === "logged_in"}
         />
     );
 }
 
 export function KotlinHubToolbar({isLoggedIn}: KotlinHubToolbarProps) {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const handleOnSignOutClick = () => {
-        dispatch(logoutThunk())
+        dispatch(logoutThunk());
+        navigate("/");
     }
 
-    const settingsMenu = (
-        <>
-            <MenuItem key={"Settings"}>
-                <Typography
-                    component={NavLink}
-                    to={"/settings"}
-                    sx={primaryLinkStyle}
-                >
-                    Settings
-                </Typography>
-            </MenuItem>
-            <MenuItem key={"Sign out"} onClick={handleOnSignOutClick}>
-                <Typography
-                    component={NavLink}
-                    to={"/"}
-                    sx={primaryLinkStyle}
-                >
-                    Sign out
-                </Typography>
-            </MenuItem>
-        </>
-    );
+    const settingsMenu = [
+        <MenuItem key={"Settings"}>
+            <Typography
+                component={NavLink}
+                to={"/settings"}
+                sx={primaryLinkStyle}
+            >
+                Settings
+            </Typography>
+        </MenuItem>
+        ,
+        <MenuItem key={"Sign out"} onClick={handleOnSignOutClick}>
+            <Typography
+                sx={primaryLinkStyle}
+            >
+                Sign out
+            </Typography>
+        </MenuItem>
+        ,
+    ];
 
     return (
         <AppBar position={"static"}>
@@ -76,7 +77,7 @@ export function KotlinHubToolbar({isLoggedIn}: KotlinHubToolbarProps) {
                 <SvgIcon
                     inheritViewBox
                     component={NavLink}
-                    to={"/main"}
+                    to={"/"}
                     sx={{
                         width: 34,
                         height: 50,
@@ -104,7 +105,7 @@ export function KotlinHubToolbar({isLoggedIn}: KotlinHubToolbarProps) {
 }
 
 interface AvatarMenuProps {
-    settingsMenu: React.ReactElement,
+    settingsMenu: React.ReactElement[],
 }
 
 function AvatarMenu({settingsMenu}: AvatarMenuProps) {

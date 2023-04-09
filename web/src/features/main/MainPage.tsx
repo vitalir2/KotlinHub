@@ -4,23 +4,22 @@ import {LoadableRepositories} from "./LoadableRepositories";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {fetchCurrentRepositories} from "./MainSlice";
-import {fetchCurrentUser} from "../user/UserSlice";
+import {useAuthState} from "../auth/AuthHooks";
 
 export function MainPage() {
-    const userState = useAppSelector(state => state.user)
+    const authState = useAuthState();
     const repositoriesState = useAppSelector((state) => state.repositories)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(fetchCurrentUser())
         dispatch(fetchCurrentRepositories())
     }, [dispatch])
 
+    // TODO handle auth error by showing placeholder?
+
     return (
-        <Stack direction={"row"} spacing={2} sx={{
-            padding: 2,
-        }}>
-            <LoadableProfileSidebar loadableUser={userState.user}/>
+        <Stack direction={"row"} spacing={2} sx={{p: 2}}>
+            <LoadableProfileSidebar user={authState.user}/>
             <LoadableRepositories loadableRepositories={repositoriesState.repositories}/>
         </Stack>
     )

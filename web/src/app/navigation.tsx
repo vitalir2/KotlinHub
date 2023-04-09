@@ -1,13 +1,12 @@
-import {LoginPage} from "../features/login/LoginPage";
 import {createBrowserRouter} from "react-router-dom";
 import {Router as RemixRouter} from "@remix-run/router/dist/router";
 import App from "../App";
-import {MainPage} from "../features/main/MainPage";
 import {RepositoryPage} from "../features/repositories/repository/RepositoryPage";
 import {RepositoryContentDestination} from "../features/repositories/repository/content/RepositoryContentDestination";
 import {
     RepositoryFileContentDestination
 } from "../features/repositories/repository/content/RepositoryFileContentDestination";
+import {RootPage} from "../features/root/RootPage";
 
 export function createAppRouter(): RemixRouter {
     return createBrowserRouter([
@@ -17,11 +16,7 @@ export function createAppRouter(): RemixRouter {
             children: [
                 {
                    index: true,
-                   element: <LoginPage/>,
-                },
-                {
-                    path: "main/", // TODO
-                    element: <MainPage/>,
+                   element: <RootPage/>,
                 },
                 {
                     path: "repositories/:repositoryId/",
