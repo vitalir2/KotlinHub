@@ -11,5 +11,7 @@ export default meta;
 type Story = StoryObj<typeof KotlinHubToolbar>;
 
 export const Default: Story = {
-    render: () => <KotlinHubToolbar/>
-};
+    args: {
+        isLoggedIn: false,
+    },
+}

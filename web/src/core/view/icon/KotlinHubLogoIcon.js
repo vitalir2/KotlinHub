@@ -1,5 +1,5 @@
 import * as React from "react";
-const SvgKotlinhubLogoNoBg = (props) => (
+const KotlinHubLogoIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={34} height={50} {...props}>
     <path
       d="M31.336 6.188C31.336 2.77 28.52 0 25.046 0c-3.472 0-6.288 2.77-6.288 6.188 0 3.417 2.816 6.187 6.289 6.187s6.289-2.77 6.289-6.188ZM.145 2.477H7.69v41.582H.145Zm0 0"
@@ -30,5 +30,5 @@ const SvgKotlinhubLogoNoBg = (props) => (
     />
   </svg>
 );
-export default SvgKotlinhubLogoNoBg;
+export default KotlinHubLogoIcon;
 

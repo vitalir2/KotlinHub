@@ -5,14 +5,15 @@ import {Loadable} from "../../core/models/Loadable";
 import {ProfileSidebar} from "./ProfileSidebar";
 
 export interface LoadableProfileSidebarProps {
-    loadableUser: Loadable<User>,
+    loadableUser?: Loadable<User>,
 }
 
 export function LoadableProfileSidebar(props: LoadableProfileSidebarProps) {
-    const { loadableUser } = props
+    const {loadableUser} = props
 
     let body: ReactElement
-    switch (loadableUser.kind) {
+    switch (loadableUser?.kind) {
+        case undefined:
         case "loading":
             body = <LoadingProfileSidebar/>
             break

@@ -4,13 +4,11 @@ import {createAppAsyncThunk} from "../../app/hooks";
 import {Loadable} from "../../core/models/Loadable";
 
 interface UserState {
-    user: Loadable<User>,
+    user?: Loadable<User>,
 }
 
 const initState: UserState = {
-    user: {
-        kind: "loading",
-    }
+
 }
 
 export const fetchCurrentUser = createAppAsyncThunk<
@@ -25,6 +23,9 @@ export const userSlice = createSlice({
     initialState: initState,
     name: "user",
     reducers: {
+        logout: state => {
+            state.user = undefined
+        },
     },
     extraReducers: builder => {
         builder.addCase(fetchCurrentUser.pending, (state) => {
@@ -46,3 +47,5 @@ export const userSlice = createSlice({
         })
     }
 })
+
+export const { logout } = userSlice.actions

@@ -24,7 +24,7 @@ export function RepositoryPage() {
         dispatch(fetchCurrentUser())
     }, [repositoryId, dispatch])
 
-    if (repository.kind === "loading" || user.kind === "loading") {
+    if (user === undefined || repository.kind === "loading" || user.kind === "loading") {
         return <LoadingPlaceholder/>
     }
 
