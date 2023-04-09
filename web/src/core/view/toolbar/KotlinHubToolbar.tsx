@@ -12,7 +12,7 @@ import {
 import KotlinHubLogoIcon from "../icon/KotlinHubLogoIcon";
 import React, {useState} from "react";
 import {Link as NavLink} from "react-router-dom";
-import {useAppDispatch} from "../../../app/hooks";
+import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {logout} from "../../../features/user/UserSlice";
 
 export interface KotlinHubToolbarProps {
@@ -28,6 +28,15 @@ const primaryLinkStyle: SxProps = {
         color: "text.primary",
     },
 };
+
+export function KotlinHubToolbarRedux() {
+    const isLoggedIn = useAppSelector(state => state.user.user?.kind !== undefined);
+    return (
+        <KotlinHubToolbar
+            isLoggedIn={isLoggedIn}
+        />
+    );
+}
 
 export function KotlinHubToolbar({isLoggedIn}: KotlinHubToolbarProps) {
     const dispatch = useAppDispatch();
