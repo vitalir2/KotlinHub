@@ -15,6 +15,7 @@ import {loginUser, setLogin, setPassword, setRememberMe} from "./LoginSlice";
 import {AppDispatch} from "../../app/store";
 import {useNavigate} from "react-router-dom";
 import {SETTING_AUTH_TOKEN} from "../../core/settings/SettingsNames";
+import {setSetting} from "../../core/settings/Settings";
 
 export function LoginPage() {
     const containerStyle: SxProps<Theme> = {
@@ -43,9 +44,7 @@ function LoginForm() {
 
     useEffect(() => {
         if (userToken !== undefined) {
-            // TODO implement remember me functionality
-            document.cookie = `${SETTING_AUTH_TOKEN}=${userToken}; Secure`
-            navigate("/main")
+            navigate("/main");
         }
     }, [navigate, userToken])
 

@@ -3,6 +3,8 @@ import {baseApi, convertNullableToTypescriptModel, getDefaultHeaders} from "../.
 import {User} from "./User";
 import {LoginParams, LoginResult, LoginResultError, SuccessfulLoginResult, UserRepository} from "./UserRepository";
 import axios from "axios";
+import {clearSetting, setSetting} from "../../core/settings/Settings";
+import {SETTING_AUTH_TOKEN} from "../../core/settings/SettingsNames";
 
 type LoginRequest = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginRequest
 type LoginResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginResponse
@@ -10,6 +12,10 @@ type GetUserResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.G
 type ErrorResponse = platformShared.io.vitalir.kotlinhub.shared.common.ErrorResponse
 
 export class DefaultUserRepository implements UserRepository {
+    logout(): Promise<Boolean> {
+        clearSetting(SETTING_AUTH_TOKEN)
+        return Promise.resolve(true);
+    }
     loginUser(request: LoginParams): Promise<LoginResult> {
         return baseApi.post<LoginResponse>(
             "/users/auth", this.mapParamsToRequest(request),
@@ -18,7 +24,10 @@ export class DefaultUserRepository implements UserRepository {
             }
         )
             .then(
-                response => this.mapResponseToResult(response.data),
+                response => {
+                    setSetting(SETTING_AUTH_TOKEN ,response.data.token);
+                    return this.mapResponseToResult(response.data);
+                },
                 error => {
                     let loginError: LoginResultError
                     if (axios.isAxiosError(error) && error.response !== undefined) {

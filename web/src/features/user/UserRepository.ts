@@ -24,5 +24,6 @@ export type LoginResult = SuccessfulLoginResult | ErrorLoginResult
 
 export interface UserRepository {
     loginUser(request: LoginParams): Promise<LoginResult>
+    logout(): Promise<Boolean>
     getUser(): Promise<User>
 }

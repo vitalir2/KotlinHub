@@ -13,7 +13,7 @@ import KotlinHubLogoIcon from "../icon/KotlinHubLogoIcon";
 import React, {useState} from "react";
 import {Link as NavLink} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
-import {logout} from "../../../features/user/UserSlice";
+import {logoutThunk} from "../../../features/user/UserSlice";
 
 export interface KotlinHubToolbarProps {
     isLoggedIn: boolean,
@@ -42,7 +42,7 @@ export function KotlinHubToolbar({isLoggedIn}: KotlinHubToolbarProps) {
     const dispatch = useAppDispatch();
 
     const handleOnSignOutClick = () => {
-        dispatch(logout())
+        dispatch(logoutThunk())
     }
 
     const settingsMenu = (

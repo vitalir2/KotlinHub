@@ -2,6 +2,8 @@ import {User} from "./User";
 import {createSlice} from "@reduxjs/toolkit";
 import {createAppAsyncThunk} from "../../app/hooks";
 import {Loadable} from "../../core/models/Loadable";
+import {appGraph} from "../../app/dependency_injection";
+import {AppDispatch} from "../../app/store";
 
 interface UserState {
     user?: Loadable<User>,
@@ -18,6 +20,13 @@ export const fetchCurrentUser = createAppAsyncThunk<
     const authRepository = thunkApi.extra.appGraph.userGraph.userRepository
     return await authRepository.getUser()
 })
+
+export const logoutThunk = () => async (dispatch: AppDispatch) => {
+    const isLogoutSuccessful = await appGraph.userGraph.userRepository.logout();
+    if (isLogoutSuccessful) {
+        dispatch(logout())
+    }
+}
 
 export const userSlice = createSlice({
     initialState: initState,
@@ -48,4 +57,4 @@ export const userSlice = createSlice({
     }
 })
 
-export const { logout } = userSlice.actions
+const {logout} = userSlice.actions;
