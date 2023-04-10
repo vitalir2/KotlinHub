@@ -1,6 +1,6 @@
 import {Box, CircularProgress, Stack, SxProps} from "@mui/material";
 import React, {ReactElement} from "react";
-import {User} from "../user/User";
+import {User} from "../auth/User";
 import {ProfileSidebar} from "./ProfileSidebar";
 
 export interface LoadableProfileSidebarProps {

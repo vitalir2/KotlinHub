@@ -4,7 +4,7 @@ import {Stack, SxProps, Tab, Tabs, Typography} from "@mui/material";
 import {ReactElement, useEffect, useMemo, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {fetchRepository} from "./RepositorySlice";
-import {User} from "../../user/User";
+import {User} from "../../auth/User";
 import {ErrorPlaceholder} from "../../../core/view/placeholder/ErrorPlaceholder";
 import {LoadingPlaceholder} from "../../../core/view/placeholder/LoadingPlaceholder";
 import {RepositoryInfo} from "./RepositoryInfo";

@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {LoginResultError} from "../user/UserRepository";
+import {LoginResultError} from "../auth/AuthRepository";
 import {loginUser} from "../auth/AuthSlice";
 
 export interface LoginState {

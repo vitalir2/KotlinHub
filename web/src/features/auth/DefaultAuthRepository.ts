@@ -1,7 +1,7 @@
 import * as platformShared from "platform-shared"
 import {baseApi, convertNullableToTypescriptModel, getDefaultHeaders} from "../../app/fetch";
 import {User} from "./User";
-import {LoginParams, LoginResult, LoginResultError, SuccessfulLoginResult, UserRepository} from "./UserRepository";
+import {LoginParams, LoginResult, LoginResultError, SuccessfulLoginResult, AuthRepository} from "./AuthRepository";
 import axios from "axios";
 import {clearSetting, setSetting} from "../../core/settings/Settings";
 import {SETTING_AUTH_TOKEN} from "../../core/settings/SettingsNames";
@@ -11,7 +11,7 @@ type LoginResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.Log
 type GetUserResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.GetUserResponse
 type ErrorResponse = platformShared.io.vitalir.kotlinhub.shared.common.ErrorResponse
 
-export class DefaultUserRepository implements UserRepository {
+export class DefaultAuthRepository implements AuthRepository {
     logout(): Promise<Boolean> {
         clearSetting(SETTING_AUTH_TOKEN)
         return Promise.resolve(true);

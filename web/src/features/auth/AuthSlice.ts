@@ -3,10 +3,10 @@ import {AuthState} from "./AuthState";
 import {readSetting} from "../../core/settings/Settings";
 import {SETTING_AUTH_TOKEN} from "../../core/settings/SettingsNames";
 import {createAppAsyncThunk} from "../../app/hooks";
-import {User} from "../user/User";
+import {User} from "./User";
 import {AppDispatch} from "../../app/store";
 import {appGraph} from "../../app/dependency_injection";
-import {LoginParams, SuccessfulLoginResult} from "../user/UserRepository";
+import {LoginParams, SuccessfulLoginResult} from "./AuthRepository";
 
 const getInitialState: () => AuthState = () => {
     const authToken = readSetting(SETTING_AUTH_TOKEN);
@@ -27,7 +27,7 @@ export const fetchCurrentUser = createAppAsyncThunk<
     User,
     void
 >("users/fetch", async (arg, thunkApi) => {
-    const authRepository = thunkApi.extra.appGraph.userGraph.userRepository
+    const authRepository = thunkApi.extra.appGraph.authGraph.authRepository
     return await authRepository.getUser();
 })
 
@@ -40,7 +40,7 @@ export const loginUser = createAppAsyncThunk<
     SuccessfulLoginResult,
     LoginParams
 >("login/loginUser", async (request: LoginParams, { extra, rejectWithValue}) => {
-    const authRepository = extra.appGraph.userGraph.userRepository
+    const authRepository = extra.appGraph.authGraph.authRepository
     const result = await authRepository.loginUser(request)
     switch (result.type) {
         case "success":
@@ -51,7 +51,7 @@ export const loginUser = createAppAsyncThunk<
 })
 
 export const logoutThunk = () => async (dispatch: AppDispatch) => {
-    const isLogoutSuccessful = await appGraph.userGraph.userRepository.logout();
+    const isLogoutSuccessful = await appGraph.authGraph.authRepository.logout();
     if (isLogoutSuccessful) {
         dispatch(authSlice.actions.logout())
     }
