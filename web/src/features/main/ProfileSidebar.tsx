@@ -1,6 +1,6 @@
 import {Avatar, Stack, Typography} from "@mui/material";
 import React from "react";
-import {getFullName, User} from "../user/User";
+import {getFullName, User} from "../auth/User";
 
 export interface ProfileSidebarProps {
     user: User

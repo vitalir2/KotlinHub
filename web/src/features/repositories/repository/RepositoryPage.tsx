@@ -4,35 +4,35 @@ import {Stack, SxProps, Tab, Tabs, Typography} from "@mui/material";
 import {ReactElement, useEffect, useMemo, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks";
 import {fetchRepository} from "./RepositorySlice";
-import {User} from "../../user/User";
-import {fetchCurrentUser} from "../../user/UserSlice";
+import {User} from "../../auth/User";
 import {ErrorPlaceholder} from "../../../core/view/placeholder/ErrorPlaceholder";
 import {LoadingPlaceholder} from "../../../core/view/placeholder/LoadingPlaceholder";
 import {RepositoryInfo} from "./RepositoryInfo";
 import {RepositorySettingsInfo} from "./RepositorySettingsInfo";
+import {useAuthState} from "../../auth/AuthHooks";
 
 export function RepositoryPage() {
     const dispatch = useAppDispatch()
 
     const { repositoryId } = useParams()
-    const user = useAppSelector(state => state.user.user)
+    const authState = useAuthState();
+    const user = authState.user;
     const repository = useAppSelector(state => state.repository.repository)
 
     useEffect(() => {
         if (repositoryId === undefined) return
         dispatch(fetchRepository(repositoryId))
-        dispatch(fetchCurrentUser())
     }, [repositoryId, dispatch])
 
-    if (repository.kind === "loading" || user.kind === "loading") {
+    if (user === undefined || repository.kind === "loading") {
         return <LoadingPlaceholder/>
     }
 
-    if (repositoryId === undefined || repository.kind === "error" || user.kind === "error") {
+    if (repositoryId === undefined || repository.kind === "error") {
         return <ErrorPlaceholder error={"Something went wrong"} />
     }
 
-    return <RepositoryContainer user={user.data} repository={repository.data}/>
+    return <RepositoryContainer user={user} repository={repository.data}/>
 }
 
 interface RepositoryContainerProps {

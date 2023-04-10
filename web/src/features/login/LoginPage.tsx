@@ -9,21 +9,20 @@ import {
     TextField, Theme,
     Typography
 } from "@mui/material";
-import React, {useEffect} from "react";
+import React from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {loginUser, setLogin, setPassword, setRememberMe} from "./LoginSlice";
+import {setLogin, setPassword, setRememberMe} from "./LoginSlice";
 import {AppDispatch} from "../../app/store";
-import {useNavigate} from "react-router-dom";
-import {SETTING_AUTH_TOKEN} from "../../core/settings/SettingsNames";
+import {loginThunk} from "../auth/AuthSlice";
+
+const containerStyle: SxProps<Theme> = {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    height: "85vh",
+}
 
 export function LoginPage() {
-    const containerStyle: SxProps<Theme> = {
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        justifyContent: "center",
-    }
-
     return (
         <Container maxWidth={"xs"} sx={containerStyle}>
             <LoginForm/>
@@ -37,18 +36,6 @@ export function LoginPage() {
 function LoginForm() {
     const state = useAppSelector(state => state.login)
     const dispatch = useAppDispatch()
-    const navigate = useNavigate()
-
-    const userToken = state.userToken
-
-    useEffect(() => {
-        if (userToken !== undefined) {
-            // TODO implement remember me functionality
-            document.cookie = `${SETTING_AUTH_TOKEN}=${userToken}; Secure`
-            navigate("/main")
-        }
-    }, [navigate, userToken])
-
     const isButtonEnabled = state.login.errorMessage === undefined && state.password.errorMessage === undefined &&
         state.login.value !== "" && state.password.value !== ""
 
@@ -80,7 +67,7 @@ function LoginForm() {
                     if (state.isValidating) return
 
                     dispatch(
-                        loginUser(
+                        loginThunk(
                             {
                                 username: state.login.value,
                                 password: state.password.value,

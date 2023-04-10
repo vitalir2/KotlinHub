@@ -1,5 +1,5 @@
 import axios from "axios";
-import {readCookie} from "../core/settings/Cookies";
+import {readSetting} from "../core/settings/Settings";
 import {SETTING_AUTH_TOKEN} from "../core/settings/SettingsNames";
 import {BACKEND_URL_DEVELOPMENT, BACKEND_URL_PRODUCTION, isProductionBackend} from "./environment";
 
@@ -23,8 +23,15 @@ export const baseApi = axios.create({
 })
 
 export function getDefaultHeaders() {
+    const authToken = readSetting(SETTING_AUTH_TOKEN);
+    if (authToken === undefined) {
+        return {
+
+        };
+    }
+
     return {
-        "Authorization": `Bearer ${readCookie(SETTING_AUTH_TOKEN)}`,
+        "Authorization": `Bearer ${authToken}`,
     }
 }
 

@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {createAppAsyncThunk} from "../../app/hooks";
-import {LoginParams, LoginResult, LoginResultError, SuccessfulLoginResult} from "../user/UserRepository";
+import {LoginResultError} from "../auth/AuthRepository";
+import {loginUser} from "../auth/AuthSlice";
 
 export interface LoginState {
     login: TextInputData,
@@ -25,20 +25,6 @@ const initialState: LoginState = {
     rememberUser: false,
     isValidating: false,
 }
-
-export const loginUser = createAppAsyncThunk<
-    SuccessfulLoginResult,
-    LoginParams
->("login/loginUser", async (request: LoginParams, { extra, rejectWithValue }) => {
-    const authRepository = extra.appGraph.userGraph.userRepository
-    const result = await authRepository.loginUser(request)
-    switch (result.type) {
-        case "success":
-            return result
-        case "error":
-            return rejectWithValue(result.error)
-    }
-})
 
 export const loginSlice = createSlice({
     name: "login",
