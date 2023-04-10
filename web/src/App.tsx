@@ -1,5 +1,5 @@
 import React from 'react';
-import {createTheme, CssBaseline, ThemeProvider} from "@mui/material";
+import {createTheme, CssBaseline, Stack, ThemeProvider} from "@mui/material";
 import {Outlet} from "react-router-dom";
 import {Provider} from "react-redux";
 import {store} from "./app/store";
@@ -21,8 +21,10 @@ function App() {
         <Provider store={store}>
             <ThemeProvider theme={appTheme}>
                 <CssBaseline/>
-                <KotlinHubToolbarRedux/>
-                <Outlet/>
+                <Stack direction={"column"}>
+                    <KotlinHubToolbarRedux/>
+                    <Outlet/>
+                </Stack>
             </ThemeProvider>
         </Provider>
     );

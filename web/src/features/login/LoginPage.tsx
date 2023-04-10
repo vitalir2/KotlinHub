@@ -15,14 +15,14 @@ import {setLogin, setPassword, setRememberMe} from "./LoginSlice";
 import {AppDispatch} from "../../app/store";
 import {loginThunk} from "../auth/AuthSlice";
 
-export function LoginPage() {
-    const containerStyle: SxProps<Theme> = {
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        justifyContent: "center",
-    }
+const containerStyle: SxProps<Theme> = {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    height: "85vh",
+}
 
+export function LoginPage() {
     return (
         <Container maxWidth={"xs"} sx={containerStyle}>
             <LoginForm/>

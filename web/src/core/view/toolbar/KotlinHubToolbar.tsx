@@ -85,19 +85,6 @@ export function KotlinHubToolbar({isLoggedIn}: KotlinHubToolbarProps) {
                 >
                     <KotlinHubLogoIcon/>
                 </SvgIcon>
-                {!isLoggedIn &&
-                    <Typography
-                        variant={"h6"}
-                        component={NavLink}
-                        to={"/"}
-                        sx={{
-                            ...primaryLinkStyle,
-                            marginLeft: "auto",
-                        }}
-                    >
-                        Sign in
-                    </Typography>
-                }
                 {isLoggedIn && <AvatarMenu settingsMenu={settingsMenu}/>}
             </Toolbar>
         </AppBar>
