@@ -5,7 +5,15 @@ import {loginSlice} from "../features/login/LoginSlice";
 import {repositorySlice} from "../features/repositories/repository/RepositorySlice";
 import {authReducer} from "../features/auth/AuthSlice";
 import logger from 'redux-logger';
+import {isProductionEnv} from "./environment";
 
+const getMiddlewares = () => {
+    const middlewares = [];
+    if (!isProductionEnv()) {
+        middlewares.push(logger);
+    }
+    return middlewares;
+};
 
 export const store = configureStore({
   reducer: {
@@ -21,7 +29,7 @@ export const store = configureStore({
               appGraph: appGraph,
           }
         },
-      }).concat(logger)
+      }).concat(getMiddlewares())
 });
 
 export type AppDispatch = typeof store.dispatch;

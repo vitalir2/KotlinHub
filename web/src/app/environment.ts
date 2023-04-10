@@ -1,6 +1,6 @@
 import * as process from "process";
 
-function isProductionEnv(): boolean {
+export function isProductionEnv(): boolean {
     return process.env.NODE_ENV === 'production'
 }
 
