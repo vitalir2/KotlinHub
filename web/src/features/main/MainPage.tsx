@@ -5,6 +5,7 @@ import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {fetchCurrentRepositories} from "./MainSlice";
 import {useAuthState} from "../auth/AuthHooks";
+import {ErrorPlaceholder} from "../../core/view/placeholder/ErrorPlaceholder";
 
 export function MainPage() {
     const authState = useAuthState();
@@ -15,7 +16,9 @@ export function MainPage() {
         dispatch(fetchCurrentRepositories())
     }, [dispatch])
 
-    // TODO handle auth error by showing placeholder?
+    if (authState.error !== undefined) {
+        return <ErrorPlaceholder error={authState.error}/>
+    }
 
     return (
         <Stack direction={"row"} spacing={2} sx={{p: 2}}>
