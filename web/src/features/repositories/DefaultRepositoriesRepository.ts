@@ -20,8 +20,10 @@ export class DefaultRepositoriesRepository implements RepositoriesRepository {
             const result = await baseApi.post<CreateRepositoryResponse>("/repositories", request, {
                 headers: getDefaultHeaders(),
             });
-            const repositoryUrl = result.data.repositoryUrl // TODO replace by id
-            const repositoryId = repositoryUrl.substring(repositoryUrl.lastIndexOf("/"));
+            const repositoryUrl = result.data.repositoryUrl; // TODO replace by id
+            const repositoryIdStart = repositoryUrl.lastIndexOf("/") + 1;
+            const repositoryIdEnd = repositoryUrl.lastIndexOf(".git") - 1;
+            const repositoryId = repositoryUrl.substring(repositoryIdStart, repositoryIdEnd);
             return {
                 kind: "success",
                 repositoryId: repositoryId,
@@ -41,18 +43,18 @@ export class DefaultRepositoriesRepository implements RepositoriesRepository {
     }
 
     private getCreateRepositoryRequest(params: CreateRepositoryParams): CreateRepositoryRequest {
-        let accessMode: platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository.AccessMode
+        let accessMode: string
         switch (params.accessMode) {
             case RepositoryAccessMode.PUBLIC:
-                accessMode = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository.AccessMode.PUBLIC;
+                accessMode = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository.AccessMode.PUBLIC.name;
                 break;
             case RepositoryAccessMode.PRIVATE:
-                accessMode = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository.AccessMode.PRIVATE;
+                accessMode = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository.AccessMode.PRIVATE.name;
                 break;
         }
         return {
             name: params.name,
-            accessMode: accessMode,
+            accessMode: accessMode as any as platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository.AccessMode,
             description: params.description,
         };
     }

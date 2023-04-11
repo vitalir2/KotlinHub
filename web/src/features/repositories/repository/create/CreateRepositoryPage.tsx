@@ -25,6 +25,8 @@ export function CreateRepositoryPage() {
     const [accessMode, setAccessMode] = useState(RepositoryAccessMode.PUBLIC);
     const [description, setDescription] = useState("");
     const [isCreating, setCreatingRepository] = useState(false);
+
+    const isButtonEnabled = name.value !== "" && name.errorMessage === undefined;
     const onRegisterClick = async () => {
         if (isCreating) return;
         setCreatingRepository(true);
@@ -45,36 +47,38 @@ export function CreateRepositoryPage() {
             case "error":
                 setName({
                     ...name,
-                    errorMessage: result.error,
+                    errorMessage: "Unknown error", // TODO replace by some helpful message
                 })
                 break;
         }
     };
 
     return (
-        <Stack direction={"column"} spacing={2}>
-            <CreateRepositoryForm
-                name={name}
-                accessMode={accessMode}
-                description={description}
-                setName={(newName: string) => setName({
-                    ...name,
-                    value: newName,
-                })}
-                setNameError={error => setName({
-                   ...name,
-                   errorMessage: error,
-                })}
-                setAccessMode={setAccessMode}
-                setDescription={setDescription}
-            />
-            <KotlinHubButton
-                title={"Sign In"}
-                isButtonEnabled={true}
-                isLoading={isCreating}
-                onClick={onRegisterClick}
-            />
-        </Stack>
+        <Container maxWidth={"xs"} sx={containerStyle}>
+            <Stack direction={"column"} spacing={2}>
+                <CreateRepositoryForm
+                    name={name}
+                    accessMode={accessMode}
+                    description={description}
+                    setName={(newName: string) => setName({
+                        value: newName,
+                        errorMessage: undefined,
+                    })}
+                    setNameError={error => setName({
+                        ...name,
+                        errorMessage: error,
+                    })}
+                    setAccessMode={setAccessMode}
+                    setDescription={setDescription}
+                />
+                <KotlinHubButton
+                    title={"Create"}
+                    isButtonEnabled={isButtonEnabled}
+                    isLoading={isCreating}
+                    onClick={onRegisterClick}
+                />
+            </Stack>
+        </Container>
     );
 }
 
@@ -106,31 +110,39 @@ export function CreateRepositoryForm(props: CreateRepositoryFormProps) {
     } = props;
 
     return (
-        <Container maxWidth={"xs"} sx={containerStyle}>
-            <Stack direction={"column"} spacing={2}>
-                <Typography variant={"h4"}>Create Repository</Typography>
-                <TextField
-                    variant={"outlined"}
-                    onChange={event => setName(event.target.value)}
-                    value={name}
-                    />
-                <ToggleButtonGroup
-                    color={"primary"}
-                    value={accessMode}
-                    exclusive
-                    onChange={(_, newAccessMode) => setAccessMode(newAccessMode)}
-                >
-                    <ToggleButton value={RepositoryAccessMode.PUBLIC}>Public</ToggleButton>
-                    <ToggleButton value={RepositoryAccessMode.PRIVATE}>Private</ToggleButton>
-                </ToggleButtonGroup>
-                <TextField
-                    variant={"outlined"}
-                    onChange={event => setDescription(event.target.value)}
-                    value={description}
-                    multiline
-                    rows={3}
-                />
-            </Stack>
-        </Container>
+        <Stack direction={"column"} spacing={2}>
+            <Typography
+                variant={"h4"}
+                align={"center"}
+            >
+                Create Repository
+            </Typography>
+            <TextField
+                variant={"outlined"}
+                label={"Repository name"}
+                required
+                onChange={event => setName(event.target.value)}
+                value={name.value}
+                helperText={name.errorMessage}
+                error={name.errorMessage !== undefined}
+            />
+            <ToggleButtonGroup
+                color={"primary"}
+                value={accessMode}
+                exclusive
+                onChange={(_, newAccessMode) => setAccessMode(newAccessMode)}
+            >
+                <ToggleButton value={RepositoryAccessMode.PUBLIC}>Public</ToggleButton>
+                <ToggleButton value={RepositoryAccessMode.PRIVATE}>Private</ToggleButton>
+            </ToggleButtonGroup>
+            <TextField
+                variant={"outlined"}
+                label={"Repository Description"}
+                onChange={event => setDescription(event.target.value)}
+                value={description}
+                multiline
+                rows={3}
+            />
+        </Stack>
     );
 }
