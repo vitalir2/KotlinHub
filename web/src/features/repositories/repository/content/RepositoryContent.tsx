@@ -5,6 +5,7 @@ import React from "react";
 import {Grid, Typography} from "@mui/material";
 import {Link as RouterLink, useLocation} from "react-router-dom";
 import {RepositoryFile, RepositoryFileType} from "../../RepositoryFile";
+import {EmptyRepositoryContent} from "./EmptyRepositoryContent";
 
 export interface RepositoryContentProps {
     repositoryFiles: RepositoryFile[],
@@ -13,20 +14,24 @@ export interface RepositoryContentProps {
 
 export function RepositoryContent({repositoryFiles, path}: RepositoryContentProps) {
     let fileIndex = 0;
-    return (
-        <Grid container spacing={0.5} sx={{
-            border: '1px solid lightgrey',
-        }}>
-            {repositoryFiles.map(file =>
-                <RepositoryFileView
-                    key={fileIndex}
-                    repositoryFile={file}
-                    index={fileIndex++}
-                    path={path}
-                />)
-            }
-        </Grid>
-    )
+    if (repositoryFiles.length === 0) {
+        return <EmptyRepositoryContent/>;
+    } else {
+        return (
+            <Grid container spacing={0.5} sx={{
+                border: '1px solid lightgrey',
+            }}>
+                {repositoryFiles.map(file =>
+                    <RepositoryFileView
+                        key={fileIndex}
+                        repositoryFile={file}
+                        index={fileIndex++}
+                        path={path}
+                    />)
+                }
+            </Grid>
+        );
+    }
 }
 
 export interface RepositoryFileViewProps {
