@@ -13,19 +13,42 @@ import {RepositoryAccessMode} from "../../Repository";
 import {TextInputData} from "../../../../core/models/TextInputData";
 import {KotlinHubButton} from "../../../../core/view/button/KotlinHubButton";
 import {appGraph} from "../../../../app/dependency_injection";
+import {useNavigate} from "react-router-dom";
 
 export function CreateRepositoryPage() {
+    const navigate = useNavigate();
+
     const [name, setName] = useState<TextInputData>({
         value: "",
         errorMessage: undefined,
     });
     const [accessMode, setAccessMode] = useState(RepositoryAccessMode.PUBLIC);
     const [description, setDescription] = useState("");
-    const [isRegistering, setRegistering] = useState(false);
-    const onRegisterClick = () => {
-        setRegistering(true)
-        const caller = appGraph.repositoriesGraph.repositoriesRepository; // TODO
-        setRegistering(false)
+    const [isCreating, setCreatingRepository] = useState(false);
+    const onRegisterClick = async () => {
+        if (isCreating) return;
+        setCreatingRepository(true);
+
+        const caller = appGraph.repositoriesGraph.repositoriesRepository;
+        const result = await caller.createRepository({
+            name: name.value,
+            accessMode: accessMode,
+            description: description,
+        });
+
+        setCreatingRepository(false);
+
+        switch (result.kind) {
+            case "success":
+                navigate(`/repositories/${result.repositoryId}`)
+                break;
+            case "error":
+                setName({
+                    ...name,
+                    errorMessage: result.error,
+                })
+                break;
+        }
     };
 
     return (
@@ -48,7 +71,7 @@ export function CreateRepositoryPage() {
             <KotlinHubButton
                 title={"Sign In"}
                 isButtonEnabled={true}
-                isLoading={isRegistering}
+                isLoading={isCreating}
                 onClick={onRegisterClick}
             />
         </Stack>

@@ -18,6 +18,8 @@ import io.vitalir.kotlinhub.server.app.infrastructure.docs.reqType
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
 import io.vitalir.kotlinhub.shared.common.ErrorResponse
 import io.vitalir.kotlinhub.shared.common.network.Url
+import io.vitalir.kotlinhub.shared.feature.repository.CreateRepositoryRequest
+import io.vitalir.kotlinhub.shared.feature.repository.CreateRepositoryResponse
 
 internal fun Route.createRepositoryRoute(
     createRepositoryUseCase: CreateRepositoryUseCase,

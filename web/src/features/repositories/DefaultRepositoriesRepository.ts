@@ -1,16 +1,61 @@
 import * as platformShared from "platform-shared/platform-shared"
 import {baseApi, convertNullableToTypescriptModel, getDefaultHeaders} from "../../app/fetch";
-import {RepositoriesRepository} from "./RepositoriesRepository";
+import {CreateRepositoryParams, CreateRepositoryResult, RepositoriesRepository} from "./RepositoriesRepository";
 import {Repository, RepositoryAccessMode} from "./Repository";
 import {RepositoryFile, RepositoryFileType} from "./RepositoryFile";
+import axios from "axios";
 
 type GetRepositoriesResponse = platformShared.io.vitalir.kotlinhub.shared.feature.repository.GetRepositoriesResponse
 type GetRepositoryResponse = platformShared.io.vitalir.kotlinhub.shared.feature.repository.GetRepositoryResponse
 type GetRepositoryFilesResponse = platformShared.io.vitalir.kotlinhub.shared.feature.repository.GetRepositoryFilesResponse
+type CreateRepositoryRequest = platformShared.io.vitalir.kotlinhub.shared.feature.repository.CreateRepositoryRequest
+type CreateRepositoryResponse = platformShared.io.vitalir.kotlinhub.shared.feature.repository.CreateRepositoryResponse
 type ApiRepository = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository
 type ApiRepositoryFile = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepositoryFile
 
 export class DefaultRepositoriesRepository implements RepositoriesRepository {
+    async createRepository(params: CreateRepositoryParams): Promise<CreateRepositoryResult> {
+        const request = this.getCreateRepositoryRequest(params);
+        try {
+            const result = await baseApi.post<CreateRepositoryResponse>("/repositories", request, {
+                headers: getDefaultHeaders(),
+            });
+            const repositoryUrl = result.data.repositoryUrl // TODO replace by id
+            const repositoryId = repositoryUrl.substring(repositoryUrl.lastIndexOf("/"));
+            return {
+                kind: "success",
+                repositoryId: repositoryId,
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                return {
+                    kind: "error",
+                    error: error.message,
+                }
+            }
+            return {
+                kind: "error",
+                error: "Unknown",
+            };
+        }
+    }
+
+    private getCreateRepositoryRequest(params: CreateRepositoryParams): CreateRepositoryRequest {
+        let accessMode: platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository.AccessMode
+        switch (params.accessMode) {
+            case RepositoryAccessMode.PUBLIC:
+                accessMode = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository.AccessMode.PUBLIC;
+                break;
+            case RepositoryAccessMode.PRIVATE:
+                accessMode = platformShared.io.vitalir.kotlinhub.shared.feature.repository.ApiRepository.AccessMode.PRIVATE;
+                break;
+        }
+        return {
+            name: params.name,
+            accessMode: accessMode,
+            description: params.description,
+        };
+    }
     getRepositoryFileContent(userId: string, repositoryId: string, path: string): Promise<string> {
         return baseApi.get<string>(
             `/repositories/${userId}/${repositoryId}/content/${path}`,
