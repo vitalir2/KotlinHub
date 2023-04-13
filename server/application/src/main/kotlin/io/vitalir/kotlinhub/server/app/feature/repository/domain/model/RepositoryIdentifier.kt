@@ -1,6 +1,7 @@
 package io.vitalir.kotlinhub.server.app.feature.repository.domain.model
 
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
+import io.vitalir.kotlinhub.shared.feature.repository.RepositoryId
 
 sealed interface RepositoryIdentifier {
 

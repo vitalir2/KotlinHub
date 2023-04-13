@@ -20,10 +20,7 @@ export class DefaultRepositoriesRepository implements RepositoriesRepository {
             const result = await baseApi.post<CreateRepositoryResponse>("/repositories", request, {
                 headers: getDefaultHeaders(),
             });
-            const repositoryUrl = result.data.repositoryUrl; // TODO replace by id
-            const repositoryIdStart = repositoryUrl.lastIndexOf("/") + 1;
-            const repositoryIdEnd = repositoryUrl.lastIndexOf(".git") - 1;
-            const repositoryId = repositoryUrl.substring(repositoryIdStart, repositoryIdEnd);
+            const repositoryId = result.data.repositoryId.toString();
             return {
                 kind: "success",
                 repositoryId: repositoryId,

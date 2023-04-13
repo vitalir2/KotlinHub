@@ -10,6 +10,7 @@ import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
+import io.vitalir.kotlinhub.shared.feature.repository.RepositoryId
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toDomainModel
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
@@ -17,7 +18,6 @@ import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.reqType
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
 import io.vitalir.kotlinhub.shared.common.ErrorResponse
-import io.vitalir.kotlinhub.shared.common.network.Url
 import io.vitalir.kotlinhub.shared.feature.repository.CreateRepositoryRequest
 import io.vitalir.kotlinhub.shared.feature.repository.CreateRepositoryResponse
 
@@ -51,7 +51,7 @@ internal fun NotarizedRoute.Config.createRepositoryDocs() {
         response {
             resType<CreateRepositoryResponse>()
             responseCode(HttpStatusCode.Created)
-            description("URL of created repository to clone")
+            description("ID of the created repository")
         }
         badRequestResponse()
         canRespond {
@@ -67,12 +67,14 @@ internal fun NotarizedRoute.Config.createRepositoryDocs() {
     }
 }
 
-private fun Either<CreateRepositoryUseCase.Error, Url>.toCreateRepositoryResponseData(): ResponseData {
+private fun Either<CreateRepositoryUseCase.Error, RepositoryId>.toCreateRepositoryResponseData(): ResponseData {
     return when (this) {
         is Either.Left -> value.toResponseData()
         is Either.Right -> ResponseData(
             code = HttpStatusCode.Created,
-            body = CreateRepositoryResponse(repositoryUrl = value.toString()),
+            body = CreateRepositoryResponse(
+                repositoryId = value,
+            ),
         )
     }
 }

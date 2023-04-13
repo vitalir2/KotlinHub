@@ -6,5 +6,5 @@ import kotlin.js.JsExport
 @Serializable
 @JsExport
 class CreateRepositoryResponse(
-    val repositoryUrl: String,
+    val repositoryId: RepositoryId,
 )

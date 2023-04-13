@@ -4,6 +4,7 @@ import io.vitalir.kotlinhub.server.app.common.domain.LocalDateTimeProvider
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.shared.common.network.Path
 import io.vitalir.kotlinhub.shared.common.network.Url
+import io.vitalir.kotlinhub.shared.feature.repository.RepositoryId
 import java.time.LocalDateTime
 
 data class Repository(

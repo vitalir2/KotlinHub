@@ -123,8 +123,8 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 createdAt = nowDateTime,
                 updatedAt = nowDateTime,
             )
-            val url = result.shouldBeRight()
-            url.toString() shouldBe "http://localhost/${repositoryOwner.id}/$someRepositoryName.git"
+            val id = result.shouldBeRight()
+            id shouldBe someRepositoryId
             coVerify {
                 repositoryPersistence.addRepository(expectedRepository.copy(id = Repository.AUTOINCREMENT_ID))
             }

@@ -16,7 +16,6 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.User
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.persistence.UserPersistence
 import io.vitalir.kotlinhub.server.app.infrastructure.git.GitManager
-import io.vitalir.kotlinhub.shared.common.network.ServicesInfo
 
 internal class CreateRepositoryUseCaseImpl(
     private val userPersistence: UserPersistence,
@@ -55,11 +54,7 @@ internal class CreateRepositoryUseCaseImpl(
                 result.value.toCreateError().left()
             }
 
-            is Either.Right -> {
-                repositoryWithRealId.createHttpResourceUrl(
-                    baseUrl = ServicesInfo.ReverseProxy.mainUrl,
-                ).right()
-            }
+            is Either.Right -> repositoryWithRealId.id.right()
         }
     }
 
