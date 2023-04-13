@@ -5,9 +5,10 @@ export interface KotlinHubTextFieldProps {
     field: TextInputData,
     label: string,
     onChange: (value: string) => void,
+    type?: string,
 }
 
-export function KotlinHubTextField({field, label, onChange}: KotlinHubTextFieldProps) {
+export function KotlinHubTextField({field, label, onChange, type}: KotlinHubTextFieldProps) {
     return (
         <TextField
             label={label}
@@ -15,6 +16,7 @@ export function KotlinHubTextField({field, label, onChange}: KotlinHubTextFieldP
             error={field.errorMessage !== undefined}
             helperText={field.errorMessage}
             onChange={event => onChange(event.target.value)}
+            type={type}
         />
     );
 }

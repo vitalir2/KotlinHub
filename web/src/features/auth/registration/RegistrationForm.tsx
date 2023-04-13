@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import {appGraph} from "../../../app/dependency_injection";
-import {Stack} from "@mui/material";
+import {Stack, Typography} from "@mui/material";
 import {KotlinHubTextField} from "../../../core/view/input/KotlinHubTextField";
 import {KotlinHubButton} from "../../../core/view/button/KotlinHubButton";
 import {TextInputData} from "../../../core/models/TextInputData";
@@ -48,6 +48,7 @@ export function RegistrationForm(props: RegistrationFormProps) {
 
     return (
         <Stack direction={"column"} spacing={2}>
+            <Typography variant={"h3"} align={"center"}>Register</Typography>
             <KotlinHubTextField
                 label={"Username"}
                 field={username}
@@ -65,6 +66,7 @@ export function RegistrationForm(props: RegistrationFormProps) {
                     value: value,
                     errorMessage: undefined,
                 })}
+                type={"password"}
             />
             <KotlinHubButton
                 title={"Sign Up"}

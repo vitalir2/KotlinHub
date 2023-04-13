@@ -8,6 +8,7 @@ import {
 } from "../features/repositories/repository/content/RepositoryFileContentDestination";
 import {RootPage} from "../features/root/RootPage";
 import {CreateRepositoryPage} from "../features/repositories/repository/create/CreateRepositoryPage";
+import {RegistrationPage} from "../features/auth/registration/RegistrationPage";
 
 export function createAppRouter(): RemixRouter {
     return createBrowserRouter([
@@ -18,6 +19,10 @@ export function createAppRouter(): RemixRouter {
                 {
                    index: true,
                    element: <RootPage/>,
+                },
+                {
+                    path: "register",
+                    element: <RegistrationPage/>,
                 },
                 {
                     path: "repositories/create",

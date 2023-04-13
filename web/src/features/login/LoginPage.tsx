@@ -118,7 +118,7 @@ function RegisterNow(props: RegisterNowProps) {
             }}>
                 Don't have an account yet?
             </Typography>
-            <Link href={"#"} variant={"body1"} underline={"none"} sx={{
+            <Link href={"/register"} variant={"body1"} underline={"none"} sx={{
                 textAlign: "center",
             }}>
                 Register now
