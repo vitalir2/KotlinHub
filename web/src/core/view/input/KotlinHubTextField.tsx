@@ -1,5 +1,5 @@
 import {TextField} from "@mui/material";
-import {TextInputData} from "../../../core/models/TextInputData";
+import {TextInputData} from "../../models/TextInputData";
 
 export interface KotlinHubTextFieldProps {
     field: TextInputData,

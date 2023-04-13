@@ -2,7 +2,7 @@ import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import {appGraph} from "../../../app/dependency_injection";
 import {Stack} from "@mui/material";
-import {KotlinHubTextField} from "./KotlinHubTextField";
+import {KotlinHubTextField} from "../../../core/view/input/KotlinHubTextField";
 import {KotlinHubButton} from "../../../core/view/button/KotlinHubButton";
 import {TextInputData} from "../../../core/models/TextInputData";
 
