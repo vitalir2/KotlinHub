@@ -1,7 +1,7 @@
 import * as platformShared from "platform-shared"
 import {baseApi, convertNullableToTypescriptModel, getDefaultHeaders} from "../../app/fetch";
 import {User} from "./User";
-import {LoginParams, LoginResult, LoginResultError, SuccessfulLoginResult, AuthRepository} from "./AuthRepository";
+import {LoginParams, LoginResult, LoginResultError, SuccessfulLoginResult, AuthRepository, RegistrationParams, RegistrationResult} from "./AuthRepository";
 import axios from "axios";
 import {clearSetting, setSetting} from "../../core/settings/Settings";
 import {SETTING_AUTH_TOKEN} from "../../core/settings/SettingsNames";
@@ -12,6 +12,10 @@ type GetUserResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.G
 type ErrorResponse = platformShared.io.vitalir.kotlinhub.shared.common.ErrorResponse
 
 export class DefaultAuthRepository implements AuthRepository {
+    registerUser(params: RegistrationParams): Promise<RegistrationResult> {
+        // TODO
+        throw new Error("Method not implemented.");
+    }
     logout(): Promise<Boolean> {
         clearSetting(SETTING_AUTH_TOKEN)
         return Promise.resolve(true);
