@@ -110,7 +110,7 @@ function RepositoryName({username, repositoryName}: RepositoryNameProps) {
                 variant={variant}
                 sx={linkStyle}
                 component={NavLink}
-                to={`/main`}
+                to={`/`}
             >
                 {username}
             </Typography>

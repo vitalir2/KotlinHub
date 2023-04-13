@@ -1,6 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {LoginResultError} from "../auth/AuthRepository";
 import {loginUser} from "../auth/AuthSlice";
+import {TextInputData} from "../../core/models/TextInputData";
 
 export interface LoginState {
     login: TextInputData,
@@ -8,11 +9,6 @@ export interface LoginState {
     rememberUser: boolean,
     isValidating: boolean,
     userToken?: string,
-}
-
-export interface TextInputData {
-    value: string,
-    errorMessage?: string,
 }
 
 const initialState: LoginState = {

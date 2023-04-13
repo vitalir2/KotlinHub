@@ -7,7 +7,7 @@ import {
     MenuItem,
     Avatar,
     IconButton,
-    SvgIcon, SxProps
+    SvgIcon, SxProps, Stack
 } from "@mui/material";
 import KotlinHubLogoIcon from "../icon/KotlinHubLogoIcon";
 import React, {useState} from "react";
@@ -15,6 +15,7 @@ import {Link as NavLink, useNavigate} from "react-router-dom";
 import {useAppDispatch} from "../../../app/hooks";
 import {useAuthState} from "../../../features/auth/AuthHooks";
 import {logoutThunk} from "../../../features/auth/AuthSlice";
+import {Add as AddIcon} from "@mui/icons-material";
 
 export interface KotlinHubToolbarProps {
     isLoggedIn: boolean,
@@ -85,7 +86,17 @@ export function KotlinHubToolbar({isLoggedIn}: KotlinHubToolbarProps) {
                 >
                     <KotlinHubLogoIcon/>
                 </SvgIcon>
-                {isLoggedIn && <AvatarMenu settingsMenu={settingsMenu}/>}
+                {isLoggedIn &&
+                    <Stack direction={"row"} sx={{marginLeft: "auto"}}>
+                        <IconButton
+                            component={NavLink}
+                            to={"/repositories/create"}
+                        >
+                            <AddIcon/>
+                        </IconButton>
+                        <AvatarMenu settingsMenu={settingsMenu}/>
+                    </Stack>
+                }
             </Toolbar>
         </AppBar>
     )
@@ -107,7 +118,7 @@ function AvatarMenu({settingsMenu}: AvatarMenuProps) {
     };
 
     return (
-        <Box sx={{marginLeft: "auto"}}>
+        <Box>
             <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
                 <Avatar alt="User Avatar" src={"TODO"}/>
             </IconButton>

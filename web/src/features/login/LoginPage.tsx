@@ -1,7 +1,5 @@
 import {
-    Button,
-    Checkbox, CircularProgress,
-    Container,
+    Checkbox, Container,
     FormControlLabel,
     Link,
     Stack,
@@ -14,6 +12,7 @@ import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {setLogin, setPassword, setRememberMe} from "./LoginSlice";
 import {AppDispatch} from "../../app/store";
 import {loginThunk} from "../auth/AuthSlice";
+import {KotlinHubButton} from "../../core/view/button/KotlinHubButton";
 
 const containerStyle: SxProps<Theme> = {
     display: "flex",
@@ -60,9 +59,10 @@ function LoginForm() {
                 onChange={event => dispatch(setPassword(event.target.value))}
             />
             <AdditionalOptions dispatch={dispatch} rememberUser={state.rememberUser}/>
-            <Button
-                variant={"contained"}
-                disabled={!isButtonEnabled}
+            <KotlinHubButton
+                title={"Sign in"}
+                isButtonEnabled={isButtonEnabled}
+                isLoading={state.isValidating}
                 onClick={() => {
                     if (state.isValidating) return
 
@@ -74,9 +74,7 @@ function LoginForm() {
                             }
                         )
                     )
-                }}>
-                {state.isValidating ? <CircularProgress/> : "Sign in"}
-            </Button>
+                }}/>
         </Stack>
     )
 }
