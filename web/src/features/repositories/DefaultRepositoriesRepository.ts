@@ -20,7 +20,7 @@ export class DefaultRepositoriesRepository implements RepositoriesRepository {
             const result = await baseApi.post<CreateRepositoryResponse>("/repositories", request, {
                 headers: getDefaultHeaders(),
             });
-            const repositoryId = result.data.repositoryId.toString();
+            const repositoryId = result.data.repositoryName;
             return {
                 kind: "success",
                 repositoryId: repositoryId,

@@ -1,10 +1,11 @@
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
-import {appGraph} from "../../../app/dependency_injection";
 import {Stack, Typography} from "@mui/material";
 import {KotlinHubTextField} from "../../../core/view/input/KotlinHubTextField";
 import {KotlinHubButton} from "../../../core/view/button/KotlinHubButton";
 import {TextInputData} from "../../../core/models/TextInputData";
+import {useAppDispatch} from "../../../app/hooks";
+import {registerThunk} from "../AuthSlice";
 
 export interface RegistrationFormProps {
     username: TextInputData,
@@ -15,6 +16,7 @@ export interface RegistrationFormProps {
 
 export function RegistrationForm(props: RegistrationFormProps) {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const {
         username,
@@ -30,10 +32,10 @@ export function RegistrationForm(props: RegistrationFormProps) {
         if (isRegistering) return;
 
         setRegistering(true);
-        const result = await appGraph.authGraph.authRepository.registerUser({
+        const result = await dispatch(registerThunk({
             username: username.value,
             password: password.value,
-        });
+        }));
         switch (result.kind) {
             case "success":
                 navigate("/");

@@ -54,7 +54,7 @@ internal class CreateRepositoryUseCaseImpl(
                 result.value.toCreateError().left()
             }
 
-            is Either.Right -> repositoryWithRealId.id.right()
+            is Either.Right -> repositoryWithRealId.right()
         }
     }
 

@@ -21,12 +21,26 @@ export function RepositoryFileContent({fileName, fileContent}: RepositoryFileCon
         case "jsx":
             contentLanguage = "javascript";
             break;
+        case "json":
+            contentLanguage = "json";
+            fileContent = JSON.stringify(fileContent, null, 2);
+            break;
         case "ts":
         case "tsx":
             contentLanguage = "typescript";
             break;
         case "kt":
+        case "kts":
             contentLanguage = "kotlin";
+            break;
+        case "html":
+            contentLanguage = "html"
+            break;
+        case "yml":
+            contentLanguage = "yml";
+            break;
+        case "sh":
+            contentLanguage = "bash";
             break;
         default:
             contentLanguage = "text";

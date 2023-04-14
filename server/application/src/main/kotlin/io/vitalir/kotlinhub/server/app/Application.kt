@@ -3,6 +3,7 @@ package io.vitalir.kotlinhub.server.app
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.netty.*
+import io.ktor.util.logging.*
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.configureAuth
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.di.AppGraphFactory
@@ -17,7 +18,7 @@ fun main(args: Array<String>) = EngineMain.main(args)
 // Used in application config
 @Suppress("UNUSED")
 fun Application.mainModule() {
-    val appConfig = environment.config.toAppConfig()
+    val appConfig = environment.config.toAppConfig(log)
     val appGraphFactory: AppGraphFactory = AppGraphFactoryImpl(this)
     val appGraph = appGraphFactory.create(appConfig)
 
@@ -28,8 +29,9 @@ fun Application.mainModule() {
     configureSecurity(appConfig)
 }
 
-private fun ApplicationConfig.toAppConfig(): AppConfig {
+private fun ApplicationConfig.toAppConfig(logger: Logger): AppConfig {
     val isDevelopmentMode = property("ktor.development").getString().toBoolean()
+    logger.info("isDevMode=$isDevelopmentMode")
     return AppConfig(
         debug = if (isDevelopmentMode) config("debug").debugConfig else null,
         auth = authConfig,

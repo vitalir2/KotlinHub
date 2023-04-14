@@ -10,7 +10,7 @@ import io.ktor.server.routing.*
 import io.vitalir.kotlinhub.server.app.common.routes.ResponseData
 import io.vitalir.kotlinhub.server.app.common.routes.extensions.respondWith
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
-import io.vitalir.kotlinhub.shared.feature.repository.RepositoryId
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase.CreateRepositoryUseCase
 import io.vitalir.kotlinhub.server.app.feature.repository.routes.toDomainModel
 import io.vitalir.kotlinhub.server.app.infrastructure.auth.userId
@@ -67,13 +67,13 @@ internal fun NotarizedRoute.Config.createRepositoryDocs() {
     }
 }
 
-private fun Either<CreateRepositoryUseCase.Error, RepositoryId>.toCreateRepositoryResponseData(): ResponseData {
+private fun Either<CreateRepositoryUseCase.Error, Repository>.toCreateRepositoryResponseData(): ResponseData {
     return when (this) {
         is Either.Left -> value.toResponseData()
         is Either.Right -> ResponseData(
             code = HttpStatusCode.Created,
             body = CreateRepositoryResponse(
-                repositoryId = value,
+                repositoryName = value.name,
             ),
         )
     }

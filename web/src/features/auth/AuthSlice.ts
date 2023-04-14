@@ -39,6 +39,7 @@ export const loginThunk = (params: LoginParams) => (dispatch: AppDispatch) => {
 export const registerThunk = (params: RegistrationParams) => (dispatch: AppDispatch) => {
     const result = appGraph.authGraph.authRepository.registerUser(params);
     result.then(() => dispatch(fetchCurrentUser()));
+    return result;
 }
 
 export const loginUser = createAppAsyncThunk<

@@ -25,7 +25,7 @@ export class DefaultAuthRepository implements AuthRepository {
     async registerUser(params: RegistrationParams): Promise<RegistrationResult> {
         const request = this.createRegistrationRequest(params);
         try {
-            const response = await baseApi.post<RegistrationResponse>("/users/register", request, {
+            const response = await baseApi.post<RegistrationResponse>("/users", request, {
                 headers: getDefaultHeaders(),
             });
             setSetting(SETTING_AUTH_TOKEN, response.data.token)

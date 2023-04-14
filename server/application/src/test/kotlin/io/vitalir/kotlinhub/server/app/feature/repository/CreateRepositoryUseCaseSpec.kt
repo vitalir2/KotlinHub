@@ -123,8 +123,8 @@ internal class CreateRepositoryUseCaseSpec : ShouldSpec() {
                 createdAt = nowDateTime,
                 updatedAt = nowDateTime,
             )
-            val id = result.shouldBeRight()
-            id shouldBe someRepositoryId
+            val repository = result.shouldBeRight()
+            repository shouldBe expectedRepository
             coVerify {
                 repositoryPersistence.addRepository(expectedRepository.copy(id = Repository.AUTOINCREMENT_ID))
             }

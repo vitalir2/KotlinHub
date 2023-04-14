@@ -19,6 +19,7 @@ export function RepositoryContentDestination() {
     const repositoryId = params['repositoryId'];
     const path = params['*'];
     const [repositoryFiles, setRepositoryFiles] = useState<RepositoryFile[]>([])
+    const [isLoading, setLoading] = useState(true);
 
     const currentPath = path ?? ""
     useEffect(() => {
@@ -26,9 +27,12 @@ export function RepositoryContentDestination() {
             return
         }
         const fetchFiles = async () => {
-            return await appGraph.repositoriesGraph.repositoriesRepository.getRepositoryFiles(
+            setLoading(true);
+            const result = await appGraph.repositoriesGraph.repositoriesRepository.getRepositoryFiles(
                 "current", repositoryId, currentPath
             )
+            setLoading(false);
+            return result;
         }
         fetchFiles()
             .then(files => setRepositoryFiles(
@@ -42,6 +46,7 @@ export function RepositoryContentDestination() {
             <RepositoryContent
                 repositoryFiles={repositoryFiles}
                 path={currentPath}
+                isLoading={isLoading}
             />
         </>
     )
