@@ -10,6 +10,7 @@ import {LoadingPlaceholder} from "../../../core/view/placeholder/LoadingPlacehol
 import {RepositoryInfo} from "./RepositoryInfo";
 import {RepositorySettingsInfo} from "./RepositorySettingsInfo";
 import {useAuthState} from "../../auth/AuthHooks";
+import {fetchCurrentUser} from "../../auth/AuthSlice";
 
 export function RepositoryPage() {
     const dispatch = useAppDispatch()
@@ -20,8 +21,9 @@ export function RepositoryPage() {
     const repository = useAppSelector(state => state.repository.repository)
 
     useEffect(() => {
-        if (repositoryId === undefined) return
-        dispatch(fetchRepository(repositoryId))
+        if (repositoryId === undefined) return;
+        dispatch(fetchCurrentUser());
+        dispatch(fetchRepository(repositoryId));
     }, [repositoryId, dispatch])
 
     if (user === undefined || repository.kind === "loading") {

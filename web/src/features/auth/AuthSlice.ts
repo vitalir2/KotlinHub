@@ -6,7 +6,7 @@ import {createAppAsyncThunk} from "../../app/hooks";
 import {User} from "./User";
 import {AppDispatch} from "../../app/store";
 import {appGraph} from "../../app/dependency_injection";
-import {LoginParams, SuccessfulLoginResult} from "./AuthRepository";
+import {LoginParams, RegistrationParams, SuccessfulLoginResult} from "./AuthRepository";
 
 const getInitialState: () => AuthState = () => {
     const authToken = readSetting(SETTING_AUTH_TOKEN);
@@ -35,6 +35,12 @@ export const loginThunk = (params: LoginParams) => (dispatch: AppDispatch) => {
     const result = dispatch(loginUser(params)).unwrap();
     result.then(() => dispatch(fetchCurrentUser()))
 };
+
+export const registerThunk = (params: RegistrationParams) => (dispatch: AppDispatch) => {
+    const result = appGraph.authGraph.authRepository.registerUser(params);
+    result.then(() => dispatch(fetchCurrentUser()));
+    return result;
+}
 
 export const loginUser = createAppAsyncThunk<
     SuccessfulLoginResult,

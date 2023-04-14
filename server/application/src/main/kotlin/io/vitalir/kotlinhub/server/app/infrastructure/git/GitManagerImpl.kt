@@ -53,6 +53,7 @@ internal class GitManagerImpl(
         repositoryName: String,
         path: String,
     ): Either<GitError, List<RepositoryFile>> = withRepository(userId, repositoryName) {
+        val headCommit = headCommit ?: return@withRepository emptyList<RepositoryFile>().right()
         getDirContent(
             commit = headCommit,
             path = path,
@@ -65,7 +66,7 @@ internal class GitManagerImpl(
         path: String,
     ): Either<GitError, ByteArray> = withRepository(userId, repositoryName) {
         TreeWalk(this).use { walk ->
-            walk.addTree(headCommit.tree)
+            walk.addTree(headCommit!!.tree)
             val directoryPath = if ('/' in path) path.substringBeforeLast('/') else ROOT_DIR_PATH
             if (walk.openDirByPath(directoryPath)) {
                 getFileContentInCurrentDir(path, walk)
@@ -91,8 +92,12 @@ internal class GitManagerImpl(
         }
     }
 
-    private val JGitRepository.headCommit: RevCommit
-        get() = parseCommit(findRef("HEAD").objectId)
+    private val JGitRepository.headCommit: RevCommit?
+        get() = try {
+            parseCommit(findRef("HEAD").objectId)
+        } catch (_: Exception) {
+            null
+        }
 
     private fun <T> withRepository(
         userId: UserId,

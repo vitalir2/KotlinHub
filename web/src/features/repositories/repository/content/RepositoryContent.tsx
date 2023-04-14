@@ -2,7 +2,7 @@ import FolderIcon from '@mui/icons-material/Folder';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import QuizOutlinedIcon from '@mui/icons-material/QuizOutlined';
 import React from "react";
-import {Grid, Typography} from "@mui/material";
+import {CircularProgress, Grid, Typography} from "@mui/material";
 import {Link as RouterLink, useLocation} from "react-router-dom";
 import {RepositoryFile, RepositoryFileType} from "../../RepositoryFile";
 import {EmptyRepositoryContent} from "./EmptyRepositoryContent";
@@ -10,11 +10,14 @@ import {EmptyRepositoryContent} from "./EmptyRepositoryContent";
 export interface RepositoryContentProps {
     repositoryFiles: RepositoryFile[],
     path: string,
+    isLoading: boolean,
 }
 
-export function RepositoryContent({repositoryFiles, path}: RepositoryContentProps) {
+export function RepositoryContent({repositoryFiles, path, isLoading}: RepositoryContentProps) {
     let fileIndex = 0;
-    if (repositoryFiles.length === 0) {
+    if (isLoading) {
+        return <CircularProgress/>;
+    } else if (repositoryFiles.length === 0) {
         return <EmptyRepositoryContent/>;
     } else {
         return (

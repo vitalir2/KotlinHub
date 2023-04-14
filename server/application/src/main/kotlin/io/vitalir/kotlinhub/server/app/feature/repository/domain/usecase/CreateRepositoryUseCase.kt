@@ -2,8 +2,8 @@ package io.vitalir.kotlinhub.server.app.feature.repository.domain.usecase
 
 import arrow.core.Either
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.CreateRepositoryData
+import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.Repository
 import io.vitalir.kotlinhub.server.app.feature.repository.domain.model.RepositoryError
-import io.vitalir.kotlinhub.shared.feature.repository.RepositoryId
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.shared.feature.user.UserId
 
@@ -25,4 +25,4 @@ interface CreateRepositoryUseCase {
     }
 }
 
-typealias CreateRepositoryResult = Either<CreateRepositoryUseCase.Error, RepositoryId>
+typealias CreateRepositoryResult = Either<CreateRepositoryUseCase.Error, Repository>

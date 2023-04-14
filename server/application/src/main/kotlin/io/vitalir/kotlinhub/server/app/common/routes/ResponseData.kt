@@ -39,10 +39,10 @@ data class ResponseData(
             )
         }
 
-        fun forbidden(): ResponseData {
+        fun forbidden(message: String? = null): ResponseData {
             return fromErrorData(
                 code = HttpStatusCode.Forbidden,
-                errorMessage = "forbidden",
+                errorMessage = message ?: "forbidded",
             )
         }
     }

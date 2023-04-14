@@ -18,7 +18,7 @@ export function SegmentsView({segments}: SegmentsViewProps) {
     let currentIndex = 0;
     const segmentsLastIndex = segments.length - 1;
     return (
-        <Stack direction={'row'} alignItems={"center"} spacing={1}>
+        <Stack direction={'row'} alignItems={"center"} spacing={1} flexWrap={"wrap"}>
             {segments.map(segment => <PathSegment
                 segment={segment}
                 isCurrentSegment={segmentsLastIndex === currentIndex}

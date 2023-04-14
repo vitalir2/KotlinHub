@@ -33,7 +33,7 @@ internal fun Route.httpBaseAuth(
         post {
             val request = call.receive<GitAuthRequest>()
             val password = request.credentials?.let(headerManager::parse)?.password ?: run {
-                call.respondWith(ResponseData.forbidden())
+                call.respondWith(ResponseData.forbidden("No password provided"))
                 return@post
             }
             val userIdentifier = UserIdentifier.Id(request.userId)

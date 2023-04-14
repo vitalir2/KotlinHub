@@ -1,9 +1,6 @@
 package io.vitalir.kotlinhub.server.app.feature.user.routes.login
 
 import arrow.core.Either
-import com.auth0.jwt.JWT
-import com.auth0.jwt.JWTCreator
-import com.auth0.jwt.algorithms.Algorithm
 import io.bkbn.kompendium.core.metadata.PostInfo
 import io.bkbn.kompendium.core.plugin.NotarizedRoute
 import io.ktor.http.*
@@ -17,9 +14,9 @@ import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserCredentials
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserError
 import io.vitalir.kotlinhub.server.app.feature.user.domain.model.UserIdentifier
 import io.vitalir.kotlinhub.server.app.feature.user.domain.usecase.LoginUseCase
+import io.vitalir.kotlinhub.server.app.feature.user.routes.common.createToken
 import io.vitalir.kotlinhub.server.app.feature.user.routes.common.usersTag
 import io.vitalir.kotlinhub.server.app.feature.user.routes.getErrorResponseData
-import io.vitalir.kotlinhub.server.app.infrastructure.auth.AuthenticationPayload
 import io.vitalir.kotlinhub.server.app.infrastructure.config.AppConfig
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.badRequestResponse
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.kompendiumDocs
@@ -27,9 +24,6 @@ import io.vitalir.kotlinhub.server.app.infrastructure.docs.reqType
 import io.vitalir.kotlinhub.server.app.infrastructure.docs.resType
 import io.vitalir.kotlinhub.shared.feature.user.LoginRequest
 import io.vitalir.kotlinhub.shared.feature.user.LoginResponse
-import io.vitalir.kotlinhub.shared.feature.user.UserId
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 internal fun Route.authRoute(
     jwtConfig: AppConfig.Auth.Jwt,
@@ -98,20 +92,4 @@ private fun getResponseData(
             )
         }
     }
-}
-
-private fun createToken(
-    jwtConfig: AppConfig.Auth.Jwt,
-    userId: UserId,
-): String {
-    return JWT.create().apply {
-        withAudience(jwtConfig.audience)
-        withIssuer(jwtConfig.issuer)
-        withUserId(AuthenticationPayload.UserId(userId))
-        withExpiresAt(Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)))
-    }.sign(Algorithm.HMAC256(jwtConfig.secret))
-}
-
-private fun JWTCreator.Builder.withUserId(payload: AuthenticationPayload.UserId) {
-    withClaim(payload.name, payload.value)
 }

@@ -1,21 +1,64 @@
 import * as platformShared from "platform-shared"
 import {baseApi, convertNullableToTypescriptModel, getDefaultHeaders} from "../../app/fetch";
 import {User} from "./User";
-import {LoginParams, LoginResult, LoginResultError, SuccessfulLoginResult, AuthRepository} from "./AuthRepository";
+import {
+    LoginParams,
+    LoginResult,
+    LoginResultError,
+    SuccessfulLoginResult,
+    AuthRepository,
+    RegistrationParams,
+    RegistrationResult
+} from "./AuthRepository";
 import axios from "axios";
 import {clearSetting, setSetting} from "../../core/settings/Settings";
 import {SETTING_AUTH_TOKEN} from "../../core/settings/SettingsNames";
 
 type LoginRequest = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginRequest
 type LoginResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.LoginResponse
+type RegistrationRequest = platformShared.io.vitalir.kotlinhub.shared.feature.user.RegisterUserRequest
+type RegistrationResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.RegisterUserResponse
 type GetUserResponse = platformShared.io.vitalir.kotlinhub.shared.feature.user.GetUserResponse
 type ErrorResponse = platformShared.io.vitalir.kotlinhub.shared.common.ErrorResponse
 
 export class DefaultAuthRepository implements AuthRepository {
+    async registerUser(params: RegistrationParams): Promise<RegistrationResult> {
+        const request = this.createRegistrationRequest(params);
+        try {
+            const response = await baseApi.post<RegistrationResponse>("/users", request, {
+                headers: getDefaultHeaders(),
+            });
+            setSetting(SETTING_AUTH_TOKEN, response.data.token)
+            return {
+                kind: "success",
+            };
+        } catch (e) {
+            if (axios.isAxiosError(e)) {
+                return {
+                    kind: "error",
+                    error: e.message,
+                };
+            } else {
+                return {
+                    kind: "error",
+                    error: "Unknown",
+                };
+            }
+        }
+    }
+
+    private createRegistrationRequest(params: RegistrationParams): RegistrationRequest {
+        return {
+            login: params.username,
+            password: params.password,
+        };
+    }
+
     logout(): Promise<Boolean> {
         clearSetting(SETTING_AUTH_TOKEN)
         return Promise.resolve(true);
     }
+
     loginUser(request: LoginParams): Promise<LoginResult> {
         return baseApi.post<LoginResponse>(
             "/users/auth", this.mapParamsToRequest(request),
@@ -25,7 +68,7 @@ export class DefaultAuthRepository implements AuthRepository {
         )
             .then(
                 response => {
-                    setSetting(SETTING_AUTH_TOKEN ,response.data.token);
+                    setSetting(SETTING_AUTH_TOKEN, response.data.token);
                     return this.mapResponseToResult(response.data);
                 },
                 error => {
