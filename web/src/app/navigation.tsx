@@ -9,7 +9,7 @@ import {
 import {RootPage} from "../features/root/RootPage";
 import {CreateRepositoryPage} from "../features/repositories/repository/create/CreateRepositoryPage";
 import {RegistrationPage} from "../features/auth/registration/RegistrationPage";
-import {isProductionEnv} from "./environment";
+import {isProductionBackend, isProductionEnv} from "./environment";
 
 export function createAppRouter(): RemixRouter {
     const routes = [
@@ -50,7 +50,7 @@ export function createAppRouter(): RemixRouter {
             ],
         }
     ];
-    if (isProductionEnv()) {
+    if (isProductionBackend()) {
         return createHashRouter(routes);
     } else {
         return createBrowserRouter(routes);
