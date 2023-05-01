@@ -1,7 +1,6 @@
 server {
     listen ${NGINX_PORT};
     server_name localhost;
-    resolver 127.0.0.11 ipv6=off;
 
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
