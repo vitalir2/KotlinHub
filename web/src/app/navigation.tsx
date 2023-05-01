@@ -1,4 +1,4 @@
-import {createBrowserRouter} from "react-router-dom";
+import {createBrowserRouter, createHashRouter} from "react-router-dom";
 import {Router as RemixRouter} from "@remix-run/router/dist/router";
 import App from "../App";
 import {RepositoryPage} from "../features/repositories/repository/RepositoryPage";
@@ -9,16 +9,17 @@ import {
 import {RootPage} from "../features/root/RootPage";
 import {CreateRepositoryPage} from "../features/repositories/repository/create/CreateRepositoryPage";
 import {RegistrationPage} from "../features/auth/registration/RegistrationPage";
+import {isProductionEnv} from "./environment";
 
 export function createAppRouter(): RemixRouter {
-    return createBrowserRouter([
+    const routes = [
         {
             path: "/",
             element: <App/>,
             children: [
                 {
-                   index: true,
-                   element: <RootPage/>,
+                    index: true,
+                    element: <RootPage/>,
                 },
                 {
                     path: "register",
@@ -48,5 +49,10 @@ export function createAppRouter(): RemixRouter {
                 }
             ],
         }
-    ])
+    ];
+    if (isProductionEnv()) {
+        return createHashRouter(routes);
+    } else {
+        return createBrowserRouter(routes);
+    }
 }

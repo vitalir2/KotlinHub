@@ -1,6 +1,7 @@
 {
-  "name": "web-react",
+  "name": "kotlinhub-web",
   "version": "0.1.0",
+  "homepage": "https://vitalir2.github.io/KotlinHub/",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -21,6 +22,7 @@
     "axios": "^1.2.2",
     "dotenv": "^16.0.3",
     "dotenv-webpack": "^8.0.1",
+    "gh-pages": "^5.0.0",
     "platform-shared": "file:../platform-shared/build/productionLibrary",
     "process": "^0.11.10",
     "react": "^18.2.0",
@@ -36,6 +38,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
