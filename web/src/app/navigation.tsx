@@ -50,9 +50,5 @@ export function createAppRouter(): RemixRouter {
             ],
         }
     ];
-    if (isProductionBackend()) {
-        return createHashRouter(routes);
-    } else {
-        return createBrowserRouter(routes);
-    }
+    return createBrowserRouter(routes);
 }

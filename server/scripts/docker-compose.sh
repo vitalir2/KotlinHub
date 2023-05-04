@@ -20,10 +20,18 @@ gradlewTask() {
   cd - || exit
 }
 
+buildFrontend() {
+  echo "Build frontend"
+  cd ../../web || exit
+  npm run build
+  cd - || exit
+}
+
 if [[ $mode_value == "up" ]];
 then
   gradlewTask application buildFatJar
   gradlewTask kgit shadow
+  buildFrontend
   dockerComposeTask build
   dockerComposeTask up
 else
