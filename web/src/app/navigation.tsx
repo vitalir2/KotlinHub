@@ -1,4 +1,4 @@
-import {createBrowserRouter, createHashRouter} from "react-router-dom";
+import {createBrowserRouter} from "react-router-dom";
 import {Router as RemixRouter} from "@remix-run/router/dist/router";
 import App from "../App";
 import {RepositoryPage} from "../features/repositories/repository/RepositoryPage";
@@ -9,7 +9,6 @@ import {
 import {RootPage} from "../features/root/RootPage";
 import {CreateRepositoryPage} from "../features/repositories/repository/create/CreateRepositoryPage";
 import {RegistrationPage} from "../features/auth/registration/RegistrationPage";
-import {isProductionBackend, isProductionEnv} from "./environment";
 
 export function createAppRouter(): RemixRouter {
     const routes = [
