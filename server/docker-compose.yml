@@ -64,6 +64,7 @@ services:
     volumes:
       - ./reverse-proxy/templates:/etc/nginx/templates
       - ./reverse-proxy/templates/default.conf:/etc/nginx/conf.d/default.conf
+      - ../web/build:/etc/nginx/frontend
     ports:
       - 80:80
     environment:

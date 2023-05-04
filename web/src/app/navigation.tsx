@@ -11,14 +11,14 @@ import {CreateRepositoryPage} from "../features/repositories/repository/create/C
 import {RegistrationPage} from "../features/auth/registration/RegistrationPage";
 
 export function createAppRouter(): RemixRouter {
-    return createBrowserRouter([
+    const routes = [
         {
             path: "/",
             element: <App/>,
             children: [
                 {
-                   index: true,
-                   element: <RootPage/>,
+                    index: true,
+                    element: <RootPage/>,
                 },
                 {
                     path: "register",
@@ -48,5 +48,6 @@ export function createAppRouter(): RemixRouter {
                 }
             ],
         }
-    ])
+    ];
+    return createBrowserRouter(routes);
 }

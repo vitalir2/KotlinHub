@@ -1,7 +1,6 @@
 server {
     listen ${NGINX_PORT};
     server_name localhost;
-    resolver 127.0.0.11 ipv6=off;
 
     client_max_body_size 100m;
 
@@ -9,7 +8,13 @@ server {
         proxy_pass http://kgit:8081/git/$1/$2$is_args$args;
     }
 
-    location / {
+    location /api/ {
         proxy_pass http://app:8080/;
+    }
+
+    root /etc/nginx/frontend;
+
+    location / {
+        try_files $uri /index.html;
     }
 }
