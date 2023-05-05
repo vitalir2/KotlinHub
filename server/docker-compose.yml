@@ -67,6 +67,7 @@ services:
       - ../web/build:/etc/nginx/frontend
     ports:
       - 80:80
+      - 8090:8090
     environment:
       - NGINX_PORT=80
     depends_on:
