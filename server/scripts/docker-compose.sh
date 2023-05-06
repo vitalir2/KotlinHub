@@ -23,6 +23,7 @@ gradlewTask() {
 buildFrontend() {
   echo "Build frontend"
   cd ../../web || exit
+  npm install
   npm run build
   cd - || exit
 }
