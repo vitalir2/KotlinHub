@@ -5,7 +5,6 @@ import {
     Toolbar,
     Typography,
     MenuItem,
-    Avatar,
     IconButton,
     SvgIcon, SxProps, Stack
 } from "@mui/material";
@@ -16,9 +15,11 @@ import {useAppDispatch} from "../../../app/hooks";
 import {useAuthState} from "../../../features/auth/AuthHooks";
 import {logoutThunk} from "../../../features/auth/AuthSlice";
 import {Add as AddIcon} from "@mui/icons-material";
+import {UserAvatar} from "../avatar/UserAvatar";
+import {User} from "../../../features/auth/User";
 
 export interface KotlinHubToolbarProps {
-    isLoggedIn: boolean,
+    user?: User,
 }
 
 const primaryLinkStyle: SxProps = {
@@ -34,15 +35,14 @@ const primaryLinkStyle: SxProps = {
 export function KotlinHubToolbarRedux() {
     const authState = useAuthState();
     return (
-        <KotlinHubToolbar
-            isLoggedIn={authState.kind === "logged_in"}
-        />
+        <KotlinHubToolbar user={authState.user}/>
     );
 }
 
-export function KotlinHubToolbar({isLoggedIn}: KotlinHubToolbarProps) {
+export function KotlinHubToolbar({user}: KotlinHubToolbarProps) {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const isLoggedIn = user !== undefined;
 
     const handleOnSignOutClick = () => {
         dispatch(logoutThunk());
@@ -94,7 +94,7 @@ export function KotlinHubToolbar({isLoggedIn}: KotlinHubToolbarProps) {
                         >
                             <AddIcon/>
                         </IconButton>
-                        <AvatarMenu settingsMenu={settingsMenu}/>
+                        <AvatarMenu settingsMenu={settingsMenu} username={user.username}/>
                     </Stack>
                 }
             </Toolbar>
@@ -104,9 +104,10 @@ export function KotlinHubToolbar({isLoggedIn}: KotlinHubToolbarProps) {
 
 interface AvatarMenuProps {
     settingsMenu: React.ReactElement[],
+    username: string,
 }
 
-function AvatarMenu({settingsMenu}: AvatarMenuProps) {
+function AvatarMenu({settingsMenu, username}: AvatarMenuProps) {
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -120,7 +121,7 @@ function AvatarMenu({settingsMenu}: AvatarMenuProps) {
     return (
         <Box>
             <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
-                <Avatar alt="User Avatar" src={"TODO"}/>
+                <UserAvatar name={username}/>
             </IconButton>
             <Menu
                 sx={{mt: '45px'}}

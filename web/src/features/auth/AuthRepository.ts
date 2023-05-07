@@ -33,7 +33,7 @@ export interface SuccessfulRegistration {
 
 export interface RegistrationError {
     kind: "error",
-    error?: string,
+    error: string,
 }
 
 export type RegistrationResult = SuccessfulRegistration | RegistrationError;

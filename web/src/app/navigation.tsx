@@ -9,6 +9,7 @@ import {
 import {RootPage} from "../features/root/RootPage";
 import {CreateRepositoryPage} from "../features/repositories/repository/create/CreateRepositoryPage";
 import {RegistrationPage} from "../features/auth/registration/RegistrationPage";
+import {UserSettingsPage} from "../features/auth/settings/UserSettingsPage";
 
 export function createAppRouter(): RemixRouter {
     const routes = [
@@ -23,6 +24,10 @@ export function createAppRouter(): RemixRouter {
                 {
                     path: "register",
                     element: <RegistrationPage/>,
+                },
+                {
+                    path: "settings",
+                    element: <UserSettingsPage/>,
                 },
                 {
                     path: "repositories/create",

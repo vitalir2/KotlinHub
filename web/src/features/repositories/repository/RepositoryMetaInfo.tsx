@@ -6,7 +6,9 @@ export function RepositoryMetaInfo(description: string) {
             <Typography variant={"subtitle1"}>
                 About
             </Typography>
-            <Typography variant={"body1"}>
+            <Typography variant={"body2"} sx={{
+                color: "text.secondary",
+            }}>
                 {description}
             </Typography>
         </Stack>

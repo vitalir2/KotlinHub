@@ -1,6 +1,7 @@
-import {Avatar, Stack, Typography} from "@mui/material";
+import {Stack, Typography} from "@mui/material";
 import React from "react";
 import {getFullName, User} from "../auth/User";
+import {UserAvatar} from "../../core/view/avatar/UserAvatar";
 
 export interface ProfileSidebarProps {
     user: User
@@ -15,7 +16,7 @@ export function ProfileSidebar(props: ProfileSidebarProps) {
             width: "100%",
             height: "100%",
         }}>
-            <Avatar alt={"Account picture"} src={"#"} sx={{
+            <UserAvatar name={user.username} sx={{
                 width: "10vw",
                 height: "10vw",
             }}/>
