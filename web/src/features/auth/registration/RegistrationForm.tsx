@@ -41,7 +41,10 @@ export function RegistrationForm(props: RegistrationFormProps) {
                 navigate("/");
                 break;
             case "error":
-                // TODO handle validation errors
+                setPassword({
+                    ...password,
+                    errorMessage: result.error,
+                })
                 break;
         }
 
@@ -63,11 +66,17 @@ export function RegistrationForm(props: RegistrationFormProps) {
             <KotlinHubTextField
                 label={"Password"}
                 field={password}
-                onChange={value => setPassword({
-                    ...password,
-                    value: value,
-                    errorMessage: undefined,
-                })}
+                onChange={value => {
+                    setUsername({
+                        ...username,
+                        errorMessage: undefined,
+                    })
+                    setPassword({
+                        ...password,
+                        value: value,
+                        errorMessage: undefined,
+                    })
+                }}
                 type={"password"}
             />
             <KotlinHubButton

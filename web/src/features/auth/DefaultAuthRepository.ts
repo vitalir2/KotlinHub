@@ -34,14 +34,15 @@ export class DefaultAuthRepository implements AuthRepository {
             };
         } catch (e) {
             if (axios.isAxiosError(e)) {
+                // TODO handle errors from backend
                 return {
                     kind: "error",
-                    error: e.message,
+                    error: "User already exists",
                 };
             } else {
                 return {
                     kind: "error",
-                    error: "Unknown",
+                    error: "Unknown error",
                 };
             }
         }
