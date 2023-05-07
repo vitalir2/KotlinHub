@@ -16,7 +16,6 @@ import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.treewalk.TreeWalk
 import org.eclipse.jgit.treewalk.filter.PathFilter
 import kotlin.io.path.Path
-import kotlin.io.path.deleteIfExists
 import org.eclipse.jgit.lib.Repository as JGitRepository
 
 private const val ROOT_DIR_PATH = ""
@@ -74,6 +73,12 @@ internal class GitManagerImpl(
                 GitError.DirectoryNotFound(directoryPath).left()
             }
         }
+    }
+
+    override suspend fun removeRepositoryByName(userId: UserId, repositoryName: String): Boolean {
+        val repositoryPath = createRepositoryPath(userId, repositoryName)
+
+        return repositoryPath.toFile().deleteRecursively()
     }
 
     private fun getFileContentInCurrentDir(
@@ -208,11 +213,6 @@ internal class GitManagerImpl(
             }
         },
     )
-
-    override suspend fun removeRepositoryByName(userId: UserId, repositoryName: String): Boolean {
-        val repositoryPath = createRepositoryPath(userId, repositoryName)
-        return repositoryPath.deleteIfExists()
-    }
 
     private fun Repository.toFilePath(): Path {
         return createRepositoryPath(
