@@ -6,6 +6,7 @@ import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {fetchCurrentRepositories} from "./MainSlice";
 import {useAuthState} from "../auth/AuthHooks";
 import {ErrorPlaceholder} from "../../core/view/placeholder/ErrorPlaceholder";
+import {fetchCurrentUser} from "../auth/AuthSlice";
 
 export function MainPage() {
     const authState = useAuthState();
@@ -13,6 +14,7 @@ export function MainPage() {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
+        dispatch(fetchCurrentUser())
         dispatch(fetchCurrentRepositories())
     }, [dispatch])
 
