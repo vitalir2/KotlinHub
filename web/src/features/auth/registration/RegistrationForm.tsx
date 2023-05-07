@@ -5,7 +5,7 @@ import {KotlinHubTextField} from "../../../core/view/input/KotlinHubTextField";
 import {KotlinHubButton} from "../../../core/view/button/KotlinHubButton";
 import {TextInputData} from "../../../core/models/TextInputData";
 import {useAppDispatch} from "../../../app/hooks";
-import {registerThunk} from "../AuthSlice";
+import {fetchCurrentUser, registerThunk} from "../AuthSlice";
 
 export interface RegistrationFormProps {
     username: TextInputData,
@@ -38,6 +38,7 @@ export function RegistrationForm(props: RegistrationFormProps) {
         }));
         switch (result.kind) {
             case "success":
+                dispatch(fetchCurrentUser())
                 navigate("/");
                 break;
             case "error":
