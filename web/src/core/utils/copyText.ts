@@ -1,13 +1,13 @@
+// TODO: Replace by navigator API when https will be supported
 export function copyText(
     text: string,
     onSuccess: () => void,
     onError: () => void = () => {},
 ) {
-    const type = "text/plain";
-    const blob = new Blob([text], {type});
-    const data = [new ClipboardItem({[type]: blob})];
-    navigator.clipboard.write(data).then(
-        () => onSuccess(),
-        () => onError(),
-    );
+    const input = document.createElement('input');
+    input.setAttribute('value', text);
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
 }
