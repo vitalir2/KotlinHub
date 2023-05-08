@@ -32,6 +32,7 @@ if [[ $mode_value == "up" ]];
 then
   gradlewTask application buildFatJar
   gradlewTask kgit shadow
+  gradlewTask kgit :platform-shared:jsNodeProductionLibraryDistribution
   buildFrontend
   dockerComposeTask build
   dockerComposeTask up
