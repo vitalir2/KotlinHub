@@ -1,11 +1,11 @@
 import React from 'react';
-import {createTheme, CssBaseline, Stack, ThemeProvider} from "@mui/material";
+import {createTheme, CssBaseline, responsiveFontSizes, Stack, ThemeProvider} from "@mui/material";
 import {Outlet} from "react-router-dom";
 import {Provider} from "react-redux";
 import {store} from "./app/store";
 import {KotlinHubToolbarRedux} from "./core/view/toolbar/KotlinHubToolbar";
 
-export const appTheme = createTheme({
+let theme = createTheme({
     palette: {
         primary: {
             main: '#ffcf52',
@@ -15,6 +15,7 @@ export const appTheme = createTheme({
         },
     },
 });
+export const appTheme = responsiveFontSizes(theme);
 
 function App() {
     return (

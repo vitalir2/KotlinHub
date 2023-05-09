@@ -27,8 +27,9 @@ export const loginSlice = createSlice({
     initialState,
     reducers: {
         setLogin(state: LoginState, action: PayloadAction<string>) {
-            state.login.value = action.payload
-            state.login.errorMessage = undefined
+            state.login.value = action.payload;
+            state.login.errorMessage = undefined;
+            state.password.errorMessage = undefined;
         },
         setPassword(state: LoginState, action: PayloadAction<string>) {
             state.password.value = action.payload

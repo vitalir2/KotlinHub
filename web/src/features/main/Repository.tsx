@@ -6,8 +6,15 @@ export interface RepositoryProps {
     repository: RepositoryModel,
 }
 
-const repositoryStyle: SxProps = {
+const repositoryLinkStyle: SxProps = {
     textDecoration: "none",
+    color: "secondary.dark",
+    ":visited": {
+        color: "secondary.dark",
+    },
+    ":hover": {
+        color: "secondary.main",
+    },
 }
 
 export function Repository(props: RepositoryProps) {
@@ -17,7 +24,7 @@ export function Repository(props: RepositoryProps) {
         <Stack spacing={0.5}>
             <Stack spacing={1} direction={"row"}>
                 <Typography component={RouterLink}
-                            sx={repositoryStyle}
+                            sx={repositoryLinkStyle}
                             variant={"h6"}
                             to={`/repositories/${repository.name}`}
                 >

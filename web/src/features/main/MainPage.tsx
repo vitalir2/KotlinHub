@@ -23,7 +23,7 @@ export function MainPage() {
     }
 
     return (
-        <Stack direction={"row"} spacing={2} sx={{p: 2}}>
+        <Stack direction={"row"} spacing={2} sx={{p: 2}} justifyContent={"center"}>
             <LoadableProfileSidebar user={authState.user}/>
             <LoadableRepositories loadableRepositories={repositoriesState.repositories}/>
         </Stack>

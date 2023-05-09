@@ -42,6 +42,9 @@ export function RepositoryFileContent({fileName, fileContent}: RepositoryFileCon
         case "sh":
             contentLanguage = "bash";
             break;
+        case "md":
+            contentLanguage = "markdown";
+            break;
         default:
             contentLanguage = "text";
             break;

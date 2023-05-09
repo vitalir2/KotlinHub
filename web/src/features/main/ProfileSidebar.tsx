@@ -20,7 +20,7 @@ export function ProfileSidebar(props: ProfileSidebarProps) {
                 width: "10vw",
                 height: "10vw",
             }}/>
-            <Typography variant={"h5"}>
+            <Typography variant={"h5"} fontWeight={200}>
                 {user.username}
             </Typography>
             {fullName &&

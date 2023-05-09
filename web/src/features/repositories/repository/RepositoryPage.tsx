@@ -105,12 +105,13 @@ const linkStyle: SxProps = {
 }
 
 function RepositoryName({username, repositoryName}: RepositoryNameProps) {
-    const variant = "subtitle1"
+    const variant = "h6"
     return (
         <Stack direction={"row"} spacing={0.5} alignItems={"center"}>
             <Typography
                 variant={variant}
                 sx={linkStyle}
+                fontWeight={400}
                 component={NavLink}
                 to={`/`}
             >
